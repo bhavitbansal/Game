@@ -1,0 +1,1224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>TitanArmada - Triple Threat Suite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body, html { width: 100vw; height: 100vh; overflow: hidden; background-color: #010204; font-family: 'Rajdhani', sans-serif; color: #ffffff; user-select: none; touch-action: none; }
+      #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: auto; }
+      #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
+      
+      .glass-panel, .battle-header, .modal-box, .vibe-card { pointer-events: auto !important; }
+      
+      .game-screen { display: none; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; padding: 15px; }
+      .game-screen.active { display: flex; }
+      
+      /* --- TRIPLE REALISTIC HAPTIC GLASSMORPHIC INTRO SCREEN --- */
+      #screen-intro { background-color: #000000; flex-direction: column; justify-content: center; align-items: center; gap: 30px; z-index: 100; transition: background-color 1s ease; }
+      .intro-headline { font-family: 'Orbitron', sans-serif; font-size: 20px; letter-spacing: 4px; color: #8a99ad; text-shadow: 0 0 10px rgba(255,255,255,0.1); text-transform: uppercase; text-align: center; }
+      .vibe-deck { display: flex; gap: 20px; justify-content: center; align-items: center; width: 100%; max-width: 1200px; perspective: 1000px; }
+      
+      .vibe-card {
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        border-radius: 16px; padding: 25px; width: 280px;
+        display: flex; flex-direction: column; gap: 20px; cursor: pointer;
+        transform-style: preserve-3d; transform: translateZ(0px) scale(1);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s ease;
+      }
+      
+      /* MOOD-BASED CARD COLORS */
+      .vibe-card.combat-variant {
+        background: linear-gradient(135deg, rgba(255, 60, 0, 0.15) 0%, rgba(20, 5, 0, 0.85) 100%);
+        border: 1px solid rgba(255, 85, 0, 0.3);
+      }
+      .vibe-card.zen-variant {
+        background: linear-gradient(135deg, rgba(0, 200, 255, 0.15) 0%, rgba(0, 10, 20, 0.85) 100%);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+      }
+      .vibe-card.jolly-variant {
+        background: linear-gradient(135deg, rgba(255, 64, 129, 0.2) 0%, rgba(40, 10, 25, 0.85) 100%);
+        border: 1px solid rgba(255, 107, 155, 0.4);
+      }
+
+      .vibe-card:hover { transform: translateZ(30px) translateY(-5px) scale(1.04); }
+      .vibe-card.combat-variant:hover { border-color: rgba(255, 85, 0, 0.8); box-shadow: 0 30px 60px rgba(255, 85, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.2); }
+      .vibe-card.zen-variant:hover { border-color: rgba(0, 240, 255, 0.8); box-shadow: 0 30px 60px rgba(0, 240, 255, 0.25), inset 0 1px 0 rgba(255,255,255,0.2); }
+      .vibe-card.jolly-variant:hover { border-color: rgba(255, 107, 155, 0.8); box-shadow: 0 30px 60px rgba(255, 107, 155, 0.35), inset 0 1px 0 rgba(255,255,255,0.2); }
+
+      .vibe-tag { font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+      .combat-variant .vibe-tag { color: #ff5500; text-shadow: 0 0 10px rgba(255,85,0,0.3); }
+      .zen-variant .vibe-tag { color: #00f0ff; text-shadow: 0 0 10px rgba(0,240,255,0.3); }
+      .jolly-variant .vibe-tag { color: #ff6b9d; text-shadow: 0 0 10px rgba(255,107,155,0.3); }
+
+      .song-title { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; line-height: 1.2; margin-top: 4px; color: #ffffff; }
+      .vibe-description { font-size: 13.5px; color: #cbd5e0; line-height: 1.5; font-weight: 500; opacity: 0.85; }
+      .audio-indicator-box { background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; font-size: 11px; font-family: 'Orbitron', sans-serif; color: #a0aec0; display: flex; align-items: center; gap: 8px; transition: border-color 0.4s; }
+      .combat-variant:hover .audio-indicator-box { border-color: rgba(255,85,0,0.4); }
+      .zen-variant:hover .audio-indicator-box { border-color: rgba(0, 240, 255, 0.4); }
+      .jolly-variant:hover .audio-indicator-box { border-color: rgba(255,107,155,0.5); }
+      
+      .pulse-dot { width: 6px; height: 6px; border-radius: 50%; }
+      .combat-variant .pulse-dot { background: #ff5500; animation: combatPulse 1.5s infinite; }
+      .zen-variant .pulse-dot { background: #00f0ff; animation: zenPulse 1.5s infinite; }
+      .jolly-variant .pulse-dot { background: #ff4081; animation: jollyPulse 1.5s infinite; }
+      
+      @keyframes combatPulse { 0%, 100% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0px #ff5500; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px #ff5500; } }
+      @keyframes zenPulse { 0%, 100% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0px #00f0ff; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px #00f0ff; } }
+      @keyframes jollyPulse { 0%, 100% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0px #ff4081; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px #ff4081; } }
+
+      /* Glassmorphism Settings */
+      .glass-panel { background: rgba(8, 12, 24, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 12px; padding: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); }
+      
+      #screen-home { flex-direction: column; justify-content: center; align-items: center; gap: 30px; pointer-events: auto; }
+      .logo-container { text-align: center; }
+      .logo-text { font-family: 'Orbitron', sans-serif; font-size: 56px; font-weight: 900; letter-spacing: 5px; text-shadow: 0 0 30px rgba(0, 240, 255, 0.4); }
+      .logo-text span { color: #00f0ff; }
+      .subtitle { font-size: 13px; letter-spacing: 10px; color: #ff9900; opacity: 0.9; margin-bottom: 6px; font-weight: bold; }
+      
+      .home-menu { display: flex; flex-direction: column; gap: 14px; width: 280px; }
+      
+      #screen-deploy { flex-direction: row; justify-content: space-between; align-items: center; }
+      .deploy-sidebar-left { position: absolute; left: 15px; top: 15px; width: 240px; display: flex; flex-direction: column; gap: 12px; }
+      .deploy-sidebar-right { position: absolute; right: 15px; top: 15px; width: 240px; }
+      
+      #screen-battle { flex-direction: column; justify-content: space-between; }
+      .battle-header { width: calc(100% - 30px); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: absolute; top: 15px; left: 15px; border-radius: 8px; }
+      
+      /* Zen Mode UI */
+      #screen-zen { flex-direction: column; justify-content: center; align-items: flex-start; padding: 30px; }
+      .zen-sidebar { max-width: 320px; display: flex; flex-direction: column; gap: 12px; }
+
+      /* Jolly Mode UI */
+      #screen-jolly { flex-direction: column; justify-content: space-between; padding: 25px; }
+      .jolly-header { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+      .jolly-score-box { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.35); box-shadow: 0 8px 32px rgba(255, 140, 180, 0.25); text-align: center; }
+      .jolly-score-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #ff66aa; font-weight: 700; }
+      .jolly-score-val { font-family: 'Orbitron', sans-serif; font-size: 32px; color: #fff; text-shadow: 0 0 12px rgba(255,255,255,0.6); }
+      .jolly-footer { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+      .jolly-tip { font-size: 14px; color: #ff6b9d; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
+
+      #settings-trigger-container { position: absolute; bottom: 15px; right: 15px; z-index: 20; pointer-events: auto; }
+      #ai-taunt { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; color: #ffaa00; text-shadow: 0 0 15px rgba(255, 170, 0, 0.6); z-index: 20; opacity: 0; transition: opacity 0.3s; pointer-events: none; text-align: center; background: rgba(4, 6, 14, 0.85); padding: 12px 24px; border-radius: 6px; border: 1px solid rgba(255,170,0,0.3); max-width: 80%; min-height: 45px; }
+
+      .hud-main-containers { display: flex; justify-content: space-between; width: 100%; height: 100%; align-items: flex-end; }
+      .sidebar-left { position: absolute; left: 15px; bottom: 15px; width: 200px; display: flex; flex-direction: column; gap: 10px; }
+      .hud-item .label { font-size: 9px; color: #00f0ff; letter-spacing: 1px; opacity: 0.7; }
+      .hud-item .val { font-size: 15px; font-weight: 700; font-family: 'Orbitron', sans-serif; }
+      #turn-indicator { font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 900; color: #00f0ff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.5); }
+      
+      .stats-grid { display: flex; justify-content: space-between; text-align: center; }
+      .stat-box { background: rgba(0,0,0,0.4); padding: 6px; border-radius: 4px; width: 31%; border: 1px solid rgba(255,255,255,0.05); }
+      .stat-box .label { font-size: 8px; color: #a0aec0; }
+      .stat-box .val { font-size: 12px; font-weight: bold; color: #00f0ff; }
+      
+      .btn { 
+        background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.4); color: #00f0ff; 
+        padding: 10px 16px; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; 
+        border-radius: 6px; cursor: pointer; transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s, box-shadow 0.25s;
+      }
+      .btn:hover { transform: scale(1.04) translateY(-1px); background: rgba(0, 240, 255, 0.15); border-color: #00f0ff; box-shadow: 0 8px 20px rgba(0, 240, 255, 0.3); }
+      .btn-primary { background: #00f0ff; color: #000; border-color: #00f0ff; }
+      .btn-primary:hover { background: #ffffff; color: #000; border-color: #ffffff; box-shadow: 0 8px 20px rgba(255, 255, 255, 0.4); }
+      .btn-accent { border-color: rgba(255, 0, 85, 0.4); color: #ffaa00; width: 100%; background: rgba(255, 0, 85, 0.02); }
+      .btn-accent:hover { background: #ffaa00; color: #000; border-color: #ffaa00; box-shadow: 0 8px 20px rgba(255, 170, 0, 0.4); }
+      .btn-danger { border-color: rgba(255, 0, 50, 0.6); color: #ff3333; background: rgba(255, 0, 50, 0.05); width: 100%; }
+      .btn-danger:hover { background: #ff2222; color: #fff; border-color: #ff2222; box-shadow: 0 8px 20px rgba(255, 30, 30, 0.4); }
+      .btn-zen { border-color: rgba(0, 240, 255, 0.8); color: #00f0ff; width: 100%; background: rgba(0, 240, 255, 0.1); }
+      .btn-zen:hover { background: #00f0ff; color: #000; border-color: #00f0ff; box-shadow: 0 8px 25px rgba(0, 240, 255, 0.6); }
+      .btn-jolly { border-color: rgba(255, 64, 129, 0.8); color: #ff6b9d; width: 100%; background: rgba(255, 64, 129, 0.15); }
+      .btn-jolly:hover { background: #fff37a; color: #ff4081; border-color: #fff37a; box-shadow: 0 8px 25px rgba(255, 100, 150, 0.6); }
+      
+      .slider-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; width: 100%; }
+      .slider-label { font-size: 13px; font-weight: bold; color: #00f0ff; letter-spacing: 1px; }
+      .cyber-slider { -webkit-appearance: none; width: 140px; height: 6px; background: rgba(0, 240, 255, 0.2); border-radius: 3px; outline: none; pointer-events: auto; }
+      .cyber-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #00f0ff; cursor: pointer; box-shadow: 0 0 10px #00f0ff; }
+      
+      #screen-gameover { justify-content: center; align-items: center; }
+      .gameover-box glass-panel { width: 340px; text-align: center; display: flex; flex-direction: column; gap: 18px; border-color: #ff0055; }
+      .gameover-stats { display: flex; flex-direction: column; gap: 8px; text-align: left; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 6px; }
+      .stat-row { display: flex; justify-content: space-between; font-size: 14px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+      
+      h2, h3 { font-family: 'Orbitron', sans-serif; color: #00f0ff; letter-spacing: 0.5px; }
+      h2 { font-size: 15px; margin-bottom: 4px; } h3 { font-size: 12px; margin-bottom: 4px; }
+      .deploy-ship-info { background: rgba(0,0,0,0.4); padding: 8px; border-radius: 4px; border-left: 3px solid #00f0ff; }
+      .ship-name { font-size: 14px; font-weight: bold; color: #fff; font-family: 'Orbitron', sans-serif; }
+      .ship-size { font-size: 11px; color: #00f0ff; }
+      .cyber-divider { border: none; height: 1px; background: rgba(0,240,255,0.15); margin: 8px 0; }
+      .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 3, 7, 0.85); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
+      .modal-box { width: 90%; max-width: 460px; display: flex; flex-direction: column; gap: 14px; }
+      .ships-list { display: flex; flex-direction: column; gap: 5px; font-size: 12px; }
+      .ship-status-item { display: flex; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 4px 8px; border-radius: 4px; }
+      .status-active { color: #00f0ff; font-weight: bold; }
+      .status-sunk { color: #ff0055; text-decoration: line-through; opacity: 0.5; font-weight: bold; }
+
+      /* Floating words animation */
+      @keyframes popUpWord {
+        0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translate(-50%, -150%) scale(1.3); opacity: 0; }
+      }
+      .pop-word { position: absolute; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 24px; color: #fff37a; text-shadow: 0 4px 12px rgba(255,64,129,0.8); pointer-events: none; z-index: 100; animation: popUpWord 0.8s ease-out forwards; }
+
+      /* RESPONSIVE DESIGN: MOBILE PORTRAIT */
+      @media (max-width: 767px) {
+        .logo-text { font-size: 34px; letter-spacing: 3px; }
+        .subtitle { font-size: 10px; letter-spacing: 5px; }
+        .glass-panel { backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); background: rgba(8, 12, 24, 0.85); }
+        .home-menu { width: 240px; padding: 15px; }
+        #screen-intro { gap: 15px; padding: 20px; overflow-y: auto; justify-content: flex-start; }
+        .vibe-deck { flex-direction: column; gap: 15px; perspective: none; }
+        .vibe-card { width: 100%; max-width: 300px; padding: 20px; }
+        .vibe-card:hover { transform: translateY(-4px) scale(1.02); }
+        #screen-deploy { flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 10px; }
+        .deploy-sidebar-left, .deploy-sidebar-right { position: static; width: 100%; max-width: 320px; padding: 12px; margin-bottom: 6px; }
+        .battle-header { top: 10px; left: 10px; width: calc(100% - 20px); padding: 6px 12px; flex-direction: row; font-size: 11px; }
+        #ai-taunt { bottom: 175px; font-size: 13px; max-width: 90%; width: 85%; }
+        .hud-main-containers { flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; width: 100%; padding-bottom: 5px; }
+        .sidebar-left { position: static; width: 100%; max-width: 320px; padding: 10px; }
+        #screen-zen { justify-content: flex-end; align-items: center; padding: 15px; padding-bottom: 20px; }
+        .zen-sidebar { position: static; width: 100%; max-width: 320px; padding: 15px; }
+        #screen-jolly { padding: 15px; justify-content: space-between; }
+        #settings-trigger-container { bottom: unset; top: 65px; right: 15px; }
+      }
+
+      /* RESPONSIVE DESIGN: MOBILE LANDSCAPE */
+      @media (max-height: 500px) and (orientation: landscape) {
+        .logo-text { font-size: 28px; }
+        .subtitle { font-size: 10px; }
+        .home-menu { flex-direction: row; flex-wrap: wrap; justify-content: center; width: 100%; gap: 10px; padding: 10px; }
+        #screen-intro { padding: 10px; overflow-y: auto; }
+        .vibe-deck { flex-direction: row; gap: 15px; }
+        .vibe-card { width: 220px; padding: 15px; gap: 10px; }
+        .song-title { font-size: 16px; }
+        .vibe-description { display: none; }
+        .battle-header { padding: 4px 10px; font-size: 10px; }
+        .deploy-sidebar-left, .deploy-sidebar-right { top: 5px; left: 5px; width: 200px; padding: 10px; position: absolute; margin-bottom: 0; }
+        .deploy-sidebar-right { left: auto; right: 5px; }
+        .sidebar-left { position: absolute; left: 5px; bottom: 5px; width: 180px; padding: 8px; }
+        
+        #screen-zen { justify-content: flex-end; align-items: flex-start; padding: 10px; }
+        .zen-sidebar { max-width: 250px; padding: 10px; }
+        #screen-jolly { padding: 10px; }
+        #settings-trigger-container { top: auto; bottom: 5px; right: 5px; }
+        #ai-taunt { bottom: 15px; left: 50%; font-size: 14px; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="canvas-container"></div>
+    <canvas id="displacement-canvas" width="1024" height="1024" style="display: none;"></canvas>
+
+    <div id="ui-container">
+      
+      <div id="screen-intro" class="game-screen active">
+        <div class="intro-headline">Select Operations Environment Soundtrack</div>
+        <div class="vibe-deck">
+          <div class="vibe-card combat-variant" onclick="dismissIntroScreen('COMBAT')">
+            <div><div class="vibe-tag">ORBITAL SKIRMISH PROTOCOL</div><div class="song-title">Solar Flare Command</div></div>
+            <div class="vibe-description">Deep space tracking systems active. Fast-paced, driving industrial military brass arrangements engineered for deep focus.</div>
+            <div class="audio-indicator-box"><div class="pulse-dot"></div><span>COMBAT MODE READY</span></div>
+            <button class="btn btn-primary" style="pointer-events:none; width: 100%; background: #ff5500; border-color: #ff5500; color: #fff;">SELECT STRATAGEM</button>
+          </div>
+          <div class="vibe-card zen-variant" onclick="dismissIntroScreen('ZEN')">
+            <div><div class="vibe-tag">QUIET SPACE COGNITION</div><div class="song-title">ZENGARDEN</div></div>
+            <div class="vibe-description">Calming acoustic sub-tones, crystal clear synth swells, and restorative atmospheric pads. Formulated for stress relief.</div>
+            <div class="audio-indicator-box"><div class="pulse-dot"></div><span>SOOTHING MODE READY</span></div>
+            <button class="btn btn-primary" style="pointer-events:none; width: 100%; background: #00f0ff; border-color: #00f0ff; color: #000;">SELECT STRATAGEM</button>
+          </div>
+          <div class="vibe-card jolly-variant" onclick="dismissIntroScreen('JOLLY')">
+            <div><div class="vibe-tag">COSMIC POP PROTOCOL</div><div class="song-title">Jolly Pop Symphony</div></div>
+            <div class="vibe-description">Bright pentatonic major chord modulations and breathing visualizar visuals. Optimized for instant hit engine dopamine responses.</div>
+            <div class="audio-indicator-box"><div class="pulse-dot"></div><span>POPPING MODE READY</span></div>
+            <button class="btn btn-primary" style="pointer-events:none; width: 100%; background: #fff37a; border-color: #fff37a; color: #ff4081;">SELECT STRATAGEM</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-home" class="game-screen">
+        <div class="logo-container">
+          <div id="home-subtitle" class="subtitle">TACTICAL NAVAL COMBAT</div>
+          <h1 id="home-title" class="logo-text">TITAN<span>ARMADA</span></h1>
+        </div>
+        <div class="home-menu glass-panel">
+          <button id="btn-start-combat" class="btn btn-primary" onclick="game.startNewGame()">START COMBAT SKIRMISH</button>
+          <button id="btn-start-zen" class="btn btn-zen" onclick="game.startZenGardenMode()" style="display: none;">ENTER ZEN GARDEN</button>
+          <button id="btn-start-jolly" class="btn btn-jolly" onclick="game.startJollyPopMode()" style="display: none;">LAUNCH JOLLY POP</button>
+          <button class="btn" onclick="ui.openModal('modal-tutorial')">TUTORIAL</button>
+          <button class="btn" onclick="ui.openModal('modal-settings')">SETTINGS</button>
+        </div>
+      </div>
+
+      <div id="screen-deploy" class="game-screen">
+        <div class="deploy-sidebar-left glass-panel">
+          <h2>FLEET DEPLOYMENT</h2>
+          <p style="font-size:11px; color:#cbd5e0; line-height:1.4;">Position war assets on your light matrix. Click grid cells to lock, press <strong>R</strong> to switch orientation.</p>
+          <div class="deploy-ship-info">
+            <div style="font-size:9px; color:#a0aec0;">CURRENT SCHEMATIC:</div>
+            <div id="deploy-ship-name" class="ship-name">-</div>
+            <div id="deploy-ship-size" class="ship-size">-</div>
+          </div>
+          <button id="btn-rotate" class="btn btn-accent" onclick="game.rotateDeployShip()">ROTATE AXIS (R)</button>
+        </div>
+        <div class="deploy-sidebar-right glass-panel">
+          <h3>TACTICAL PROFILE</h3>
+          <p style="font-size:11px; color:#cbd5e0; line-height:1.5; margin-top:4px;">• Match Type: Titan Skirmish<br>• Board Dimension: 6x6 Cells<br>• Threat Level: Aggressive AI</p>
+        </div>
+      </div>
+
+      <div id="screen-battle" class="game-screen">
+        <div class="battle-header glass-panel">
+          <div class="hud-item"><span class="label">FLEET COMMANDER</span><span class="val" style="color:#fff;">PLAYER 1</span></div>
+          <div class="hud-indicator"><div id="turn-indicator">YOUR TURN: ENGAGE SECTOR</div></div>
+          <div class="hud-item" style="text-align: right;"><span class="label">TACTICAL COMPUTER</span><span class="val" style="color:#ff0055;">AI ENGINE</span></div>
+        </div>
+        <div id="ai-taunt"></div>
+        <div class="hud-main-containers">
+          <div class="sidebar-left glass-panel">
+            <h3>PERFORMANCE</h3>
+            <div class="stats-grid">
+              <div class="stat-box"><div class="label">ACC</div><div id="p-accuracy" class="val">0%</div></div>
+              <div class="stat-box"><div class="label">HITS</div><div id="p-hits" class="val">0</div></div>
+              <div class="stat-box"><div class="label">MISS</div><div id="p-miss" class="val">0</div></div>
+            </div>
+            <hr class="cyber-divider"/>
+            <h3>YOUR HULLS</h3>
+            <div id="player-fleet-status" class="ships-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-zen" class="game-screen">
+        <div class="zen-sidebar glass-panel">
+          <h2>ZEN GARDEN TRAILS</h2>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.4;">Freely draw and carve patterns into the sand. The camera is locked so your drawings stay perfectly where you put them.</p>
+          <hr class="cyber-divider" style="margin: 12px 0;"/>
+          <button class="btn btn-zen" onclick="game.washAwaySand()" style="padding: 15px; font-size: 14px; margin-bottom: 10px;">🌊 CLEAR SAND</button>
+          <button class="btn btn-danger" onclick="game.terminateAndResetToMenu()">RETURN TO CORE</button>
+        </div>
+      </div>
+
+      <div id="screen-jolly" class="game-screen">
+        <div class="jolly-header">
+          <div class="brand-title" style="font-size:24px;">JOLLY<span>POP</span></div>
+          <div class="jolly-score-box glass-panel">
+            <div class="jolly-score-label">Happiness Index</div>
+            <div id="jolly-score" class="jolly-score-val">0</div>
+          </div>
+        </div>
+        <div class="jolly-footer">
+          <div class="jolly-tip">🎈 Tap the cosmic bubbles!</div>
+          <button class="btn btn-danger interactive" onclick="game.terminateAndResetToMenu()" style="width:160px;">RETURN TO CORE</button>
+        </div>
+      </div>
+
+      <div id="settings-trigger-container">
+        <button id="btn-universal-settings" class="btn glass-panel" onclick="ui.openModal('modal-settings')" style="padding: 8px 14px; background: rgba(3,4,8,0.6); border-color: rgba(0,240,255,0.45);">⚙ SYSTEM CONFIG</button>
+      </div>
+
+      <div id="screen-gameover" class="game-screen">
+        <div class="gameover-box glass-panel">
+          <h2 id="go-title" style="font-size:22px; text-shadow:0 0 15px #ff0055;">VICTORY</h2>
+          <div class="gameover-stats">
+            <div class="stat-row"><span>Weapons Accuracy:</span><span id="go-acc" style="color:#00f0ff;">0%</span></div>
+            <div class="stat-row"><span>Direct Strikes:</span><span id="go-hits" style="color:#00f0ff;">0</span></div>
+            <div class="stat-row"><span>Missed Munitions:</span><span id="go-miss" style="color:#00f0ff;">0</span></div>
+          </div>
+          <div class="gameover-menu">
+            <button class="btn btn-primary" onclick="game.terminateAndResetToMenu()">RETURN TO SYSTEM CORE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-tutorial" class="modal-overlay">
+      <div class="modal-box glass-panel">
+        <h2 style="font-size: 20px; text-shadow: 0 0 15px #00f0ff; border-bottom: 1px solid rgba(0,240,255,0.3); padding-bottom: 8px; margin-bottom: 8px;">TACTICAL OPERATIONS MANUAL</h2>
+        <div style="max-height: 45vh; overflow-y: auto; padding-right: 8px;">
+          <h3 style="color: #fff;">COMBAT PHASE</h3>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Deploy vessels. Click crimson sectors to fire. Destroy all 14 enemy hull segments.</p>
+          <h3 style="color: #ffaa00;">STREAK BONUS (CRITICAL)</h3>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Scoring a direct HIT grants an immediate extra turn.</p>
+          <h3 style="color: #00f0ff;">ZEN GARDEN</h3>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Enter Zen Mode to freely rake sand and draw shapes to relax your mind.</p>
+          <h3 style="color: #ff6b9d;">JOLLY POP</h3>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">A cosmic, colorful bubble pop simulation mapping Major Pentatonic chimes onto custom WebGL matrices.</p>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 8px;" onclick="ui.closeModal('modal-tutorial')">ACKNOWLEDGE</button>
+      </div>
+    </div>
+
+    <div id="modal-settings" class="modal-overlay">
+      <div class="modal-box glass-panel">
+        <h2>SYSTEM CONFIGURATION</h2>
+        <div class="cyber-divider"></div>
+        <div class="slider-container">
+          <span class="slider-label">MUSIC VOLUME</span>
+          <input type="range" id="slider-music-vol" class="cyber-slider" min="0" max="100" value="70" oninput="game.adjustMusicVolume(this.value)">
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span style="font-size: 13px; font-weight: bold; color: #00f0ff; letter-spacing: 1px;">SYSTEM AUDIO</span>
+          <button id="btn-audio-toggle" class="btn" onclick="game.toggleAudio()" style="width: 140px; text-align: center;">AUDIO: ON</button>
+        </div>
+        
+        <div id="intro-return-container" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <span style="font-size: 13px; font-weight: bold; color: #ffaa00; letter-spacing: 1px;">SYSTEM CORE</span>
+          <button class="btn btn-accent" onclick="game.returnToIntro()" style="width: 140px; text-align: center;">CHANGE VIBE</button>
+        </div>
+
+        <div id="exit-action-container" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <span style="font-size: 13px; font-weight: bold; color: #ff3333; letter-spacing: 1px;">OPERATIONS</span>
+          <button class="btn btn-danger" onclick="game.abortActiveMatch()" style="width: 140px; text-align: center;">EXIT MODE</button>
+        </div>
+
+        <div class="cyber-divider"></div>
+        <button class="btn btn-primary" onclick="ui.closeModal('modal-settings')" style="width:100%;">RESUME ENVIRONMENT</button>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+      const BOARD_SIZE = 6;       
+      const C_SIZE = 1.6;         
+      const H_WIDTH = (BOARD_SIZE * C_SIZE) / 2; 
+      const P_X = -7;             
+      const A_X = 7;              
+
+      let scene, camera, renderer, trackingPlane;
+      let shipBlueprint;
+      let isVertical = false, isHoveringValid = false, isInputLocked = false;
+      let currentPhase = 'INTRO'; 
+      let selectedTrackVibe = 'COMBAT'; 
+      
+      let activeProjectiles = [], activeParticles = [], angryHitMarkers = [], uiCache = {};
+      let playerHumanOperator, aiHumanOperator, playerRightArmJoint, aiRightArmJoint;
+      let playerArmAnimTimer = 0, aiArmAnimTimer = 0, playerDanceTimer = 0, aiDanceTimer = 0, playerDanceAge = 0, aiDanceAge = 0;
+      let staticStarField, shootingStars = [], tauntTimeout, typingInterval, titanPlanet, titanAtmosphere, zenParticles;
+      let burningWreckages = [];
+
+      // Zen Sand Map Variables
+      let dCanvas, ctx, dTexture, sandMesh, zenHitPlane;
+      let isDrawingSand = false, lastDrawPoint = null, isWashingSand = false;
+      const CANVAS_SIZE = 1024;
+
+      // Jolly Pop Mode Variables
+      let bubbles = [], jollyParticles = [];
+      let jollyScore = 0;
+      const JOLLY_WORDS = ["JOY!", "WOW!", "HAPPY!", "SWEET!", "BOOM!", "CHILL!", "ALIVE!"];
+      const BUBBLE_COLORS = [0xff6b9b, 0xfff176, 0x4fc3f7, 0x81c784, 0xba68c8, 0xffb74d];
+
+      /* Audio Variables */
+      let audioCtx = null, isAudioMuted = false, proceduralMusicInterval = null, musicVolumeLevel = 0.7, beatCounter = 0;
+
+      const SHIP_TYPES = [{ name: 'Aircraft Carrier', size: 5 }, { name: 'Heavy Destroyer', size: 4 }, { name: 'Stealth Frigate', size: 3 }, { name: 'Corvette Patrol', size: 2 }];
+      let currentDeployIndex = 0;
+      let playerLogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0));
+      let aiLogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0));
+      let playerShipsTrack = SHIP_TYPES.map(s => ({ ...s, hits: 0, coords: [], isVertical: false }));
+      let aiShipsTrack = SHIP_TYPES.map(s => ({ ...s, hits: 0, coords: [], isVertical: false }));
+      let playerStats = { hits: 0, misses: 0 }, currentSnappedCoords = { r: 0, c: 0 };
+
+      const AI_LINES = {
+          playerMiss: ["Predictable trajectory.", "You missed. Stupidity detected.", "Targeting grid missed entirely."],
+          playerHit: ["Lucky shot. It won't happen again.", "Minor hull damage detected. Try harder."],
+          aiMiss: ["Warning shot only.", "I intentionally missed to test your heart rate."],
+          aiHit: ["Direct impact.", "You cannot hide from my target tracker."]
+      };
+
+      function switchEnvironmentVibe(vibe) {
+          if (vibe === 'ZEN') {
+              scene.background.setHex(0x131a26); 
+              scene.fog.color.setHex(0x131a26);
+              if(titanPlanet) titanPlanet.visible = false;
+              if(titanAtmosphere) titanAtmosphere.visible = false;
+              shootingStars.forEach(ss => ss.visible = false);
+              if(zenParticles) zenParticles.visible = true;
+          } else if (vibe === 'JOLLY') {
+              scene.background.setHex(0xffc2d4);
+              scene.fog.color.setHex(0xffc2d4);
+              scene.fog.density = 0.025;
+              if(titanPlanet) titanPlanet.visible = false;
+              if(titanAtmosphere) titanAtmosphere.visible = false;
+              shootingStars.forEach(ss => ss.visible = false);
+              if(zenParticles) zenParticles.visible = false;
+
+              // Clean active entities and generate background bubbles for home page animation
+              const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh") meshesToRemove.push(child); });
+              meshesToRemove.forEach(m => scene.remove(m));
+              bubbles = [];
+              for(let i = 0; i < 15; i++) {
+                  spawnBubble((Math.random() - 0.5) * 8);
+              }
+          } else {
+              scene.background.setHex(0x020306);
+              scene.fog = new THREE.FogExp2(0x020306, 0.012);
+              if(titanPlanet) titanPlanet.visible = true;
+              if(titanAtmosphere) titanAtmosphere.visible = true;
+              shootingStars.forEach(ss => ss.visible = true);
+              if(zenParticles) zenParticles.visible = false;
+          }
+      }
+
+      function dismissIntroScreen(vibeChoice) {
+          selectedTrackVibe = vibeChoice;
+          try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); playSynthesizedSound('click'); } catch(e) {}
+          
+          if (vibeChoice === 'COMBAT') {
+              document.getElementById('home-subtitle').textContent = "TACTICAL NAVAL COMBAT";
+              document.getElementById('home-title').innerHTML = "TITAN<span>ARMADA</span>";
+              document.getElementById('btn-start-combat').style.display = "block";
+              document.getElementById('btn-start-zen').style.display = "none";
+              document.getElementById('btn-start-jolly').style.display = "none";
+              switchEnvironmentVibe('COMBAT');
+          } else if (vibeChoice === 'ZEN') {
+              document.getElementById('home-subtitle').textContent = "DIGITAL SANDBOX";
+              document.getElementById('home-title').innerHTML = "ZEN<span>GARDEN</span>";
+              document.getElementById('btn-start-combat').style.display = "none";
+              document.getElementById('btn-start-zen').style.display = "block";
+              document.getElementById('btn-start-jolly').style.display = "none";
+              switchEnvironmentVibe('ZEN');
+          } else if (vibeChoice === 'JOLLY') {
+              document.getElementById('home-subtitle').textContent = "COSMIC SYMPHONY";
+              document.getElementById('home-title').innerHTML = "JOLLY<span>POP</span>";
+              document.getElementById('btn-start-combat').style.display = "none";
+              document.getElementById('btn-start-zen').style.display = "none";
+              document.getElementById('btn-start-jolly').style.display = "block";
+              switchEnvironmentVibe('JOLLY');
+          }
+
+          currentPhase = 'MENU';
+          document.getElementById('screen-intro').classList.remove('active');
+          document.getElementById('screen-home').classList.add('active');
+          updateCameraAngle();
+      }
+
+      function startInGameCombatMusic() {
+          if (proceduralMusicInterval) return;
+          if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          
+          proceduralMusicInterval = setInterval(() => {
+              if (isAudioMuted || musicVolumeLevel <= 0 || currentPhase === 'MENU' || currentPhase === 'GAMEOVER') return;
+              const now = audioCtx.currentTime;
+              
+              if (selectedTrackVibe === 'COMBAT') {
+                  const bassNotes = [55, 55, 65, 55, 48, 48, 52, 50];
+                  const currentPitch = bassNotes[beatCounter % bassNotes.length];
+                  const bassOsc = audioCtx.createOscillator(), bassGain = audioCtx.createGain();
+                  bassOsc.type = 'sawtooth'; bassOsc.frequency.setValueAtTime(currentPitch, now);
+                  bassOsc.frequency.exponentialRampToValueAtTime(currentPitch / 2, now + 0.3);
+                  bassGain.gain.setValueAtTime(musicVolumeLevel * 0.18, now);
+                  bassGain.gain.linearRampToValueAtTime(0.001, now + 0.35);
+                  bassOsc.connect(bassGain); bassGain.connect(audioCtx.destination);
+                  bassOsc.start(now); bassOsc.stop(now + 0.36);
+
+                  if (beatCounter % 2 === 0) {
+                      const ticOsc = audioCtx.createOscillator(), ticGain = audioCtx.createGain();
+                      ticOsc.type = 'triangle'; ticOsc.frequency.setValueAtTime(1200, now);
+                      ticGain.gain.setValueAtTime(musicVolumeLevel * 0.04, now);
+                      ticGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                      ticOsc.connect(ticGain); ticGain.connect(audioCtx.destination);
+                      ticOsc.start(now); ticOsc.stop(now + 0.06);
+                  }
+              } else if (selectedTrackVibe === 'ZEN') {
+                  const zenMelody = [220, 293, 329, 440, 392, 293, 329, 220];
+                  if (beatCounter % 4 === 0) {
+                      const currentZenPitch = zenMelody[Math.floor(beatCounter / 4) % zenMelody.length];
+                      const zenOsc = audioCtx.createOscillator(), zenGain = audioCtx.createGain();
+                      zenOsc.type = 'sine'; zenOsc.frequency.setValueAtTime(currentZenPitch, now);
+                      zenGain.gain.setValueAtTime(0.001, now);
+                      zenGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.25, now + 0.6);
+                      zenGain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+                      zenOsc.connect(zenGain); zenGain.connect(audioCtx.destination);
+                      zenOsc.start(now); zenOsc.stop(now + 1.6);
+                  }
+              } else if (selectedTrackVibe === 'JOLLY') {
+                  const popMelody = [261.63, 329.63, 392.00, 523.25];
+                  if (beatCounter % 8 === 0) {
+                      const currentPopPitch = popMelody[Math.floor(beatCounter / 8) % popMelody.length];
+                      const popOsc = audioCtx.createOscillator(), popGain = audioCtx.createGain();
+                      popOsc.type = 'sine'; popOsc.frequency.setValueAtTime(currentPopPitch, now);
+                      popGain.gain.setValueAtTime(0.001, now);
+                      popGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.15, now + 0.4);
+                      popGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+                      popOsc.connect(popGain); popGain.connect(audioCtx.destination);
+                      popOsc.start(now); popOsc.stop(now + 1.2);
+                  }
+              }
+              beatCounter++;
+          }, 240); 
+      }
+
+      function stopInGameCombatMusic() { clearInterval(proceduralMusicInterval); proceduralMusicInterval = null; }
+
+      function triggerAITaunt(category) {
+          const lines = AI_LINES[category];
+          const fullMessage = `AI: "${lines[Math.floor(Math.random() * lines.length)]}"`;
+          const tauntBox = document.getElementById('ai-taunt');
+          if(!tauntBox) return;
+          clearInterval(typingInterval); tauntBox.textContent = ""; tauntBox.style.opacity = 1;
+          let index = 0;
+          typingInterval = setInterval(() => {
+              if (index < fullMessage.length) { tauntBox.textContent += fullMessage.charAt(index); index++; } 
+              else { clearInterval(typingInterval); clearTimeout(tauntTimeout); tauntTimeout = setTimeout(() => { tauntBox.style.opacity = 0; }, 4000); }
+          }, 35); 
+      }
+
+      function playSynthesizedSound(type) {
+          if (isAudioMuted) return; 
+          try {
+              if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+              if (audioCtx.state === 'suspended') audioCtx.resume();
+              const osc = audioCtx.createOscillator(), gainNode = audioCtx.createGain();
+              osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+              const now = audioCtx.currentTime;
+              if (type === 'click') { osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); gainNode.gain.setValueAtTime(0.08, now); gainNode.gain.exponentialRampToValueAtTime(0.005, now + 0.05); osc.start(now); osc.stop(now + 0.05); } 
+              else if (type === 'launch') { osc.type = 'triangle'; osc.frequency.setValueAtTime(140, now); osc.frequency.exponentialRampToValueAtTime(550, now + 0.25); gainNode.gain.setValueAtTime(0.12, now); gainNode.gain.linearRampToValueAtTime(0.005, now + 0.25); osc.start(now); osc.stop(now + 0.25); } 
+              else if (type === 'hit') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(180, now); osc.frequency.linearRampToValueAtTime(45, now + 0.4); gainNode.gain.setValueAtTime(0.3, now); gainNode.gain.exponentialRampToValueAtTime(0.005, now + 0.4); osc.start(now); osc.stop(now + 0.4); } 
+              else if (type === 'miss') { osc.type = 'sine'; osc.frequency.setValueAtTime(260, now); osc.frequency.linearRampToValueAtTime(90, now + 0.18); gainNode.gain.setValueAtTime(0.08, now); gainNode.gain.linearRampToValueAtTime(0.005, now + 0.18); osc.start(now); osc.stop(now + 0.18); }
+          } catch (e) {}
+      }
+
+      function playJollyChord() {
+          if (isAudioMuted || !audioCtx) return;
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+          const now = audioCtx.currentTime;
+          const pentatonic = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+          const rootNote = pentatonic[Math.floor(Math.random() * pentatonic.length)];
+          
+          [rootNote, rootNote * 1.5].forEach((freq) => {
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(freq, now);
+              gain.gain.setValueAtTime(0.15, now);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+              osc.connect(gain);
+              gain.connect(audioCtx.destination);
+              osc.start(now);
+              osc.stop(now + 0.6);
+          });
+      }
+
+      function generateHumanOperatorMesh(colorHex) {
+          const humanGroup = new THREE.Group();
+          const matArmor = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.3, metalness: 0.5 });
+          const matVisor = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.1, metalness: 0.9, emissive: 0x00f0ff, emissiveIntensity: 0.2 });
+          const matJoints = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 });
+          const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.4, 1.4, 6), matArmor); torso.position.y = 1.3; humanGroup.add(torso);
+          const headGroup = new THREE.Group(); headGroup.position.y = 2.2;
+          const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), matArmor);
+          const visor = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.15, 0.3), matVisor); visor.position.set(0, 0, 0.25);
+          headGroup.add(helmet, visor); humanGroup.add(headGroup);
+          const lLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.15, 1.2, 8), matJoints); lLeg.position.set(-0.3, 0.6, 0); humanGroup.add(lLeg);
+          const rLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.15, 1.2, 8), matJoints); rLeg.position.set(0.3, 0.6, 0); humanGroup.add(rLeg);
+          const lArm = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.15, 1.2, 8), matArmor); lArm.position.set(-0.8, 1.3, 0); lArm.rotation.z = -0.2; humanGroup.add(lArm);
+          const shoulderJoint = new THREE.Group(); shoulderJoint.position.set(0.8, 1.8, 0); 
+          const rArm = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.15, 1.2, 8), matArmor); rArm.position.y = -0.5; shoulderJoint.add(rArm);
+          humanGroup.add(shoulderJoint);
+          return { root: humanGroup, rightArmSocket: shoulderJoint };
+      }
+
+      function generateVesselMesh(size, isHologram = false) {
+          const group = new THREE.Group(); 
+          const cellWidth = size * C_SIZE; 
+          let hullMat, wingMat, glowMat;
+          
+          if (isHologram) { 
+              hullMat = wingMat = glowMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.4, emissive: 0x00f0ff, emissiveIntensity: 0.6, wireframe: true }); 
+          } else {
+              hullMat = new THREE.MeshStandardMaterial({ color: 0x224a75, transparent: true, opacity: 0.6, roughness: 0.1, metalness: 0.9 });
+              wingMat = new THREE.MeshStandardMaterial({ color: 0x0f253d, transparent: true, opacity: 0.65, roughness: 0.2, metalness: 0.8 });
+              glowMat = new THREE.MeshStandardMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.8, emissive: 0x00ffcc, emissiveIntensity: 0.9 });
+          }
+          
+          const shipHeight = 0.45; 
+          const hullLength = cellWidth * 0.75;
+          
+          const hull = new THREE.Mesh(new THREE.BoxGeometry(hullLength, shipHeight, 0.6), hullMat); 
+          hull.position.set(-cellWidth * 0.05, shipHeight / 2, 0); 
+          group.add(hull);
+          
+          const bridge = new THREE.Mesh(new THREE.ConeGeometry(0.28, shipHeight * 2, 4), wingMat);
+          bridge.rotation.x = Math.PI / 4;
+          bridge.position.set(-cellWidth * 0.15, shipHeight, 0);
+          group.add(bridge);
+
+          const leftWing = new THREE.Mesh(new THREE.BoxGeometry(hullLength * 0.5, 0.08, 0.75), wingMat);
+          leftWing.position.set(-cellWidth * 0.2, shipHeight / 3, 0.55);
+          leftWing.rotation.y = -Math.PI / 6; 
+          group.add(leftWing);
+
+          const rightWing = leftWing.clone();
+          rightWing.position.z = -0.55;
+          rightWing.rotation.y = Math.PI / 6;
+          group.add(rightWing);
+
+          const bow = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.3, cellWidth * 0.2, 4), hullMat); 
+          bow.rotation.z = -Math.PI / 2; 
+          bow.rotation.y = Math.PI / 4; 
+          bow.position.set(hullLength/2 - cellWidth * 0.05 + (cellWidth * 0.1), shipHeight / 2, 0); 
+          group.add(bow);
+          
+          const thrusterL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.25, 0.18), glowMat);
+          thrusterL.position.set(-hullLength / 2 - cellWidth * 0.05, shipHeight / 2, 0.18);
+          group.add(thrusterL);
+          
+          const thrusterR = thrusterL.clone();
+          thrusterR.position.z = -0.18;
+          group.add(thrusterR);
+          
+          return group;
+       }
+
+      function initBackgroundEngine() {
+          const wrapper = document.getElementById('canvas-container');
+          scene = new THREE.Scene(); scene.background = new THREE.Color(0x020306); scene.fog = new THREE.FogExp2(0x020306, 0.012);
+          camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+          updateCameraAngle();
+
+          renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          wrapper.appendChild(renderer.domElement);
+
+          const starGeo = new THREE.BufferGeometry(); const starCount = 600; const positions = new Float32Array(starCount * 3);
+          for (let i = 0; i < starCount * 3; i += 3) {
+              const radius = 35 + Math.random() * 45, u = Math.random(), v = Math.random();
+              const theta = u * 2.0 * Math.PI, phi = Math.acos(2.0 * v - 1.0);
+              positions[i] = radius * Math.sin(phi) * Math.cos(theta); positions[i+1] = radius * Math.sin(phi) * Math.sin(theta); positions[i+2] = radius * Math.cos(phi);
+          }
+          starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+          staticStarField = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.38, transparent: true, opacity: 0.75 })); scene.add(staticStarField);
+
+          const ssGeo = new THREE.CylinderGeometry(0.015, 0.015, 5, 4); ssGeo.rotateX(Math.PI / 2); 
+          const ssMat = new THREE.MeshBasicMaterial({ color: 0xffaa44, transparent: true, opacity: 0.6 });
+          for(let i = 0; i < 4; i++) { const ss = new THREE.Mesh(ssGeo, ssMat); scene.add(ss); shootingStars.push(resetShootingStar(ss)); }
+
+          const titanGroup = new THREE.Group(); titanGroup.position.set(0, -1, -15);
+          titanPlanet = new THREE.Mesh(new THREE.SphereGeometry(7, 32, 32), new THREE.MeshStandardMaterial({ color: 0xe67e22, roughness: 0.9, metalness: 0.1 })); titanGroup.add(titanPlanet);
+          titanAtmosphere = new THREE.Mesh(new THREE.SphereGeometry(7.3, 32, 32), new THREE.MeshBasicMaterial({ color: 0xd35400, transparent: true, opacity: 0.22, side: THREE.BackSide })); titanGroup.add(titanAtmosphere); scene.add(titanGroup);
+
+          const zenPartGeo = new THREE.BufferGeometry(); const zenPartPos = new Float32Array(150 * 3);
+          for(let i = 0; i < 450; i++) zenPartPos[i] = (Math.random() - 0.5) * 40;
+          zenPartGeo.setAttribute('position', new THREE.BufferAttribute(zenPartPos, 3));
+          zenParticles = new THREE.Points(zenPartGeo, new THREE.PointsMaterial({ color: 0x88eeff, size: 0.15, transparent: true, opacity: 0.6 }));
+          zenParticles.visible = false; scene.add(zenParticles);
+
+          scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+          const keyLight = new THREE.DirectionalLight(0xffddaa, 1.8); keyLight.position.set(30, 20, 10); scene.add(keyLight);
+          const fillLight = new THREE.DirectionalLight(0x00f0ff, 0.5); fillLight.position.set(-20, 10, -10); scene.add(fillLight);
+
+          window.addEventListener('resize', () => { if (camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); updateCameraAngle(); } });
+          setupCoreEngineListeners();
+          animateEngineFrame();
+      }
+
+      function buildZenSandEnvironment() {
+          dCanvas = document.getElementById('displacement-canvas');
+          ctx = dCanvas.getContext('2d');
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+          dTexture = new THREE.CanvasTexture(dCanvas);
+          
+          const sandGeo = new THREE.PlaneGeometry(35, 35, 256, 256); 
+          sandGeo.rotateX(-Math.PI / 2);
+          
+          const sandMat = new THREE.MeshStandardMaterial({ 
+              color: 0xdec6a1, 
+              roughness: 0.9, 
+              displacementMap: dTexture, 
+              displacementScale: 1.5,
+              bumpMap: dTexture,
+              bumpScale: 1.2
+          });
+          
+          sandMesh = new THREE.Mesh(sandGeo, sandMat);
+          sandMesh.name = "gameplayMesh"; 
+          scene.add(sandMesh);
+
+          zenHitPlane = new THREE.Mesh(new THREE.PlaneGeometry(35, 35), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+          zenHitPlane.rotateX(-Math.PI / 2);
+          zenHitPlane.position.y = 1.5; 
+          zenHitPlane.name = "gameplayMesh";
+          scene.add(zenHitPlane);
+      }
+
+      function spawnBubble(yOffset = -8) {
+          const radius = 0.4 + Math.random() * 0.5;
+          const geometry = new THREE.SphereGeometry(radius, 32, 32);
+          const randomColor = BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)];
+          const material = new THREE.MeshStandardMaterial({
+              color: randomColor,
+              roughness: 0.1,
+              metalness: 0.1,
+              transparent: true,
+              opacity: 0.85,
+              emissive: randomColor,
+              emissiveIntensity: 0.2
+          });
+
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.position.x = (Math.random() - 0.5) * 10;
+          mesh.position.y = yOffset;
+          mesh.position.z = (Math.random() - 0.5) * 4;
+          mesh.name = "gameplayMesh";
+          
+          mesh.userData = {
+              speedY: 0.03 + Math.random() * 0.04,
+              wobbleSpeed: 1 + Math.random() * 3,
+              wobbleAmount: 0.005 + Math.random() * 0.01,
+              seed: Math.random() * 100
+          };
+
+          scene.add(mesh);
+          bubbles.push(mesh);
+      }
+
+      function triggerConfettiBurst(pos, colorHex) {
+          const particleCount = 25;
+          const pGeometry = new THREE.BoxGeometry(0.08, 0.08, 0.08);
+          const pMaterial = new THREE.MeshBasicMaterial({ color: colorHex, transparent: true, opacity: 1 });
+
+          for (let i = 0; i < particleCount; i++) {
+              const pMesh = new THREE.Mesh(pGeometry, pMaterial.clone());
+              pMesh.position.copy(pos);
+              pMesh.name = "gameplayMesh";
+              
+              pMesh.userData = {
+                  velocity: new THREE.Vector3(
+                      (Math.random() - 0.5) * 0.2,
+                      (Math.random() - 0.3) * 0.2,
+                      (Math.random() - 0.5) * 0.2
+                  ),
+                  gravity: -0.003,
+                  life: 1.0,
+                  decay: 0.02 + Math.random() * 0.02
+              };
+              scene.add(pMesh);
+              jollyParticles.push(pMesh);
+          }
+      }
+
+      function createFloatingWord(x, y) {
+          const div = document.createElement('div');
+          div.className = 'pop-word';
+          div.style.left = `${x}px`;
+          div.style.top = `${y}px`;
+          div.textContent = JOLLY_WORDS[Math.floor(Math.random() * JOLLY_WORDS.length)];
+          document.body.appendChild(div);
+          setTimeout(() => div.remove(), 800);
+      }
+
+      function initCombatWorld() {
+          uiCache.turn = document.getElementById('turn-indicator'); uiCache.accuracy = document.getElementById('p-accuracy'); uiCache.hits = document.getElementById('p-hits'); uiCache.miss = document.getElementById('p-miss'); uiCache.pFleet = document.getElementById('player-fleet-status');
+          updateCameraAngle(); titanPlanet.parent.position.set(0, -18, -25); titanPlanet.parent.scale.set(2.2, 2.2, 2.2);
+
+          const slabGeo = new THREE.BoxGeometry((BOARD_SIZE * C_SIZE) + 0.2, 0.15, (BOARD_SIZE * C_SIZE) + 0.2);
+          const playerSlab = new THREE.Mesh(slabGeo, new THREE.MeshStandardMaterial({ color: 0xeef5fc, roughness: 0.1, metalness: 0.1 })); playerSlab.position.set(P_X, -0.08, 0); playerSlab.name = "gameplayMesh"; scene.add(playerSlab);
+          const aiSlab = new THREE.Mesh(slabGeo, new THREE.MeshStandardMaterial({ color: 0xfff0f0, roughness: 0.1, metalness: 0.1 })); aiSlab.position.set(A_X, -0.08, 0); aiSlab.name = "gameplayMesh"; scene.add(aiSlab);
+
+          const playerGridVisual = new THREE.GridHelper(BOARD_SIZE * C_SIZE, BOARD_SIZE, 0x0077ee, 0xb5c9df); playerGridVisual.position.set(P_X, 0.01, 0); playerGridVisual.name = "gameplayMesh"; scene.add(playerGridVisual);
+          const aiGridVisual = new THREE.GridHelper(BOARD_SIZE * C_SIZE, BOARD_SIZE, 0xdd0033, 0xdfc0c0); aiGridVisual.position.set(A_X, 0.01, 0); aiGridVisual.name = "gameplayMesh"; scene.add(aiGridVisual);
+
+          const pOpData = generateHumanOperatorMesh(0x00aaff); playerHumanOperator = pOpData.root; playerRightArmJoint = pOpData.rightArmSocket; playerHumanOperator.position.set(P_X, 0, -H_WIDTH - 1.5); playerHumanOperator.name = "gameplayMesh"; scene.add(playerHumanOperator);
+          const aiOpData = generateHumanOperatorMesh(0xff0044); aiHumanOperator = aiOpData.root; aiRightArmJoint = aiOpData.rightArmSocket; aiHumanOperator.position.set(A_X, 0, -H_WIDTH - 1.5); aiHumanOperator.name = "gameplayMesh"; scene.add(aiHumanOperator);
+
+          const planeGeo = new THREE.PlaneGeometry(100, 100); planeGeo.rotateX(-Math.PI / 2);
+          trackingPlane = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ visible: false })); scene.add(trackingPlane);
+
+          updateDeploymentHologram(); generateAICorePlacements(); renderUIPanels();
+      }
+
+      function resetShootingStar(mesh) { mesh.position.set((Math.random() - 0.5) * 80, 15 + Math.random() * 20, -50); mesh.userData = { velX: (Math.random() - 0.5) * 1.5, velY: -0.4 - Math.random() * 0.4, velZ: 1.5 + Math.random() * 1.5 }; mesh.lookAt(mesh.position.clone().add(new THREE.Vector3(mesh.userData.velX, mesh.userData.velY, mesh.userData.velZ))); return mesh; }
+
+      function updateCameraAngle() {
+          if (!camera) return; 
+          const aspect = window.innerWidth / window.innerHeight; 
+          const isPortrait = aspect < 1;
+          const isMobileLandscape = aspect > 1 && window.innerHeight < 500;
+
+          if (currentPhase === 'INTRO' || currentPhase === 'MENU') { 
+              camera.position.set(0, 5, 25); camera.lookAt(0, 1, 0); 
+          }
+          else if (currentPhase === 'DEPLOY') { 
+              if (isPortrait) camera.position.set(P_X, 14 / aspect, 12 / aspect); 
+              else if (isMobileLandscape) camera.position.set(P_X, 10, 12);
+              else camera.position.set(P_X, 10, 10); 
+              camera.lookAt(P_X, -1, 0); 
+          } 
+          else if (currentPhase === 'ZEN_MODE') { 
+              if (isPortrait) camera.position.set(0, 25 / aspect, 2 / aspect);
+              else if (isMobileLandscape) camera.position.set(0, 16, 2);
+              else camera.position.set(0, 20, 2); 
+              camera.lookAt(0, 0, 0); 
+          }
+          else if (currentPhase === 'JOLLY_MODE') {
+              camera.position.set(0, 0, 10);
+              camera.lookAt(0, 0, 0);
+          }
+          else { 
+              if (isPortrait) { camera.position.set(0, 26 / aspect, 18 / aspect); camera.lookAt(0, -3.5, 0); } 
+              else if (isMobileLandscape) { camera.position.set(0, 14, 20); camera.lookAt(0, -2, 0); }
+              else { camera.position.set(0, 16, 16); camera.lookAt(0, -2, 0); } 
+          }
+      }
+
+      function updateDeploymentHologram() {
+          if (shipBlueprint) scene.remove(shipBlueprint);
+          const currentDef = SHIP_TYPES[currentDeployIndex]; if (!currentDef) return;
+          shipBlueprint = generateVesselMesh(currentDef.size, true); shipBlueprint.position.set(P_X, 0.2, 0);
+          if (isVertical) shipBlueprint.rotation.y = Math.PI / 2; scene.add(shipBlueprint);
+          document.getElementById('deploy-ship-name').textContent = currentDef.name.toUpperCase(); document.getElementById('deploy-ship-size').textContent = `Length: ${currentDef.size} Sectors`;
+      }
+
+      function animateEngineFrame() {
+          requestAnimationFrame(animateEngineFrame);
+          
+          const time = performance.now() * 0.002;
+
+          if(titanPlanet && titanPlanet.visible) titanPlanet.rotation.y += 0.0006;
+          if (staticStarField) { staticStarField.rotation.y += 0.00015; staticStarField.rotation.x += 0.00005; }
+          
+          if(shootingStars[0] && shootingStars[0].visible) {
+              shootingStars.forEach(ss => { ss.position.x += ss.userData.velX; ss.position.y += ss.userData.velY; ss.position.z += ss.userData.velZ; if (ss.position.y < -10 || ss.position.z > 40) resetShootingStar(ss); });
+          }
+
+          if (zenParticles && zenParticles.visible) {
+              zenParticles.position.y += 0.005;
+              if (zenParticles.position.y > 10) zenParticles.position.y = -10;
+              zenParticles.rotation.y += 0.001;
+          }
+          
+          if (burningWreckages.length > 0 && Math.random() < 0.25) {
+              const wreck = burningWreckages[Math.floor(Math.random() * burningWreckages.length)];
+              triggerParticleExplosionCloud(wreck.x, wreck.z, 0xff5500, 2);
+          }
+
+          for (let i = activeProjectiles.length - 1; i >= 0; i--) {
+              let p = activeProjectiles[i]; p.ticks += p.speed;
+              p.mesh.position.x = THREE.MathUtils.lerp(p.fromX, p.toX, p.ticks); p.mesh.position.z = THREE.MathUtils.lerp(p.fromZ, p.toZ, p.ticks); p.mesh.position.y = Math.sin(p.ticks * Math.PI) * 4.5 + 0.2;
+              if (p.ticks >= 1.0) { scene.remove(p.mesh); p.onImpact(); activeProjectiles.splice(i, 1); }
+          }
+          for (let i = activeParticles.length - 1; i >= 0; i--) {
+              let pt = activeParticles[i]; pt.mesh.position.add(pt.velocity); pt.mesh.scale.multiplyScalar(pt.shrinkRate); pt.life -= pt.decay; pt.mesh.material.opacity = pt.life;
+              if (pt.life <= 0) { scene.remove(pt.mesh); activeParticles.splice(i, 1); }
+          }
+          for (let i = angryHitMarkers.length - 1; i >= 0; i--) {
+              let m = angryHitMarkers[i]; m.userData.age += 0.06; let pulseFactor = 0.5 + Math.abs(Math.sin(m.userData.age * 5)) * 0.5; m.material.emissiveIntensity = pulseFactor * 2.0; m.material.opacity = 0.6 + Math.sin(m.userData.age * 2) * 0.2;
+          }
+
+          // Active background processing loop for Jolly Mode environment
+          if (selectedTrackVibe === 'JOLLY' && currentPhase !== 'INTRO') {
+              for (let i = bubbles.length - 1; i >= 0; i--) {
+                  let b = bubbles[i];
+                  b.position.y += b.userData.speedY;
+                  b.position.x += Math.sin(time + b.userData.seed) * b.userData.wobbleAmount;
+                  if (b.position.y > 6) {
+                      b.position.y = -6;
+                      b.position.x = (Math.random() - 0.5) * 10;
+                  }
+              }
+
+              for (let i = jollyParticles.length - 1; i >= 0; i--) {
+                  let p = jollyParticles[i];
+                  p.position.add(p.userData.velocity);
+                  p.userData.velocity.y += p.userData.gravity;
+                  p.userData.life -= p.userData.decay;
+                  p.material.opacity = p.userData.life;
+
+                  if (p.userData.life <= 0) {
+                      scene.remove(p);
+                      p.geometry.dispose();
+                      p.material.dispose();
+                      jollyParticles.splice(i, 1);
+                  }
+              }
+
+              if (scene) {
+                  const bgHue = 0.85 + Math.sin(time * 0.1) * 0.05;
+                  scene.background.setHSL(bgHue, 0.9, 0.88);
+                  scene.fog.color.setHSL(bgHue, 0.9, 0.88);
+              }
+          }
+
+          if (playerHumanOperator && aiHumanOperator) {
+              if (playerDanceTimer > 0) { playerDanceTimer -= 0.016; playerDanceAge += 0.2; playerHumanOperator.position.y = Math.abs(Math.sin(playerDanceAge * 0.7)) * 0.8; playerHumanOperator.rotation.y = Math.sin(playerDanceAge * 0.5) * 0.5; playerRightArmJoint.rotation.z = Math.sin(playerDanceAge * 0.8) * 1.4; playerRightArmJoint.rotation.x = -1.2; } 
+              else if (playerArmAnimTimer > 0) { playerArmAnimTimer -= 0.05; playerHumanOperator.position.y = 0; playerHumanOperator.rotation.y = 0; playerRightArmJoint.rotation.z = 0; playerRightArmJoint.rotation.x = -Math.sin(playerArmAnimTimer * Math.PI) * 1.5; } 
+              else { playerHumanOperator.position.y = 0; playerHumanOperator.rotation.y = 0; playerRightArmJoint.rotation.x = 0; playerRightArmJoint.rotation.z = 0; playerDanceAge = 0; }
+
+              if (aiDanceTimer > 0) { aiDanceTimer -= 0.016; aiDanceAge += 0.2; aiHumanOperator.position.y = Math.abs(Math.sin(aiDanceAge * 0.7)) * 0.8; aiHumanOperator.rotation.y = Math.sin(aiDanceAge * 0.5) * 0.5; aiRightArmJoint.rotation.z = -Math.sin(aiDanceAge * 0.8) * 1.4; aiRightArmJoint.rotation.x = -1.2; } 
+              else if (aiArmAnimTimer > 0) { aiArmAnimTimer -= 0.05; aiHumanOperator.position.y = 0; aiHumanOperator.rotation.y = 0; aiRightArmJoint.rotation.z = 0; aiRightArmJoint.rotation.x = -Math.sin(aiArmAnimTimer * Math.PI) * 1.5; } 
+              else { aiHumanOperator.position.y = 0; aiHumanOperator.rotation.y = 0; aiRightArmJoint.rotation.x = 0; aiRightArmJoint.rotation.z = 0; aiDanceAge = 0; }
+          }
+          
+          if(renderer && scene && camera) renderer.render(scene, camera);
+      }
+
+      function spawnMissileAttackProjectile(fromX, fromZ, toX, toZ, callback) {
+          playSynthesizedSound('launch'); const mMesh = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
+          mMesh.position.set(fromX, 0.2, fromZ); scene.add(mMesh); activeProjectiles.push({ mesh: mMesh, fromX: fromX, fromZ: fromZ, toX: toX, toZ: toZ, ticks: 0, speed: 0.05, onImpact: callback });
+      }
+
+      function triggerParticleExplosionCloud(x, z, hexColor, count = 15) {
+          const pGeo = new THREE.BoxGeometry(0.14, 0.14, 0.14);
+          for (let i = 0; i < count; i++) { const pMesh = new THREE.Mesh(pGeo, new THREE.MeshBasicMaterial({ color: hexColor, transparent: true, opacity: 1.0 })); pMesh.position.set(x, 0.2, z); scene.add(pMesh); activeParticles.push({ mesh: pMesh, velocity: new THREE.Vector3((Math.random() - 0.5) * 0.2, (Math.random() * 0.28) + 0.1, (Math.random() - 0.5) * 0.2), life: 1.0, decay: (Math.random() * 0.04) + 0.02, shrinkRate: 0.94 }); }
+      }
+
+      let mouse = new THREE.Vector2();
+      function setupCoreEngineListeners() {
+          const raycaster = new THREE.Raycaster(); let isPointerDown = false;
+          
+          const processPointer = (clientX, clientY) => {
+              if (isInputLocked) return;
+              mouse.x = (clientX / window.innerWidth) * 2 - 1; mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+              raycaster.setFromCamera(mouse, camera);
+
+              if (currentPhase === 'ZEN_MODE' && zenHitPlane) {
+                  const intersects = raycaster.intersectObject(zenHitPlane);
+                  if (intersects.length > 0 && isDrawingSand && !isWashingSand) {
+                      const currentPoint = { x: intersects[0].uv.x * CANVAS_SIZE, y: (1 - intersects[0].uv.y) * CANVAS_SIZE };
+                      if (!lastDrawPoint) lastDrawPoint = currentPoint;
+                      ctx.lineCap = 'round'; ctx.lineWidth = 8; ctx.strokeStyle = '#000000'; ctx.shadowBlur = 8; ctx.shadowColor = '#000000';
+                      ctx.beginPath(); ctx.moveTo(lastDrawPoint.x, lastDrawPoint.y); ctx.lineTo(currentPoint.x, currentPoint.y); ctx.stroke();
+                      dTexture.needsUpdate = true; lastDrawPoint = currentPoint;
+                  }
+              } else if (currentPhase === 'JOLLY_MODE') {
+                  // No complex drag actions mapped inside pop protocol loops
+              } else if (trackingPlane) {
+                  const hits = raycaster.intersectObject(trackingPlane);
+                  if (hits.length > 0) {
+                      const pt = hits[0].point;
+                      if (currentPhase === 'DEPLOY' && currentDeployIndex < SHIP_TYPES.length) {
+                          let cellCol = Math.floor((pt.x - P_X + H_WIDTH) / C_SIZE), cellRow = Math.floor((pt.z + H_WIDTH) / C_SIZE);
+                          if (cellCol >= 0 && cellCol < BOARD_SIZE && cellRow >= 0 && cellRow < BOARD_SIZE) {
+                              isHoveringValid = evaluatePlacementValidity(cellRow, cellCol, SHIP_TYPES[currentDeployIndex].size, isVertical);
+                              let offsetWidth = SHIP_TYPES[currentDeployIndex].size * C_SIZE;
+                              shipBlueprint.position.x = (cellCol * C_SIZE) - H_WIDTH + (isVertical ? C_SIZE / 2 : offsetWidth / 2) + P_X;
+                              shipBlueprint.position.z = (cellRow * C_SIZE) - H_WIDTH + (isVertical ? offsetWidth / 2 : C_SIZE / 2);
+                              currentSnappedCoords.r = cellRow; currentSnappedCoords.c = cellCol; toggleHologramWireColor(isHoveringValid ? 0x00f0ff : 0xff0044);
+                          } else { isHoveringValid = false; toggleHologramWireColor(0xff0044); }
+                      } else if (currentPhase === 'BATTLE_PLAYER') {
+                          let cellCol = Math.floor((pt.x - A_X + H_WIDTH) / C_SIZE), cellRow = Math.floor((pt.z + H_WIDTH) / C_SIZE);
+                          if (cellCol >= 0 && cellCol < BOARD_SIZE && cellRow >= 0 && cellRow < BOARD_SIZE) { currentSnappedCoords.r = cellRow; currentSnappedCoords.c = cellCol; isHoveringValid = true; } else isHoveringValid = false;
+                      }
+                  }
+              }
+          };
+
+          window.addEventListener('pointerdown', (e) => { 
+              isPointerDown = true; 
+              isDrawingSand = true; 
+              
+              if (currentPhase === 'JOLLY_MODE') {
+                  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                  mouse.x = (e.clientX / window.innerWidth) * 2 - 1; 
+                  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                  raycaster.setFromCamera(mouse, camera);
+                  const intersects = raycaster.intersectObjects(bubbles);
+
+                  if (intersects.length > 0) {
+                      const popped = intersects[0].object;
+                      const index = bubbles.indexOf(popped);
+                      if (index !== -1) {
+                          bubbles.splice(index, 1);
+                          triggerConfettiBurst(popped.position, popped.material.color.getHex());
+                          playJollyChord();
+                          createFloatingWord(e.clientX, e.clientY);
+                          scene.remove(popped);
+                          popped.geometry.dispose();
+                          popped.material.dispose();
+                          jollyScore += 10;
+                          document.getElementById('jolly-score').textContent = jollyScore;
+                          setTimeout(() => { if(currentPhase === 'JOLLY_MODE') spawnBubble(-6); }, 400);
+                      }
+                  }
+              } else {
+                  processPointer(e.clientX, e.clientY); 
+                  if (!isHoveringValid || isInputLocked) return; 
+                  if (currentPhase === 'DEPLOY') lockPlayerVesselPlacement(currentSnappedCoords.r, currentSnappedCoords.c, SHIP_TYPES[currentDeployIndex].size, isVertical); 
+                  else if (currentPhase === 'BATTLE_PLAYER') initiatePlayerWeaponLaunch(currentSnappedCoords.r, currentSnappedCoords.c); 
+              }
+          });
+          
+          window.addEventListener('pointermove', (e) => { if (isPointerDown || currentPhase === 'DEPLOY' || currentPhase === 'BATTLE_PLAYER' || currentPhase === 'ZEN_MODE') processPointer(e.clientX, e.clientY); });
+          window.addEventListener('pointerup', () => { isPointerDown = false; isDrawingSand = false; lastDrawPoint = null; });
+          window.addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 'r' && currentPhase === 'DEPLOY') game.rotateDeployShip(); if (e.key.toLowerCase() === 'w' && currentPhase === 'ZEN_MODE') game.washAwaySand(); });
+      }
+
+      function toggleHologramWireColor(hex) { if (!shipBlueprint) return; shipBlueprint.traverse((child) => { if (child.material && child.material.color) child.material.color.setHex(hex); }); }
+      function evaluatePlacementValidity(r, c, s, v) { if (v ? (r + s > BOARD_SIZE) : (c + s > BOARD_SIZE)) return false; for (let i = 0; i < s; i++) if (playerLogicalGrid[r + (v ? i : 0)][c + (v ? 0 : i)] !== 0) return false; return true; }
+
+      function lockPlayerVesselPlacement(row, col, size, vertical) {
+          playSynthesizedSound('click'); let shipID = 10 + currentDeployIndex; playerShipsTrack[currentDeployIndex].isVertical = vertical;
+          for (let i = 0; i < size; i++) { let r = row + (vertical ? i : 0), c = col + (vertical ? 0 : i); playerLogicalGrid[r][c] = shipID; playerShipsTrack[currentDeployIndex].coords.push({ r: r, c: c }); }
+          const mesh = generateVesselMesh(size, false); mesh.position.copy(shipBlueprint.position); mesh.rotation.copy(shipBlueprint.rotation); mesh.name = "gameplayMesh"; scene.add(mesh);
+          currentDeployIndex++; if (currentDeployIndex < SHIP_TYPES.length) updateDeploymentHologram(); else { if (shipBlueprint) scene.remove(shipBlueprint); shipBlueprint = null; isHoveringValid = false; currentPhase = 'BATTLE_PLAYER'; document.getElementById('screen-deploy').classList.remove('active'); document.getElementById('screen-battle').classList.add('active'); updateCameraAngle(); triggerAITaunt('aiMiss'); } renderUIPanels();
+      }
+
+      function generateAICorePlacements() {
+          aiShipsTrack.forEach((ship, idx) => {
+              let placed = false, shipID = 10 + idx;
+              while (!placed) {
+                  let row = Math.floor(Math.random() * BOARD_SIZE), col = Math.floor(Math.random() * BOARD_SIZE), vertical = Math.random() > 0.5;
+                  if (vertical ? (row + ship.size > BOARD_SIZE) : (col + ship.size > BOARD_SIZE)) continue;
+                  let valid = true; for (let i = 0; i < ship.size; i++) if (aiLogicalGrid[row + (vertical ? i : 0)][col + (vertical ? 0 : i)] !== 0) { valid = false; break; }
+                  if (valid) { ship.isVertical = vertical; for (let i = 0; i < ship.size; i++) { let r = row + (vertical ? i : 0), c = col + (vertical ? 0 : i); aiLogicalGrid[r][c] = shipID; ship.coords.push({ r: r, c: c }); } placed = true; }
+              }
+          });
+      }
+
+      function initiatePlayerWeaponLaunch(row, col) {
+          let cellState = aiLogicalGrid[row][col]; if (cellState === 2 || cellState === 3) return; 
+          isInputLocked = true; isHoveringValid = false; playerArmAnimTimer = 1.0; 
+          const targetX = (col * C_SIZE) - H_WIDTH + (C_SIZE/2) + A_X, targetZ = (row * C_SIZE) - H_WIDTH + (C_SIZE/2);
+          spawnMissileAttackProjectile(P_X, 0, targetX, targetZ, () => {
+              if (cellState >= 10) {
+                  playSynthesizedSound('hit'); aiLogicalGrid[row][col] = 2; playerStats.hits++; triggerParticleExplosionCloud(targetX, targetZ, 0xff0011, 35); spawnAngryHitVisualMarker(targetX, targetZ);
+                  let shipIdx = cellState - 10; aiShipsTrack[shipIdx].hits++; if (aiShipsTrack[shipIdx].hits >= aiShipsTrack[shipIdx].size) { revealSunkShipOnGrid('AI', shipIdx); playerDanceTimer = 3.5; }
+                  updatePerformanceStatsHUD(); if (checkGameOverConditions()) return; triggerAITaunt('playerHit'); isInputLocked = false; isHoveringValid = true;
+              } else {
+                  playSynthesizedSound('miss'); aiLogicalGrid[row][col] = 3; playerStats.misses++; triggerParticleExplosionCloud(targetX, targetZ, 0x4466aa, 10); spawnVisualMarker(targetX, targetZ, 0x223355);
+                  updatePerformanceStatsHUD(); if (checkGameOverConditions()) return; triggerAITaunt('playerMiss'); currentPhase = 'BATTLE_AI'; uiCache.turn.textContent = "AI CORE SECTOR PROCESSING..."; uiCache.turn.style.color = "#ffaa00"; setTimeout(executeAICoreTurnStrike, 800);
+              }
+          });
+      }
+
+      function executeAICoreTurnStrike() {
+          if (currentPhase !== 'BATTLE_AI') return; 
+          let targeted = false, row, col;
+          while (!targeted) { row = Math.floor(Math.random() * BOARD_SIZE); col = Math.floor(Math.random() * BOARD_SIZE); let state = playerLogicalGrid[row][col]; if (state !== 2 && state !== 3) targeted = true; }
+          let cellState = playerLogicalGrid[row][col]; aiArmAnimTimer = 1.0; 
+          const targetX = (col * C_SIZE) - H_WIDTH + (C_SIZE/2) + P_X, targetZ = (row * C_SIZE) - H_WIDTH + (C_SIZE/2);
+          spawnMissileAttackProjectile(A_X, 0, targetX, targetZ, () => {
+              if (cellState >= 10) {
+                  playSynthesizedSound('hit'); playerLogicalGrid[row][col] = 2; triggerParticleExplosionCloud(targetX, targetZ, 0xff1100, 30); spawnAngryHitVisualMarker(targetX, targetZ);
+                  let shipIdx = cellState - 10; playerShipsTrack[shipIdx].hits++; if (playerShipsTrack[shipIdx].hits >= playerShipsTrack[shipIdx].size) { revealSunkShipOnGrid('PLAYER', shipIdx); aiDanceTimer = 3.5; }
+                  if (checkGameOverConditions()) return; triggerAITaunt('aiHit'); setTimeout(executeAICoreTurnStrike, 1000);
+              } else {
+                  playSynthesizedSound('miss'); playerLogicalGrid[row][col] = 3; triggerParticleExplosionCloud(targetX, targetZ, 0x55bbff, 8); spawnVisualMarker(targetX, targetZ, 0x334455);
+                  if (checkGameOverConditions()) return; triggerAITaunt('aiMiss'); currentPhase = 'BATTLE_PLAYER'; uiCache.turn.textContent = "YOUR TURN: ENGAGE SECTOR"; uiCache.turn.style.color = "#00f0ff"; isInputLocked = false; isHoveringValid = true;
+              }
+          });
+      }
+
+      function spawnAngryHitVisualMarker(x, z) { const marker = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.18, 8), new THREE.MeshStandardMaterial({ color: THREE.Color.NAMES.red, emissive: 0xff0000, emissiveIntensity: 1.5, transparent: true, opacity: 0.9 })); marker.position.set(x, 0.08, z); marker.userData = { age: Math.random() * 5 }; marker.name = "gameplayMesh"; scene.add(marker); angryHitMarkers.push(marker); }
+      function spawnVisualMarker(x, z, hexColor) { const marker = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.1, 8), new THREE.MeshBasicMaterial({ color: hexColor })); marker.position.set(x, 0.05, z); marker.name = "gameplayMesh"; scene.add(marker); }
+
+      function revealSunkShipOnGrid(side, shipIndex) {
+          let tracker = (side === 'AI') ? aiShipsTrack[shipIndex] : playerShipsTrack[shipIndex], startCoord = tracker.coords[0], isVert = tracker.isVertical;
+          let pivotX = (startCoord.c * C_SIZE) - H_WIDTH + (isVert ? C_SIZE / 2 : (tracker.size * C_SIZE) / 2) + (side === 'AI' ? A_X : P_X), pivotZ = (startCoord.r * C_SIZE) - H_WIDTH + (isVert ? (tracker.size * C_SIZE) / 2 : C_SIZE / 2);
+          
+          const mesh = generateVesselMesh(tracker.size, false); 
+          mesh.traverse((child) => { 
+              if (child.material) { 
+                  child.material = new THREE.MeshStandardMaterial({ 
+                      color: 0x050508, 
+                      emissive: 0xff1100, 
+                      emissiveIntensity: 2.2, 
+                      wireframe: true 
+                  }); 
+              } 
+          }); 
+          
+          mesh.position.set(pivotX, 0.05, pivotZ); 
+          if (isVert) mesh.rotation.y = Math.PI / 2; 
+          mesh.name = "gameplayMesh"; 
+          scene.add(mesh);
+
+          tracker.coords.forEach(coord => {
+              const posX = (coord.c * C_SIZE) - H_WIDTH + (C_SIZE / 2) + (side === 'AI' ? A_X : P_X);
+              const posZ = (coord.r * C_SIZE) - H_WIDTH + (C_SIZE / 2);
+              burningWreckages.push({ x: posX, z: posZ });
+          });
+      }
+
+      function checkGameOverConditions() {
+          let aiSunkCount = 0, playerSunkCount = 0;
+          for(let r=0; r<BOARD_SIZE; r++) for(let c=0; c<BOARD_SIZE; c++) { if (aiLogicalGrid[r][c] === 2) aiSunkCount++; if (playerLogicalGrid[r][c] === 2) playerSunkCount++; }
+          if (aiSunkCount >= 14 || playerSunkCount >= 14) {
+              currentPhase = 'GAMEOVER'; document.getElementById('screen-battle').classList.remove('active'); document.getElementById('screen-gameover').classList.add('active'); document.getElementById('exit-action-container').style.display = 'none';
+              const isWin = aiSunkCount >= 14; document.getElementById('go-title').textContent = isWin ? "VICTORY ACHIEVED" : "DEFEAT DETECTED"; document.getElementById('go-title').style.color = isWin ? "#00f0ff" : "#ff0055"; document.getElementById('go-acc').textContent = uiCache.accuracy.textContent; document.getElementById('go-hits').textContent = playerStats.hits; document.getElementById('go-miss').textContent = playerStats.misses; stopInGameCombatMusic(); return true;
+          } return false;
+      }
+
+      function updatePerformanceStatsHUD() { const totalAttacks = playerStats.hits + playerStats.misses; uiCache.accuracy.textContent = `${totalAttacks > 0 ? Math.round((playerStats.hits / totalAttacks) * 100) : 0}%`; uiCache.hits.textContent = playerStats.hits; uiCache.miss.textContent = playerStats.misses; }
+      function renderUIPanels() { if (uiCache.pFleet) uiCache.pFleet.innerHTML = playerShipsTrack.map(s => `<div class="ship-status-item"><span>${s.name}</span><span class="${s.hits >= s.size ? 'status-sunk':'status-active'}">${s.hits >= s.size ? 'SUNK':'ONLINE'}</span></div>`).join(''); }
+
+      window.ui = {
+          openModal: function(id) { 
+              playSynthesizedSound('click'); 
+              if (id === 'modal-settings') {
+                  document.getElementById('exit-action-container').style.display = (currentPhase === 'DEPLOY' || currentPhase.startsWith('BATTLE') || currentPhase === 'ZEN_MODE' || currentPhase === 'JOLLY_MODE') ? 'flex' : 'none'; 
+                  document.getElementById('intro-return-container').style.display = (currentPhase === 'MENU') ? 'flex' : 'none';
+              }
+              document.getElementById(id).style.display = 'flex'; 
+          },
+          closeModal: function(id) { playSynthesizedSound('click'); document.getElementById(id).style.display = 'none'; }
+      };
+
+      window.game = {
+          startNewGame: function() { playSynthesizedSound('click'); currentPhase = 'DEPLOY'; document.getElementById('screen-home').classList.remove('active'); document.getElementById('screen-deploy').classList.add('active'); initCombatWorld(); startInGameCombatMusic(); },
+          startZenGardenMode: function() { playSynthesizedSound('click'); currentPhase = 'ZEN_MODE'; document.getElementById('screen-home').classList.remove('active'); document.getElementById('screen-zen').classList.add('active'); buildZenSandEnvironment(); updateCameraAngle(); startInGameCombatMusic(); },
+          startJollyPopMode: function() {
+              playSynthesizedSound('click');
+              currentPhase = 'JOLLY_MODE';
+              jollyScore = 0;
+              document.getElementById('jolly-score').textContent = 0;
+              document.getElementById('screen-home').classList.remove('active');
+              document.getElementById('screen-jolly').classList.add('active');
+              updateCameraAngle();
+              startInGameCombatMusic();
+          },
+          washAwaySand: function() {
+              if (isWashingSand || currentPhase !== 'ZEN_MODE') return; isWashingSand = true; playSynthesizedSound('click');
+              let frames = 0;
+              const washInterval = setInterval(() => { ctx.fillStyle = 'rgba(255, 255, 255, 0.08)'; ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE); dTexture.needsUpdate = true; frames++;
+                  if (frames >= 60) { clearInterval(washInterval); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE); dTexture.needsUpdate = true; isWashingSand = false; }
+              }, 30);
+          },
+          rotateDeployShip: function() { playSynthesizedSound('click'); if (shipBlueprint) { isVertical = !isVertical; shipBlueprint.rotation.y = isVertical ? Math.PI / 2 : 0; } },
+          adjustMusicVolume: function(val) { musicVolumeLevel = val / 100; },
+          toggleAudio: function() { isAudioMuted = !isAudioMuted; const btn = document.getElementById('btn-audio-toggle'); if (isAudioMuted) { btn.textContent = "AUDIO: OFF"; btn.style.borderColor = "rgba(255, 0, 85, 0.5)"; btn.style.color = "#ff0055"; } else { btn.textContent = "AUDIO: ON"; btn.style.borderColor = "rgba(0, 240, 255, 0.4)"; btn.style.color = "#00f0ff"; playSynthesizedSound('click'); } },
+          returnToIntro: function() {
+              playSynthesizedSound('click'); ui.closeModal('modal-settings');
+              currentPhase = 'INTRO';
+              document.getElementById('screen-home').classList.remove('active');
+              document.getElementById('screen-intro').classList.add('active');
+              
+              scene.background.setHex(0x000000); scene.fog.color.setHex(0x000000);
+              if(titanPlanet) titanPlanet.visible = false;
+              if(titanAtmosphere) titanAtmosphere.visible = false;
+              if(shootingStars[0]) shootingStars.forEach(ss => ss.visible = false);
+              if(zenParticles) zenParticles.visible = false;
+              
+              const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh") meshesToRemove.push(child); });
+              meshesToRemove.forEach(m => scene.remove(m)); bubbles = [];
+              
+              updateCameraAngle();
+          },
+          abortActiveMatch: function() { playSynthesizedSound('click'); ui.closeModal('modal-settings'); this.terminateAndResetToMenu(); },
+          terminateAndResetToMenu: function() {
+              currentPhase = 'MENU'; isInputLocked = false; isHoveringValid = false; currentDeployIndex = 0; activeProjectiles = []; activeParticles = []; angryHitMarkers = []; burningWreckages = []; bubbles = []; jollyParticles = []; stopInGameCombatMusic();
+              
+              const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh" || child === trackingPlane || child === shipBlueprint || child === zenHitPlane) meshesToRemove.push(child); });
+              meshesToRemove.forEach(m => scene.remove(m)); if (shipBlueprint) scene.remove(shipBlueprint); shipBlueprint = null; trackingPlane = null; sandMesh = null; zenHitPlane = null;
+              playerLogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)); aiLogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)); playerStats = { hits: 0, misses: 0 };
+              playerShipsTrack.forEach(s => { s.hits = 0; s.coords = []; }); aiShipsTrack.forEach(s => { s.hits = 0; s.coords = []; });
+              
+              switchEnvironmentVibe(selectedTrackVibe); 
+              updateCameraAngle();
+              ['screen-deploy', 'screen-battle', 'screen-gameover', 'screen-zen', 'screen-jolly'].forEach(s => document.getElementById(s).classList.remove('active')); document.getElementById('screen-home').classList.add('active');
+              const tauntBox = document.getElementById('ai-taunt'); if(tauntBox) { tauntBox.style.opacity = 0; tauntBox.textContent = ""; } clearInterval(typingInterval);
+          }
+      };
+
+      initBackgroundEngine();
+    </script>
+  </body>
+</html>

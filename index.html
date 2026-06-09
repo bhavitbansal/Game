@@ -27,11 +27,12 @@
         cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><circle cx='14' cy='18' r='9' fill='%23111111'/><path d='M14,9 C14,4 20,4 22,2' fill='none' stroke='%23a0aec0' stroke-width='2'/><circle cx='22' cy='2' r='4' fill='%23ffaa00'/></svg>") 14 18, pointer;
       }
 
+      /* Realistic Calligraphy Brush Cursor for Zen Mode */
       body.mode-zen {
-        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M2,30 C2,30 4,26 8,24 L24,8 C26,6 30,2 30,2 C30,2 26,4 24,8 L8,24 C4,26 2,30 2,30 Z' fill='%23d2b48c' stroke='%238b5a2b' stroke-width='2'/><path d='M2,30 C0,32 0,32 0,32 C0,32 2,30 2,30 Z' stroke='%2300f0ff' stroke-width='4'/></svg>") 0 32, auto;
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M10,22 L26,6 L28,8 L12,24 Z' fill='%236b4c2a'/><path d='M26,6 L28,8 L31,5 L29,3 Z' fill='%233e2723'/><polygon points='10,22 12,24 8,27 6,25' fill='%239e9e9e'/><path d='M6,25 L8,27 C8,27 4,30 1,31 C2,28 6,25 6,25 Z' fill='%231a1005'/></svg>") 1 31, auto;
       }
       body.mode-zen .btn {
-        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M2,30 C2,30 4,26 8,24 L24,8 C26,6 30,2 30,2 C30,2 26,4 24,8 L8,24 C4,26 2,30 2,30 Z' fill='%23ffffff' stroke='%23aaaaaa' stroke-width='2'/><path d='M2,30 C0,32 0,32 0,32 C0,32 2,30 2,30 Z' stroke='%23ffffff' stroke-width='4'/></svg>") 0 32, pointer;
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M10,22 L26,6 L28,8 L12,24 Z' fill='%238d6e4c'/><path d='M26,6 L28,8 L31,5 L29,3 Z' fill='%235c4033'/><polygon points='10,22 12,24 8,27 6,25' fill='%23e0e0e0'/><path d='M6,25 L8,27 C8,27 4,30 1,31 C2,28 6,25 6,25 Z' fill='%2300f0ff'/></svg>") 1 31, pointer;
       }
 
       body.mode-jolly {
@@ -104,7 +105,7 @@
       .battle-header { width: calc(100% - 30px); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: absolute; top: 15px; left: 15px; border-radius: 8px; }
       
       #screen-zen { flex-direction: column; justify-content: center; align-items: flex-start; padding: 30px; pointer-events: none; }
-      .zen-sidebar { max-width: 320px; display: flex; flex-direction: column; gap: 12px; }
+      .zen-sidebar { max-width: 320px; display: flex; flex-direction: column; gap: 12px; max-height: 90vh; overflow-y: auto; }
 
       #screen-jolly { flex-direction: column; justify-content: space-between; padding: 25px; pointer-events: none; }
       .jolly-header { width: 100%; display: flex; justify-content: space-between; align-items: center; }
@@ -209,7 +210,7 @@
         .sidebar-left { position: static; width: 100%; max-width: 340px; padding: 12px; max-height: 28vh; margin-bottom: 50px; }
         
         #screen-zen { justify-content: flex-end; align-items: center; padding: 15px; }
-        .zen-sidebar { position: static; width: 100%; max-width: 340px; padding: 15px; margin-bottom: 50px; }
+        .zen-sidebar { position: static; width: 100%; max-width: 340px; padding: 15px; margin-bottom: 50px; max-height: 45vh; overflow-y: auto; }
         
         #screen-jolly { padding: 15px; justify-content: space-between; }
         .jolly-header { flex-direction: row; align-items: center; }
@@ -248,7 +249,7 @@
         .sidebar-left h3, .sidebar-left hr { display: none; }
         
         #screen-zen { justify-content: flex-end; align-items: flex-start; padding: 10px; }
-        .zen-sidebar { max-width: 210px; padding: 10px; bottom: 10px; position: absolute; left: 10px; }
+        .zen-sidebar { max-width: 240px; padding: 10px; bottom: 10px; position: absolute; left: 10px; max-height: 80vh; overflow-y: auto; }
         .zen-sidebar p { display: none; }
         
         #screen-jolly { padding: 10px; }
@@ -349,15 +350,31 @@
       <div id="screen-zen" class="game-screen">
         <div class="zen-sidebar glass-panel">
           <h2>ZEN GARDEN TRAILS</h2>
-          <p style="font-size:12px; color:#cbd5e0; line-height:1.4;">Freely draw and carve patterns into the sand. <strong style="color:#00f0ff;">You can also click anywhere and start typing on your keyboard to carve words.</strong></p>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.4;">Freely draw and carve patterns into the sand.</p>
           
-          <div style="margin-top: 15px;">
-            <span style="font-size: 11px; font-family: 'Orbitron', sans-serif; color: #00f0ff; letter-spacing: 1px;">SAND THEME (COLOR)</span>
-            <input type="color" id="zen-color-picker" value="#4a5d73" onchange="game.changeZenTheme(this.value)" style="width: 100%; height: 35px; border: none; cursor: pointer; border-radius: 4px; background: none; margin-top: 5px;">
+          <div style="margin-top: 5px; background: rgba(0,240,255,0.05); padding: 10px; border-radius: 6px; border: 1px solid rgba(0,240,255,0.15);">
+            <span style="font-size: 11px; font-family: 'Orbitron', sans-serif; color: #00f0ff; letter-spacing: 1px;">TEXT BOX TOOL</span>
+            <button id="btn-zen-textbox" class="btn btn-zen" onclick="game.toggleTextBoxTool()" style="margin-top: 5px; width: 100%; font-size: 10px; padding: 8px;">📝 ACTIVATE TEXT BOX</button>
+            
+            <div class="slider-container" style="margin-top: 10px; margin-bottom: 0;">
+              <span class="slider-label" style="font-size: 11px; color: #00f0ff;">TEXT SIZE: <span id="lbl-zen-text-size">44px</span></span>
+              <input type="range" id="slider-zen-text-size" class="cyber-slider" min="16" max="100" value="44" oninput="game.changeZenTextSize(this.value)" style="width: 110px;">
+            </div>
           </div>
 
-          <hr class="cyber-divider" style="margin: 12px 0;"/>
-          <button class="btn btn-zen" onclick="game.washAwaySand()" style="padding: 15px; font-size: 14px; margin-bottom: 10px;">🌊 CLEAR SAND</button>
+          <div style="margin-top: 5px;">
+            <span style="font-size: 11px; font-family: 'Orbitron', sans-serif; color: #00f0ff; letter-spacing: 1px;">SAND THEME (COLOR)</span>
+            <input type="color" id="zen-color-picker" value="#e8c37b" onchange="game.changeZenTheme(this.value)" style="width: 100%; height: 35px; border: none; cursor: pointer; border-radius: 4px; background: none; margin-top: 5px;">
+          </div>
+
+          <div style="margin-top: 5px; background: rgba(255,170,0,0.05); padding: 10px; border-radius: 6px; border: 1px solid rgba(255,170,0,0.15);">
+            <span style="font-size: 11px; font-family: 'Orbitron', sans-serif; color: #ffaa00; letter-spacing: 1px;">CUSTOM BACKGROUND</span>
+            <input type="file" id="zen-bg-upload" accept="image/*" onchange="game.uploadCustomBackground(event)" style="display: none;">
+            <button class="btn" onclick="document.getElementById('zen-bg-upload').click()" style="width: 100%; margin-top: 5px; border-color: #ffaa00; color: #ffaa00; font-size: 10px; padding: 8px;">🖼 UPLOAD IMAGE</button>
+          </div>
+
+          <hr class="cyber-divider" style="margin: 10px 0;"/>
+          <button class="btn btn-zen" onclick="game.washAwaySand()" style="padding: 12px; font-size: 13px; margin-bottom: 5px;">🌊 CLEAR SAND</button>
         </div>
       </div>
 
@@ -465,6 +482,12 @@
       let isDrawingSand = false, lastDrawPoint = null, isWashingSand = false;
       let zenTextCursor = { x: 512, y: 512 };
       const CANVAS_SIZE = 1024;
+      
+      // Text box structural state tracking
+      let isTextBoxToolActive = false;
+      let canTypeInSand = false;
+      let zenTextSize = 44;
+      let uploadedBgImage = null;
 
       // Jolly Pop Mode Variables
       let bubbles = [], jollyParticles = [];
@@ -492,11 +515,11 @@
 
       function switchEnvironmentVibe(vibe) {
           if (vibe === 'ZEN') {
-              scene.background.setHex(0x0a0f18); 
-              if (scene.fog) { scene.fog.color.setHex(0x0a0f18); scene.fog.density = 0.015; }
-              ambientLight.intensity = 0.15;
-              mainLight.intensity = 0.6; mainLight.color.setHex(0x88bbff);
-              secLight.intensity = 0.3; secLight.color.setHex(0x0044aa);
+              scene.background.setHex(0xe8c37b); // Infinite sand environment color background
+              if (scene.fog) { scene.fog.color.setHex(0xe8c37b); scene.fog.density = 0.022; }
+              ambientLight.intensity = 0.5;
+              mainLight.intensity = 1.0; mainLight.color.setHex(0xfffaed); 
+              secLight.intensity = 0.3; secLight.color.setHex(0xd2b48c);
               
               if(titanPlanet) titanPlanet.visible = false;
               if(titanAtmosphere) titanAtmosphere.visible = false;
@@ -795,32 +818,49 @@
           animateEngineFrame();
       }
 
+      function redrawSandBase(targetColor = '#e8c37b') {
+          if (!ctx) return;
+          if (uploadedBgImage) {
+              ctx.drawImage(uploadedBgImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+          } else {
+              ctx.fillStyle = targetColor;
+              ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+              for (let i = 0; i < 6000; i++) {
+                  ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)';
+                  ctx.fillRect(Math.random() * CANVAS_SIZE, Math.random() * CANVAS_SIZE, 2, 2);
+              }
+          }
+          if (dTexture) dTexture.needsUpdate = true;
+      }
+
       function buildZenSandEnvironment() {
           dCanvas = document.getElementById('displacement-canvas');
           ctx = dCanvas.getContext('2d');
-          ctx.fillStyle = '#808080'; // Neutral gray start to prevent bright blow-out
-          ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+          
+          redrawSandBase('#e8c37b');
           dTexture = new THREE.CanvasTexture(dCanvas);
           
-          const sandGeo = new THREE.PlaneGeometry(35, 35, 180, 180); 
+          // Large responsive plane filling view flawlessly
+          const sandGeo = new THREE.PlaneGeometry(55, 55, 200, 200); 
           sandGeo.rotateX(-Math.PI / 2);
           
           const sandMat = new THREE.MeshStandardMaterial({ 
-              color: 0x4a5d73, // Soft soothing slate blue/grey sand
+              color: 0xffffff, 
+              map: dTexture,   
               roughness: 1.0, 
-              metalness: 0.1,
+              metalness: 0.02,
               displacementMap: dTexture, 
-              displacementScale: 2.5,
+              displacementScale: 2.2,
               bumpMap: dTexture,
-              bumpScale: 1.5,
-              flatShading: true // Gives a highly visible 3D textured/low-poly look
+              bumpScale: 1.2,
+              flatShading: false 
           });
           
           sandMesh = new THREE.Mesh(sandGeo, sandMat);
           sandMesh.name = "gameplayMesh"; 
           scene.add(sandMesh);
 
-          zenHitPlane = new THREE.Mesh(new THREE.PlaneGeometry(35, 35), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+          zenHitPlane = new THREE.Mesh(new THREE.PlaneGeometry(55, 55), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
           zenHitPlane.rotateX(-Math.PI / 2);
           zenHitPlane.position.y = 1.5; 
           zenHitPlane.name = "gameplayMesh";
@@ -1062,18 +1102,30 @@
                   if (intersects.length > 0) {
                       const currentPoint = { x: intersects[0].uv.x * CANVAS_SIZE, y: (1 - intersects[0].uv.y) * CANVAS_SIZE };
                       
-                      // Move typing cursor to where the user clicked
                       if (isPointerDown) {
-                          zenTextCursor.x = currentPoint.x;
-                          zenTextCursor.y = currentPoint.y;
-                      }
-
-                      // Handle drawing
-                      if (isPointerDown && isDrawingSand && !isWashingSand) {
-                          if (!lastDrawPoint) lastDrawPoint = currentPoint;
-                          ctx.lineCap = 'round'; ctx.lineWidth = 8; ctx.strokeStyle = '#000000'; ctx.shadowBlur = 8; ctx.shadowColor = '#000000';
-                          ctx.beginPath(); ctx.moveTo(lastDrawPoint.x, lastDrawPoint.y); ctx.lineTo(currentPoint.x, currentPoint.y); ctx.stroke();
-                          dTexture.needsUpdate = true; lastDrawPoint = currentPoint;
+                          if (isTextBoxToolActive) {
+                              // Drop text box anchor coordinate point explicitly
+                              zenTextCursor.x = currentPoint.x;
+                              zenTextCursor.y = currentPoint.y;
+                              canTypeInSand = true;
+                              
+                              // Carve a subtle insertion anchor marker layout
+                              ctx.fillStyle = '#1a1005';
+                              ctx.fillRect(zenTextCursor.x - 4, zenTextCursor.y - 4, 8, 8);
+                              dTexture.needsUpdate = true;
+                              
+                              // Automatically toggle state off to start direct writing
+                              game.toggleTextBoxTool();
+                              isDrawingSand = false; 
+                          } else {
+                              // Fluid drawing mode paths
+                              if (!isWashingSand) {
+                                  if (!lastDrawPoint) lastDrawPoint = currentPoint;
+                                  ctx.lineCap = 'round'; ctx.lineWidth = 14; ctx.strokeStyle = '#1a1005'; ctx.shadowBlur = 4; ctx.shadowColor = '#1a1005';
+                                  ctx.beginPath(); ctx.moveTo(lastDrawPoint.x, lastDrawPoint.y); ctx.lineTo(currentPoint.x, currentPoint.y); ctx.stroke();
+                                  dTexture.needsUpdate = true; lastDrawPoint = currentPoint;
+                              }
+                          }
                       }
                   }
               } else if (currentPhase === 'JOLLY_MODE') {
@@ -1101,7 +1153,7 @@
 
           window.addEventListener('pointerdown', (e) => { 
               isPointerDown = true; 
-              isDrawingSand = true; 
+              isDrawingSand = isTextBoxToolActive ? false : true; 
               
               if (currentPhase === 'JOLLY_MODE') {
                   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1141,25 +1193,24 @@
               if (e.key.toLowerCase() === 'r' && currentPhase === 'DEPLOY') game.rotateDeployShip(); 
               if (e.key.toLowerCase() === 'w' && currentPhase === 'ZEN_MODE') game.washAwaySand(); 
               
-              // Typing in Sand Feature
-              if (currentPhase === 'ZEN_MODE') {
+              // Typing feature bound exclusively to dropped text box insertions
+              if (currentPhase === 'ZEN_MODE' && canTypeInSand) {
                   if (!isWashingSand) {
                       if (e.key === 'Enter') {
-                          zenTextCursor.y += 45;
-                          zenTextCursor.x = CANVAS_SIZE / 2 - 150; // Carriage return offset
-                      } else if (e.key.length === 1) { // Normal character
+                          zenTextCursor.y += (zenTextSize + 6);
+                      } else if (e.key.length === 1) { 
                           if (e.key === ' ') {
-                              zenTextCursor.x += 15;
+                              zenTextCursor.x += (zenTextSize * 0.45);
                           } else {
-                              ctx.font = 'bold 36px "Orbitron", sans-serif';
-                              ctx.fillStyle = '#000000'; // Black carves downward into the displacement map
-                              ctx.textAlign = 'center';
+                              ctx.font = `bold ${zenTextSize}px "Orbitron", sans-serif`;
+                              ctx.fillStyle = '#1a1005'; 
+                              ctx.textAlign = 'left';    
                               ctx.textBaseline = 'middle';
                               ctx.shadowBlur = 4;
-                              ctx.shadowColor = '#ffffff'; 
+                              ctx.shadowColor = '#1a1005'; 
                               
                               ctx.fillText(e.key.toUpperCase(), zenTextCursor.x, zenTextCursor.y);
-                              zenTextCursor.x += ctx.measureText(e.key.toUpperCase()).width + 4; 
+                              zenTextCursor.x += ctx.measureText(e.key.toUpperCase()).width + 6; 
                               dTexture.needsUpdate = true;
                           }
                       }
@@ -1295,18 +1346,63 @@
           washAwaySand: function() {
               if (isWashingSand || currentPhase !== 'ZEN_MODE') return; isWashingSand = true; playSynthesizedSound('click');
               let frames = 0;
-              const washInterval = setInterval(() => { ctx.fillStyle = 'rgba(128, 128, 128, 0.15)'; ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE); dTexture.needsUpdate = true; frames++;
-                  if (frames >= 40) { clearInterval(washInterval); ctx.fillStyle = '#808080'; ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE); dTexture.needsUpdate = true; isWashingSand = false; }
+              let currentColor = document.getElementById('zen-color-picker').value;
+              const washInterval = setInterval(() => { 
+                  ctx.save();
+                  ctx.globalAlpha = 0.2;
+                  if (uploadedBgImage) {
+                      ctx.drawImage(uploadedBgImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+                  } else {
+                      ctx.fillStyle = currentColor;
+                      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+                  }
+                  ctx.restore();
+                  dTexture.needsUpdate = true; frames++;
+                  if (frames >= 20) { 
+                      clearInterval(washInterval); 
+                      redrawSandBase(currentColor);
+                      isWashingSand = false; 
+                  }
               }, 30);
           },
-          
-          // NEW: Theme Changer Logic
-          changeZenTheme: function(hexColor) {
-              if (sandMesh && sandMesh.material) {
-                  sandMesh.material.color.set(hexColor);
+          toggleTextBoxTool: function() {
+              playSynthesizedSound('click');
+              isTextBoxToolActive = !isTextBoxToolActive;
+              const btn = document.getElementById('btn-zen-textbox');
+              if (isTextBoxToolActive) {
+                  btn.textContent = "🎯 TAP TO DROP BOX";
+                  btn.style.background = "rgba(0, 240, 255, 0.25)";
+                  btn.style.borderColor = "#00f0ff";
+              } else {
+                  btn.textContent = "📝 ACTIVATE TEXT BOX";
+                  btn.style.background = "rgba(0, 240, 255, 0.05)";
+                  btn.style.borderColor = "rgba(0, 240, 255, 0.4)";
               }
           },
-          
+          changeZenTextSize: function(val) {
+              zenTextSize = parseInt(val);
+              document.getElementById('lbl-zen-text-size').textContent = val + "px";
+          },
+          uploadCustomBackground: function(event) {
+              const file = event.target.files[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                  const img = new Image();
+                  img.onload = function() {
+                      uploadedBgImage = img;
+                      redrawSandBase();
+                  };
+                  img.src = e.target.result;
+              };
+              reader.readAsDataURL(file);
+          },
+          changeZenTheme: function(hexColor) {
+              if (sandMesh && sandMesh.material) {
+                  // Re-render procedural grains using newly specified tint value
+                  if(!uploadedBgImage) redrawSandBase(hexColor);
+              }
+          },
           rotateDeployShip: function() { playSynthesizedSound('click'); if (shipBlueprint) { isVertical = !isVertical; shipBlueprint.rotation.y = isVertical ? Math.PI / 2 : 0; } },
           adjustMusicVolume: function(val) { musicVolumeLevel = val / 100; },
           toggleAudio: function() { isAudioMuted = !isAudioMuted; const btn = document.getElementById('btn-audio-toggle'); if (isAudioMuted) { btn.textContent = "AUDIO: OFF"; btn.style.borderColor = "rgba(255, 0, 85, 0.5)"; btn.style.color = "#ff0055"; } else { btn.textContent = "AUDIO: ON"; btn.style.borderColor = "rgba(0, 240, 255, 0.4)"; btn.style.color = "#00f0ff"; playSynthesizedSound('click'); } },
@@ -1324,12 +1420,14 @@
               
               const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh") meshesToRemove.push(child); });
               meshesToRemove.forEach(m => scene.remove(m)); bubbles = [];
+              uploadedBgImage = null; canTypeInSand = false; isTextBoxToolActive = false;
               
               updateCameraAngle();
           },
           abortActiveMatch: function() { playSynthesizedSound('click'); ui.closeModal('modal-settings'); this.terminateAndResetToMenu(); },
           terminateAndResetToMenu: function() {
               currentPhase = 'MENU'; isInputLocked = false; isHoveringValid = false; currentDeployIndex = 0; activeProjectiles = []; activeParticles = []; angryHitMarkers = []; burningWreckages = []; bubbles = []; jollyParticles = []; stopInGameCombatMusic();
+              uploadedBgImage = null; canTypeInSand = false; isTextBoxToolActive = false;
               
               const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh" || child === trackingPlane || child === shipBlueprint || child === zenHitPlane) meshesToRemove.push(child); });
               meshesToRemove.forEach(m => scene.remove(m)); if (shipBlueprint) scene.remove(shipBlueprint); shipBlueprint = null; trackingPlane = null; sandMesh = null; zenHitPlane = null;

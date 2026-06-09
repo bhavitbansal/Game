@@ -488,6 +488,10 @@
       let canTypeInSand = false;
       let zenTextSize = 44;
       let uploadedBgImage = null;
+      let zenStrokes = [];
+      let zenTextLines = [];
+      let currentTextLine = null;
+      let currentStroke = null;
 
       // Jolly Pop Mode Variables
       let bubbles = [], jollyParticles = [];
@@ -833,6 +837,36 @@
           if (dTexture) dTexture.needsUpdate = true;
       }
 
+      function redrawAllZen() {
+          let currentColor = document.getElementById('zen-color-picker').value;
+          redrawSandBase(currentColor);
+          
+          // Render vector brush lines
+          ctx.lineCap = 'round'; ctx.lineWidth = 14; ctx.strokeStyle = '#1a1005'; ctx.shadowBlur = 4; ctx.shadowColor = '#1a1005';
+          zenStrokes.forEach(stroke => {
+              if (stroke.length < 1) return;
+              ctx.beginPath();
+              ctx.moveTo(stroke[0].x, stroke[0].y);
+              for(let i = 1; i < stroke.length; i++) {
+                  ctx.lineTo(stroke[i].x, stroke[i].y);
+              }
+              ctx.stroke();
+          });
+          
+          // Render layout text boxes
+          zenTextLines.forEach(line => {
+              ctx.font = `bold ${line.size}px "Orbitron", sans-serif`;
+              ctx.fillStyle = '#1a1005';
+              ctx.textAlign = 'left';
+              ctx.textBaseline = 'middle';
+              ctx.shadowBlur = 4;
+              ctx.shadowColor = '#1a1005';
+              ctx.fillText(line.text, line.x, line.y);
+          });
+          
+          dTexture.needsUpdate = true;
+      }
+
       function buildZenSandEnvironment() {
           dCanvas = document.getElementById('displacement-canvas');
           ctx = dCanvas.getContext('2d');
@@ -840,7 +874,6 @@
           redrawSandBase('#e8c37b');
           dTexture = new THREE.CanvasTexture(dCanvas);
           
-          // Large responsive plane filling view flawlessly
           const sandGeo = new THREE.PlaneGeometry(55, 55, 200, 200); 
           sandGeo.rotateX(-Math.PI / 2);
           
@@ -1107,20 +1140,25 @@
                               // Drop text box anchor coordinate point explicitly
                               zenTextCursor.x = currentPoint.x;
                               zenTextCursor.y = currentPoint.y;
+                              zenTextCursor.startX = currentPoint.x; 
                               canTypeInSand = true;
                               
-                              // Carve a subtle insertion anchor marker layout
-                              ctx.fillStyle = '#1a1005';
-                              ctx.fillRect(zenTextCursor.x - 4, zenTextCursor.y - 4, 8, 8);
-                              dTexture.needsUpdate = true;
+                              currentTextLine = { text: "", x: currentPoint.x, y: currentPoint.y, startX: currentPoint.x, size: zenTextSize };
+                              zenTextLines.push(currentTextLine);
                               
-                              // Automatically toggle state off to start direct writing
+                              redrawAllZen();
                               game.toggleTextBoxTool();
                               isDrawingSand = false; 
                           } else {
-                              // Fluid drawing mode paths
+                              // Fluid vector line capture tracking 
                               if (!isWashingSand) {
-                                  if (!lastDrawPoint) lastDrawPoint = currentPoint;
+                                  if (!lastDrawPoint) {
+                                      lastDrawPoint = currentPoint;
+                                      currentStroke = [currentPoint];
+                                      zenStrokes.push(currentStroke);
+                                  }
+                                  currentStroke.push(currentPoint);
+                                  
                                   ctx.lineCap = 'round'; ctx.lineWidth = 14; ctx.strokeStyle = '#1a1005'; ctx.shadowBlur = 4; ctx.shadowColor = '#1a1005';
                                   ctx.beginPath(); ctx.moveTo(lastDrawPoint.x, lastDrawPoint.y); ctx.lineTo(currentPoint.x, currentPoint.y); ctx.stroke();
                                   dTexture.needsUpdate = true; lastDrawPoint = currentPoint;
@@ -1154,6 +1192,7 @@
           window.addEventListener('pointerdown', (e) => { 
               isPointerDown = true; 
               isDrawingSand = isTextBoxToolActive ? false : true; 
+              currentStroke = null;
               
               if (currentPhase === 'JOLLY_MODE') {
                   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1187,7 +1226,7 @@
           });
           
           window.addEventListener('pointermove', (e) => { if (isPointerDown || currentPhase === 'DEPLOY' || currentPhase === 'BATTLE_PLAYER' || currentPhase === 'ZEN_MODE') processPointer(e.clientX, e.clientY); });
-          window.addEventListener('pointerup', () => { isPointerDown = false; isDrawingSand = false; lastDrawPoint = null; });
+          window.addEventListener('pointerup', () => { isPointerDown = false; isDrawingSand = false; lastDrawPoint = null; currentStroke = null; });
           
           window.addEventListener('keydown', (e) => { 
               if (e.key.toLowerCase() === 'r' && currentPhase === 'DEPLOY') game.rotateDeployShip(); 
@@ -1197,22 +1236,42 @@
               if (currentPhase === 'ZEN_MODE' && canTypeInSand) {
                   if (!isWashingSand) {
                       if (e.key === 'Enter') {
+                          e.preventDefault();
                           zenTextCursor.y += (zenTextSize + 6);
+                          zenTextCursor.x = zenTextCursor.startX; // Return carriage to precise custom start column!
+                          currentTextLine = { text: "", x: zenTextCursor.x, y: zenTextCursor.y, startX: zenTextCursor.startX, size: zenTextSize };
+                          zenTextLines.push(currentTextLine);
+                          redrawAllZen();
+                      } else if (e.key === 'Backspace') {
+                          e.preventDefault();
+                          if (currentTextLine && currentTextLine.text.length > 0) {
+                              currentTextLine.text = currentTextLine.text.slice(0, -1);
+                          } else if (zenTextLines.length > 1) {
+                              zenTextLines.pop();
+                              currentTextLine = zenTextLines[zenTextLines.length - 1];
+                          } else if (currentTextLine) {
+                              currentTextLine.text = "";
+                          }
+                          
+                          if (currentTextLine) {
+                              ctx.font = `bold ${currentTextLine.size}px "Orbitron", sans-serif`;
+                              zenTextCursor.x = currentTextLine.x + ctx.measureText(currentTextLine.text).width;
+                              zenTextCursor.y = currentTextLine.y;
+                              zenTextCursor.startX = currentTextLine.startX;
+                          }
+                          redrawAllZen();
                       } else if (e.key.length === 1) { 
                           if (e.key === ' ') {
+                              if (currentTextLine) currentTextLine.text += " ";
                               zenTextCursor.x += (zenTextSize * 0.45);
                           } else {
-                              ctx.font = `bold ${zenTextSize}px "Orbitron", sans-serif`;
-                              ctx.fillStyle = '#1a1005'; 
-                              ctx.textAlign = 'left';    
-                              ctx.textBaseline = 'middle';
-                              ctx.shadowBlur = 4;
-                              ctx.shadowColor = '#1a1005'; 
-                              
-                              ctx.fillText(e.key.toUpperCase(), zenTextCursor.x, zenTextCursor.y);
-                              zenTextCursor.x += ctx.measureText(e.key.toUpperCase()).width + 6; 
-                              dTexture.needsUpdate = true;
+                              if (currentTextLine) {
+                                  currentTextLine.text += e.key.toUpperCase();
+                                  ctx.font = `bold ${currentTextLine.size}px "Orbitron", sans-serif`;
+                                  zenTextCursor.x = currentTextLine.x + ctx.measureText(currentTextLine.text).width;
+                              }
                           }
+                          redrawAllZen();
                       }
                   }
               }
@@ -1360,6 +1419,10 @@
                   dTexture.needsUpdate = true; frames++;
                   if (frames >= 20) { 
                       clearInterval(washInterval); 
+                      zenStrokes = [];
+                      zenTextLines = [];
+                      currentTextLine = null;
+                      canTypeInSand = false;
                       redrawSandBase(currentColor);
                       isWashingSand = false; 
                   }
@@ -1382,6 +1445,9 @@
           changeZenTextSize: function(val) {
               zenTextSize = parseInt(val);
               document.getElementById('lbl-zen-text-size').textContent = val + "px";
+              if (currentTextLine && currentTextLine.text.length === 0) {
+                  currentTextLine.size = zenTextSize;
+              }
           },
           uploadCustomBackground: function(event) {
               const file = event.target.files[0];
@@ -1391,7 +1457,7 @@
                   const img = new Image();
                   img.onload = function() {
                       uploadedBgImage = img;
-                      redrawSandBase();
+                      redrawAllZen();
                   };
                   img.src = e.target.result;
               };
@@ -1399,8 +1465,7 @@
           },
           changeZenTheme: function(hexColor) {
               if (sandMesh && sandMesh.material) {
-                  // Re-render procedural grains using newly specified tint value
-                  if(!uploadedBgImage) redrawSandBase(hexColor);
+                  redrawAllZen();
               }
           },
           rotateDeployShip: function() { playSynthesizedSound('click'); if (shipBlueprint) { isVertical = !isVertical; shipBlueprint.rotation.y = isVertical ? Math.PI / 2 : 0; } },
@@ -1421,6 +1486,7 @@
               const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh") meshesToRemove.push(child); });
               meshesToRemove.forEach(m => scene.remove(m)); bubbles = [];
               uploadedBgImage = null; canTypeInSand = false; isTextBoxToolActive = false;
+              zenStrokes = []; zenTextLines = []; currentTextLine = null;
               
               updateCameraAngle();
           },
@@ -1428,6 +1494,7 @@
           terminateAndResetToMenu: function() {
               currentPhase = 'MENU'; isInputLocked = false; isHoveringValid = false; currentDeployIndex = 0; activeProjectiles = []; activeParticles = []; angryHitMarkers = []; burningWreckages = []; bubbles = []; jollyParticles = []; stopInGameCombatMusic();
               uploadedBgImage = null; canTypeInSand = false; isTextBoxToolActive = false;
+              zenStrokes = []; zenTextLines = []; currentTextLine = null;
               
               const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh" || child === trackingPlane || child === shipBlueprint || child === zenHitPlane) meshesToRemove.push(child); });
               meshesToRemove.forEach(m => scene.remove(m)); if (shipBlueprint) scene.remove(shipBlueprint); shipBlueprint = null; trackingPlane = null; sandMesh = null; zenHitPlane = null;

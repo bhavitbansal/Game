@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>TitanArmada - Triple Threat Suite</title>
+    <title>HelixVerse Suite</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
@@ -14,10 +14,18 @@
       #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: auto; }
       #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
       
-      .glass-panel, .battle-header, .modal-box, .vibe-card { pointer-events: auto !important; }
+      .glass-panel, .battle-header, .modal-box, .vibe-card, .portal-box, .glass-back-portal { pointer-events: auto !important; }
       
       .game-screen { display: none; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; padding: 15px; overflow: hidden; }
       .game-screen.active { display: flex; }
+
+      /* --- DEFAULT CURSOR FOR VIBE SELECTION SCREEN --- */
+      body.mode-intro, body.mode-intro * {
+        cursor: default !important;
+      }
+      body.mode-intro .btn, body.mode-intro .vibe-card, body.mode-intro .glass-back-portal {
+        cursor: pointer !important;
+      }
 
       /* --- DYNAMIC CUSTOM MODE CURSORS --- */
       body.mode-combat {
@@ -27,13 +35,10 @@
         cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><circle cx='14' cy='18' r='9' fill='%23111111'/><path d='M14,9 C14,4 20,4 22,2' fill='none' stroke='%23a0aec0' stroke-width='2'/><circle cx='22' cy='2' r='4' fill='%23ffaa00'/></svg>") 14 18, pointer;
       }
 
-      /* Realistic Calligraphy Brush Cursor for Zen Mode */
       body.mode-zen {
-        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M10,22 L26,6 L28,8 L12,24 Z' fill='%236b4c2a'/><path d='M26,6 L28,8 L31,5 L29,3 Z' fill='%233e2723'/><polygon points='10,22 12,24 8,27 6,25' fill='%239e9e9e'/><path d='M6,25 L8,27 C8,27 4,30 1,31 C2,28 6,25 6,25 Z' fill='%231a1005'/></svg>") 1 31, auto;
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><circle cx='16' cy='16' r='6' fill='none' stroke='%2300f0ff' stroke-width='2'/><line x1='16' y1='2' x2='16' y2='30' stroke='%2300f0ff' stroke-width='1.5'/><line x1='2' y1='16' x2='30' y2='16' stroke='%2300f0ff' stroke-width='1.5'/></svg>") 16 16, auto;
       }
-      body.mode-zen .btn {
-        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M10,22 L26,6 L28,8 L12,24 Z' fill='%238d6e4c'/><path d='M26,6 L28,8 L31,5 L29,3 Z' fill='%235c4033'/><polygon points='10,22 12,24 8,27 6,25' fill='%23e0e0e0'/><path d='M6,25 L8,27 C8,27 4,30 1,31 C2,28 6,25 6,25 Z' fill='%2300f0ff'/></svg>") 1 31, pointer;
-      }
+      body.mode-zen .btn { cursor: pointer; }
 
       body.mode-jolly {
         cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><line x1='2' y1='30' x2='20' y2='12' stroke='%23ffffff' stroke-width='2'/><circle cx='24' cy='8' r='6' fill='%23ff4081'/><circle cx='22' cy='6' r='2' fill='%23ffffff'/></svg>") 2 30, auto;
@@ -42,9 +47,43 @@
         cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><line x1='2' y1='30' x2='20' y2='12' stroke='%23fff37a' stroke-width='2'/><circle cx='24' cy='8' r='6' fill='%23fff37a'/></svg>") 2 30, pointer;
       }
       
-      /* --- TRIPLE REALISTIC HAPTIC GLASSMORPHIC INTRO SCREEN --- */
-      #screen-intro { background-color: #000000; flex-direction: column; justify-content: center; align-items: center; gap: 30px; z-index: 100; transition: background-color 1s ease; overflow-y: auto; }
-      .intro-headline { font-family: 'Orbitron', sans-serif; font-size: 20px; letter-spacing: 4px; color: #8a99ad; text-shadow: 0 0 10px rgba(255,255,255,0.1); text-transform: uppercase; text-align: center; padding: 0 10px; }
+      /* --- LANDING PORTAL SCREEN --- */
+      #screen-portal { flex-direction: column; justify-content: center; align-items: center; background-color: transparent; z-index: 1000; }
+      .portal-tm-label { position: absolute; top: 20px; right: 25px; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; color: #00f0ff; letter-spacing: 1px; opacity: 0.8; text-shadow: 0 0 8px rgba(0,240,255,0.4); }
+      .portal-box { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; max-width: 500px; width: 90%; padding: 40px 30px; border-color: rgba(0, 240, 255, 0.35); box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); }
+      .portal-title { font-family: 'Orbitron', sans-serif; font-size: 42px; font-weight: 900; letter-spacing: 4px; line-height: 1.1; text-transform: uppercase; color: #ffffff; text-shadow: 0 0 25px rgba(255,255,255,0.25); }
+      .portal-title span { color: #00f0ff; text-shadow: 0 0 30px rgba(0,240,255,0.5); }
+      .portal-punchline { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 5px; color: #ffaa00; text-transform: uppercase; text-shadow: 0 0 10px rgba(255,170,0,0.3); margin-top: -5px; }
+
+      /* --- GLASSMORPHIC POP-OUT RETURN COMPONENT --- */
+      .glass-back-portal {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(0, 240, 255, 0.4);
+        color: #00f0ff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 900;
+        font-size: 11px;
+        letter-spacing: 2px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, border-color 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+      }
+      .glass-back-portal:hover {
+        transform: scale(1.15) translateY(-2px);
+        background: rgba(0, 240, 255, 0.15);
+        border-color: #ffffff;
+        box-shadow: 0 12px 40px rgba(0, 240, 255, 0.5), 0 0 15px rgba(255, 255, 255, 0.3);
+        color: #fff;
+      }
+
+      /* --- TRACK SELECTOR SCREEN --- */
+      #screen-intro { background-color: #010409; flex-direction: column; justify-content: center; align-items: center; gap: 20px; z-index: 100; transition: background-color 1s ease; overflow-y: auto; }
+      .intro-header-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1200px; padding: 0 25px; margin-bottom: 5px; }
+      .intro-headline { font-family: 'Orbitron', sans-serif; font-size: 20px; letter-spacing: 4px; color: #8a99ad; text-shadow: 0 0 10px rgba(255,255,255,0.1); text-transform: uppercase; }
       .vibe-deck { display: flex; gap: 20px; justify-content: center; align-items: stretch; width: 100%; max-width: 1200px; perspective: 1000px; padding: 10px; }
       
       .vibe-card {
@@ -71,21 +110,14 @@
       .zen-variant .vibe-tag { color: #00f0ff; text-shadow: 0 0 10px rgba(0,240,255,0.3); }
       .jolly-variant .vibe-tag { color: #ff6b9d; text-shadow: 0 0 10px rgba(255,107,155,0.3); }
 
-      .song-title { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; line-height: 1.2; margin-top: 4px; color: #ffffff; }
+      .song-title { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; line-height: 1.2; margin-top: 4px; color: #ffffff; display: flex; align-items: center; gap: 6px; }
       .vibe-description { font-size: 13.5px; color: #cbd5e0; line-height: 1.5; font-weight: 500; opacity: 0.85; }
       .audio-indicator-box { background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; font-size: 11px; font-family: 'Orbitron', sans-serif; color: #a0aec0; display: flex; align-items: center; gap: 8px; transition: border-color 0.4s; margin-top: auto; }
-      .combat-variant:hover .audio-indicator-box { border-color: rgba(255,85,0,0.4); }
-      .zen-variant:hover .audio-indicator-box { border-color: rgba(0, 240, 255, 0.4); }
-      .jolly-variant:hover .audio-indicator-box { border-color: rgba(255,107,155,0.5); }
       
       .pulse-dot { width: 6px; height: 6px; border-radius: 50%; }
       .combat-variant .pulse-dot { background: #ff5500; animation: combatPulse 1.5s infinite; }
       .zen-variant .pulse-dot { background: #00f0ff; animation: zenPulse 1.5s infinite; }
       .jolly-variant .pulse-dot { background: #ff4081; animation: jollyPulse 1.5s infinite; }
-      
-      @keyframes combatPulse { 0%, 100% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0px #ff5500; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px #ff5500; } }
-      @keyframes zenPulse { 0%, 100% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0px #00f0ff; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px #00f0ff; } }
-      @keyframes jollyPulse { 0%, 100% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0px #ff4081; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px #ff4081; } }
 
       .glass-panel { background: rgba(8, 12, 24, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 12px; padding: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); }
       
@@ -104,14 +136,45 @@
       #screen-battle { flex-direction: column; justify-content: space-between; pointer-events: none; }
       .battle-header { width: calc(100% - 30px); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: absolute; top: 15px; left: 15px; border-radius: 8px; }
       
-      #screen-zen { flex-direction: column; justify-content: center; align-items: flex-start; padding: 30px; pointer-events: none; }
-      .zen-sidebar { max-width: 320px; display: flex; flex-direction: column; gap: 12px; max-height: 90vh; overflow-y: auto; }
+      /* --- FOREST SCREEN UPDATED SCHEMATICS --- */
+      #screen-zen { flex-direction: column; justify-content: space-between; padding: 20px; pointer-events: none; }
+      .forest-upper-hud { width: 100%; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: auto; }
+      .clue-terminal-panel { width: 340px; display: flex; flex-direction: column; gap: 8px; }
+      .chest-vault-panel { background: rgba(5, 15, 10, 0.85); border: 1px solid #00f0ff; width: 220px; padding: 12px; border-radius: 10px; text-align: center; }
+      .chest-slot-container { display: flex; gap: 6px; justify-content: center; margin-top: 8px; }
+      .chest-item-token { width: 32px; height: 32px; border: 1px dashed rgba(0, 240, 255, 0.4); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: rgba(0,0,0,0.4); transition: all 0.3s ease; }
+      .chest-item-token.stored { border-style: solid; border-color: #00f0ff; background: rgba(0, 240, 255, 0.15); box-shadow: 0 0 8px rgba(0, 240, 255, 0.4); color: #00f0ff; }
+      .forest-hunt-dock { width: 100%; margin-top: auto; display: flex; flex-direction: column; gap: 10px; pointer-events: auto; background: rgba(2, 6, 12, 0.88); border: 1px solid rgba(0, 240, 255, 0.3); padding: 16px; border-radius: 12px; box-shadow: 0 -10px 30px rgba(0,0,0,0.7); }
+      .target-items-manifest { display: flex; justify-content: space-around; width: 100%; gap: 10px; }
+      .manifest-card { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); text-align: center; font-family: 'Orbitron', sans-serif; font-size: 12px; letter-spacing: 1px; color: #a0aec0; transition: all 0.3s; cursor: pointer; }
+      .manifest-card.selected { border-color: #00f0ff; color: #fff; background: rgba(0,240,255,0.15); box-shadow: 0 0 10px rgba(0,240,255,0.3); }
+      .manifest-card.found { border-color: #00f0ff; background: rgba(0, 240, 255, 0.08); color: #00f0ff; text-shadow: 0 0 8px rgba(0,240,255,0.5); text-decoration: line-through; opacity: 0.75; }
 
+      /* --- RELOADED JOLLY COGNITIVE TESTING ENVIRONMENT --- */
       #screen-jolly { flex-direction: column; justify-content: space-between; padding: 25px; pointer-events: none; }
       .jolly-header { width: 100%; display: flex; justify-content: space-between; align-items: center; }
       .jolly-score-box { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.35); box-shadow: 0 8px 32px rgba(255, 140, 180, 0.25); text-align: center; padding: 10px 20px; }
       .jolly-score-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #ff66aa; font-weight: 700; }
       .jolly-score-val { font-family: 'Orbitron', sans-serif; font-size: 32px; color: #fff; text-shadow: 0 0 12px rgba(255,255,255,0.6); }
+      
+      .jolly-counter-hud { background: rgba(4,6,16,0.85); border: 1px dashed #ff4081; padding: 8px 16px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 14px; color: #fff; text-shadow: 0 0 10px #ff4081; }
+
+      /* Dedicated Recall Page Panels */
+      .recall-panel-overlay { display: none; flex-direction: column; gap: 20px; align-items: center; justify-content: center; background: rgba(2, 4, 10, 0.94); position: absolute; width: 100vw; height: 100vh; top:0; left:0; z-index: 5000; padding: 30px; pointer-events: auto; }
+      .recall-card { background: rgba(8, 12, 28, 0.8); border: 1px solid rgba(0, 240, 255, 0.3); max-width: 600px; width: 100%; padding: 30px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
+      .recall-echo-box { font-family: 'Orbitron', sans-serif; font-size: 36px; font-weight: 900; color: #fff37a; min-height: 50px; letter-spacing: 4px; text-transform: uppercase; margin: 15px 0; text-shadow: 0 0 15px rgba(255,243,122,0.8); }
+      
+      .jolly-tracker-grid { display: flex; gap: 8px; margin: 15px 0; width: 100%; justify-content: center; }
+      .tracker-slot { width: 90px; height: 35px; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: 'Orbitron', sans-serif; color: #a0aec0; background: rgba(0,0,0,0.4); }
+      .tracker-slot.popped { border-color: #ff4081; color: #ff4081; background: rgba(255,64,129,0.1); }
+      .tracker-slot.verified { border-color: #a4ff84; color: #a4ff84; background: rgba(164,255,132,0.1); }
+
+      /* Correction Assessment Lists */
+      .assessment-container { display: none; flex-direction: column; gap: 10px; width: 100%; max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 6px; text-align: left; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); }
+      .assessment-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+      .status-correct { color: #a4ff84; font-weight: bold; }
+      .status-missed { color: #ff3366; font-weight: bold; }
+
       .jolly-footer { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
       .jolly-tip { font-size: 14px; color: #ff6b9d; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
 
@@ -172,17 +235,19 @@
       .status-sunk { color: #ff0055; text-decoration: line-through; opacity: 0.5; font-weight: bold; }
 
       @keyframes popUpWord {
-        0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-        50% { opacity: 1; }
-        100% { transform: translate(-50%, -150%) scale(1.3); opacity: 0; }
+        0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+        30% { opacity: 1; }
+        70% { opacity: 1; transform: translate(-50%, -100%) scale(1.4); }
+        100% { transform: translate(-50%, -140%) scale(1.0); opacity: 0; }
       }
-      .pop-word { position: absolute; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 24px; color: #fff37a; text-shadow: 0 4px 12px rgba(255,64,129,0.8); pointer-events: none; z-index: 100; animation: popUpWord 0.8s ease-out forwards; }
+      .pop-word { position: absolute; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 32px; color: #fff37a; text-shadow: 0 0 20px rgba(0, 240, 255, 0.8); pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); animation: popUpWord 1.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; }
 
       /* --- RESPONSIVE DESIGN BREAKPOINTS --- */
       @media (max-width: 1024px) {
         .vibe-deck { max-width: 95%; gap: 15px; }
         .vibe-card { width: 240px; padding: 20px; font-size: 13px; }
-        .song-title { font-size: 18px; }
+        .song-title { font-size: 16px; }
+        .portal-title { font-size: 34px; }
       }
 
       @media (max-width: 767px) {
@@ -191,7 +256,13 @@
         .glass-panel { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); background: rgba(8, 12, 24, 0.85); padding: 15px; }
         .home-menu { width: 250px; }
         
+        #screen-portal { padding: 15px; }
+        .portal-box { padding: 30px 20px; }
+        .portal-title { font-size: 28px; }
+        .portal-punchline { font-size: 14px; letter-spacing: 3px; }
+        
         #screen-intro { gap: 15px; padding: 20px 15px; justify-content: flex-start; }
+        .intro-header-bar { flex-direction: column; gap: 10px; align-items: center; }
         .vibe-deck { flex-direction: column; gap: 15px; perspective: none; align-items: center; width: 100%; overflow-y: visible; }
         .vibe-card { width: 100%; max-width: 320px; padding: 20px; min-height: unset; }
         .vibe-card:hover { transform: translateY(-4px) scale(1.02); }
@@ -209,57 +280,16 @@
         .hud-main-containers { flex-direction: column; justify-content: flex-end; align-items: center; width: 100%; }
         .sidebar-left { position: static; width: 100%; max-width: 340px; padding: 12px; max-height: 28vh; margin-bottom: 50px; }
         
-        #screen-zen { justify-content: flex-end; align-items: center; padding: 15px; }
-        .zen-sidebar { position: static; width: 100%; max-width: 340px; padding: 15px; margin-bottom: 50px; max-height: 45vh; overflow-y: auto; }
-        
-        #screen-jolly { padding: 15px; justify-content: space-between; }
-        .jolly-header { flex-direction: row; align-items: center; }
-        .jolly-score-box { padding: 6px 14px; }
-        .jolly-score-val { font-size: 24px; }
-        .jolly-footer { margin-bottom: 50px; }
-        .jolly-tip { font-size: 12px; padding: 6px 12px; }
+        #screen-zen { justify-content: space-between; align-items: center; padding: 15px; }
+        .forest-upper-hud { flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+        .clue-terminal-panel { width: 100%; max-width: 340px; }
+        .chest-vault-panel { width: 100%; max-width: 340px; }
+        .forest-hunt-dock { width: 100%; max-width: 340px; padding: 12px; margin-bottom: 45px; }
+        .target-items-manifest { flex-wrap: wrap; gap: 6px; }
+        .manifest-card { flex: unset; width: calc(50% - 3px); font-size: 11px; padding: 6px; }
 
         #settings-trigger-container { bottom: 10px; right: 50%; transform: translateX(50%); width: calc(100% - 30px); max-width: 340px; }
         #btn-universal-settings { width: 100%; text-align: center; padding: 10px; }
-      }
-
-      @media (max-height: 500px) and (orientation: landscape) {
-        .logo-text { font-size: 28px; letter-spacing: 2px; }
-        .subtitle { font-size: 9px; letter-spacing: 4px; margin-bottom: 2px; }
-        #screen-home { gap: 12px; }
-        .home-menu { flex-direction: row; flex-wrap: wrap; justify-content: center; width: 90%; max-width: 650px; gap: 8px; padding: 10px; }
-        .home-menu .btn { padding: 8px 12px; font-size: 10px; flex: 1 1 45%; }
-        
-        #screen-intro { padding: 15px; justify-content: flex-start; gap: 15px; }
-        .vibe-deck { flex-direction: row; gap: 12px; align-items: stretch; max-width: 100%; }
-        .vibe-card { width: 31%; padding: 12px; gap: 8px; }
-        .song-title { font-size: 15px; }
-        .vibe-description { display: none; }
-        .audio-indicator-box { padding: 6px; font-size: 9px; }
-        .vibe-card .btn { padding: 6px 10px; font-size: 9px; }
-        
-        .battle-header { padding: 4px 12px; font-size: 11px; top: 5px; left: 5px; width: calc(100% - 10px); }
-        #ai-taunt { bottom: 5px; top: unset; font-size: 12px; padding: 4px 12px; max-width: 50%; min-height: unset; }
-        
-        .deploy-sidebar-left { top: 45px; left: 10px; width: 210px; padding: 10px; gap: 6px; }
-        .deploy-sidebar-left p { display: none; }
-        .deploy-sidebar-right { top: 45px; right: 10px; width: 190px; padding: 10px; }
-        
-        .sidebar-left { position: absolute; left: 10px; bottom: 10px; width: 210px; padding: 10px; max-height: 65vh; gap: 6px; }
-        .sidebar-left h3, .sidebar-left hr { display: none; }
-        
-        #screen-zen { justify-content: flex-end; align-items: flex-start; padding: 10px; }
-        .zen-sidebar { max-width: 240px; padding: 10px; bottom: 10px; position: absolute; left: 10px; max-height: 80vh; overflow-y: auto; }
-        .zen-sidebar p { display: none; }
-        
-        #screen-jolly { padding: 10px; }
-        .jolly-score-box { padding: 4px 12px; }
-        .jolly-score-val { font-size: 20px; }
-        .jolly-footer { width: auto; position: absolute; right: 10px; bottom: 10px; gap: 10px; margin-bottom: 0; }
-        .jolly-tip { font-size: 11px; padding: 6px 12px; }
-        
-        #settings-trigger-container { bottom: 10px; right: 10px; top: auto; left: auto; transform: none; width: auto; }
-        #btn-universal-settings { padding: 6px 12px; font-size: 10px; }
       }
     </style>
   </head>
@@ -268,27 +298,62 @@
     <div id="canvas-container"></div>
     <canvas id="displacement-canvas" width="1024" height="1024" style="display: none;"></canvas>
 
+    <div id="recall-screen-panel" class="recall-panel-overlay">
+       <div class="recall-card glass-panel" style="border-color: #ff4081;">
+          <h2 style="font-size:24px; color: #ff4081; font-family:'Orbitron', sans-serif;">DATA RECALL TERMINAL</h2>
+          <p id="recall-instructions-lbl" style="font-size:13px; color:#cbd5e0; margin-top:5px;">Type out one of the 5 hidden burst words from your memory core, then press ENTER.</p>
+          
+          <div id="recall-echo" class="recall-echo-box"></div>
+          
+          <div class="jolly-tracker-grid">
+            <div id="slot-0" class="tracker-slot popped">WORD 1</div>
+            <div id="slot-1" class="tracker-slot popped">WORD 2</div>
+            <div id="slot-2" class="tracker-slot popped">WORD 3</div>
+            <div id="slot-3" class="tracker-slot popped">WORD 4</div>
+            <div id="slot-4" class="tracker-slot popped">WORD 5</div>
+          </div>
+
+          <div id="assessment-box" class="assessment-container"></div>
+
+          <div style="display:flex; gap:10px; justify-content:center; width:100%; margin-top:15px;">
+             <button id="btn-recall-submit" class="btn btn-jolly" style="display:none;" onclick="game.exitRecallToJollyMode()">RETURN TO PREVIOUS MATRIX</button>
+          </div>
+       </div>
+    </div>
+
     <div id="ui-container">
       
-      <div id="screen-intro" class="game-screen active">
-        <div class="intro-headline">Select Operations Environment Soundtrack</div>
+      <div id="screen-portal" class="game-screen active">
+        <div class="portal-tm-label">TM_BB</div>
+        <div class="portal-box glass-panel">
+          <h1 class="portal-title">Helix<span>Verse</span></h1>
+          <div class="portal-punchline">"Power Peace Harmony"</div>
+          <button class="btn btn-primary" onclick="game.enterCoreSuite()" style="width: 100%; margin-top: 10px; padding: 14px 20px; font-size: 13px; letter-spacing: 2px;">ENTER CORE SUITE</button>
+        </div>
+      </div>
+      
+      <div id="screen-intro" class="game-screen">
+        <div class="intro-header-bar">
+          <div class="intro-headline">Select Operations Environment Soundtrack</div>
+          <button class="glass-back-portal" onclick="game.backToPortal()">◀ BACK TO PORTAL</button>
+        </div>
         <div class="vibe-deck">
           <div class="vibe-card combat-variant" onclick="dismissIntroScreen('COMBAT')">
-            <div><div class="vibe-tag">ORBITAL SKIRMISH PROTOCOL</div><div class="song-title">Solar Flare Command</div></div>
-            <div class="vibe-description">Deep space tracking systems active. Fast-paced, driving industrial military brass arrangements engineered for deep focus.</div>
-            <div class="audio-indicator-box"><div class="pulse-dot"></div><span>COMBAT MODE READY</span></div>
+            <div><div class="vibe-tag">Power & Adventure</div><div class="song-title">☀️ HeliosStrike</div></div>
+            <div class="vibe-description">Deep space tracking systems active. Driving melodic sequences mixed with simulated explosive textures engineered for battlefield focus.</div>
+            <div class="audio-indicator-box"><div class="pulse-dot"></div><span>HELIOSSTRIKE READY</span></div>
             <button class="btn btn-primary" style="pointer-events:none; width: 100%; background: #ff5500; border-color: #ff5500; color: #fff;">SELECT STRATAGEM</button>
           </div>
           <div class="vibe-card zen-variant" onclick="dismissIntroScreen('ZEN')">
-            <div><div class="vibe-tag">QUIET SPACE COGNITION</div><div class="song-title">ZENGARDEN</div></div>
+            <div><div class="vibe-tag">Peace & Wellness</div><div class="song-title">🌿 Healing Garden</div></div>
             <div class="vibe-description">Calming acoustic sub-tones, crystal clear synth swells, and restorative atmospheric pads. Formulated for stress relief.</div>
-            <div class="audio-indicator-box"><div class="pulse-dot"></div><span>SOOTHING MODE READY</span></div>
+            <div class="audio-indicator-box"><div class="pulse-dot"></div><span>HEALING GARDEN READY</span></div>
             <button class="btn btn-primary" style="pointer-events:none; width: 100%; background: #00f0ff; border-color: #00f0ff; color: #000;">SELECT STRATAGEM</button>
           </div>
           <div class="vibe-card jolly-variant" onclick="dismissIntroScreen('JOLLY')">
-            <div><div class="vibe-tag">COSMIC POP PROTOCOL</div><div class="song-title">Jolly Pop Symphony</div></div>
-            <div class="vibe-description">Bright pentatonic major chord modulations and breathing visualizar visuals. Optimized for instant hit engine dopamine responses.</div>
-            <div class="audio-indicator-box"><div class="pulse-dot"></div><span>POPPING MODE READY</span></div>
+            <div><div class="vibe-tag">Music & Joy</div><div class="song-title">🎵 Heaven Harmony</div></div>
+            <div class="vibe-description">Optimized arpeggiator engine featuring melodic rhythm combos, visual shockwaves, and instant dopamine audio responses.</div>
+            <div class="audio-indicator-box"><div class="pulse-dot"></div><span>HEAVEN HARMONY READY</span></div>
             <button class="btn btn-primary" style="pointer-events:none; width: 100%; background: #fff37a; border-color: #fff37a; color: #ff4081;">SELECT STRATAGEM</button>
           </div>
         </div>
@@ -296,13 +361,13 @@
 
       <div id="screen-home" class="game-screen">
         <div class="logo-container">
-          <div id="home-subtitle" class="subtitle">TACTICAL NAVAL COMBAT</div>
-          <h1 id="home-title" class="logo-text">TITAN<span>ARMADA</span></h1>
+          <div id="home-subtitle" class="subtitle">TACTICAL SUITE CORE</div>
+          <h1 id="home-title" class="logo-text">HELIEVERSE<span>CORE</span></h1>
         </div>
         <div class="home-menu glass-panel">
-          <button id="btn-start-combat" class="btn btn-primary" onclick="game.startNewGame()">START COMBAT SKIRMISH</button>
+          <button id="btn-start-combat" class="btn btn-primary" onclick="game.promptEngagementVector()">START COMBAT SKIRMISH</button>
           <button id="btn-start-zen" class="btn btn-zen" onclick="game.startZenGardenMode()" style="display: none;">ENTER ZEN GARDEN</button>
-          <button id="btn-start-jolly" class="btn btn-jolly" onclick="game.startJollyPopMode()" style="display: none;">LAUNCH JOLLY POP</button>
+          <button id="btn-start-jolly" class="btn btn-jolly" onclick="game.promptJollyDifficulty()" style="display: none;">LAUNCH JOLLY POP</button>
           <button class="btn" onclick="ui.openModal('modal-tutorial')">TUTORIAL</button>
           <button class="btn" onclick="ui.openModal('modal-settings')">SETTINGS</button>
         </div>
@@ -310,7 +375,7 @@
 
       <div id="screen-deploy" class="game-screen">
         <div class="deploy-sidebar-left glass-panel">
-          <h2>FLEET DEPLOYMENT</h2>
+          <h2 id="deploy-title-label">FLEET DEPLOYMENT</h2>
           <p style="font-size:11px; color:#cbd5e0; line-height:1.4;">Position war assets on your light matrix. Click grid cells to lock, press <strong>R</strong> to switch orientation.</p>
           <div class="deploy-ship-info">
             <div style="font-size:9px; color:#a0aec0;">CURRENT SCHEMATIC:</div>
@@ -321,73 +386,80 @@
         </div>
         <div class="deploy-sidebar-right glass-panel">
           <h3>TACTICAL PROFILE</h3>
-          <p style="font-size:11px; color:#cbd5e0; line-height:1.5; margin-top:4px;">• Match Type: Titan Skirmish<br>• Board Dimension: 6x6 Cells<br>• Threat Level: Aggressive AI</p>
+          <p id="lbl-tactical-profile-desc" style="font-size:11px; color:#cbd5e0; line-height:1.5; margin-top:4px;">• Match Type: HeliosStrike<br>• Board Dimension: 6x6 Cells<br>• Threat Level: AI COMPUTER</p>
         </div>
       </div>
 
       <div id="screen-battle" class="game-screen">
         <div class="battle-header glass-panel">
-          <div class="hud-item"><span class="label">FLEET COMMANDER</span><span class="val" style="color:#fff;">PLAYER 1</span></div>
+          <div class="hud-item"><span class="label" id="lbl-p1-title">FLEET COMMANDER</span><span class="val" style="color:#fff;" id="lbl-p1-sub">PLAYER 1</span></div>
           <div class="hud-indicator"><div id="turn-indicator">YOUR TURN: ENGAGE SECTOR</div></div>
-          <div class="hud-item" style="text-align: right;"><span class="label">TACTICAL COMPUTER</span><span class="val" style="color:#ff0055;">AI ENGINE</span></div>
+          <div class="hud-item" style="text-align: right;"><span class="label" id="lbl-p2-title">TACTICAL COMPUTER</span><span class="val" style="color:#ff0055;" id="lbl-p2-sub">AI ENGINE</span></div>
         </div>
         <div id="ai-taunt"></div>
         <div class="hud-main-containers">
           <div class="sidebar-left glass-panel">
-            <h3>PERFORMANCE</h3>
+            <h3 id="lbl-perf-header">PERFORMANCE</h3>
             <div class="stats-grid">
               <div class="stat-box"><div class="label">ACC</div><div id="p-accuracy" class="val">0%</div></div>
               <div class="stat-box"><div class="label">HITS</div><div id="p-hits" class="val">0</div></div>
               <div class="stat-box"><div class="label">MISS</div><div id="p-miss" class="val">0</div></div>
             </div>
             <hr class="cyber-divider"/>
-            <h3>YOUR HULLS</h3>
+            <h3>ACTIVE HARDWARE</h3>
             <div id="player-fleet-status" class="ships-list"></div>
           </div>
         </div>
       </div>
 
       <div id="screen-zen" class="game-screen">
-        <div class="zen-sidebar glass-panel">
-          <h2>ZEN GARDEN TRAILS</h2>
-          <p style="font-size:12px; color:#cbd5e0; line-height:1.4;">Freely draw and carve patterns into the sand.</p>
+        <div class="forest-upper-hud">
+          <div class="clue-terminal-panel glass-panel">
+            <h2>FOREST DATA LOGS</h2>
+            <div id="forest-clue-label" style="font-size:13px; color:#00f0ff; margin-top:4px; font-weight:600; min-height:36px;">Select any item tracker below to run scanning clues.</div>
+            <div class="cyber-divider" style="margin:4px 0;"></div>
+            <div style="font-size:11px; color:#ffaa00; font-weight:bold;">TACTICAL HINT:</div>
+            <p id="forest-hint-label" style="font-size:12px; color:#cbd5e0; line-height:1.3; margin-bottom:8px;">Explore around the geometric cyber tree lines to discover anomalies.</p>
+            <button id="btn-forest-hint-trigger" class="btn btn-primary" onclick="game.triggerRadarGlowHint()" style="width:100%; padding:8px 12px; font-size:11px;">💡 SCAN AND POINT TO OBJECT</button>
+          </div>
           
-          <div style="margin-top: 5px; background: rgba(0,240,255,0.05); padding: 10px; border-radius: 6px; border: 1px solid rgba(0,240,255,0.15);">
-            <span style="font-size: 11px; font-family: 'Orbitron', sans-serif; color: #00f0ff; letter-spacing: 1px;">TEXT BOX TOOL</span>
-            <button id="btn-zen-textbox" class="btn btn-zen" onclick="game.toggleTextBoxTool()" style="margin-top: 5px; width: 100%; font-size: 10px; padding: 8px;">📝 ACTIVATE TEXT BOX</button>
-            
-            <div class="slider-container" style="margin-top: 10px; margin-bottom: 0;">
-              <span class="slider-label" style="font-size: 11px; color: #00f0ff;">TEXT SIZE: <span id="lbl-zen-text-size">44px</span></span>
-              <input type="range" id="slider-zen-text-size" class="cyber-slider" min="16" max="100" value="44" oninput="game.changeZenTextSize(this.value)" style="width: 110px;">
+          <div class="chest-vault-panel glass-panel">
+            <span style="font-size:11px; font-family:'Orbitron', sans-serif; letter-spacing:1px; color:#ffffff;">STORAGE VAULT</span>
+            <div class="chest-slot-container">
+              <div id="chest-0" class="chest-item-token">?</div>
+              <div id="chest-1" class="chest-item-token">?</div>
+              <div id="chest-2" class="chest-item-token">?</div>
+              <div id="chest-3" class="chest-item-token">?</div>
             </div>
           </div>
+        </div>
 
-          <div style="margin-top: 5px;">
-            <span style="font-size: 11px; font-family: 'Orbitron', sans-serif; color: #00f0ff; letter-spacing: 1px;">SAND THEME (COLOR)</span>
-            <input type="color" id="zen-color-picker" value="#e8c37b" onchange="game.changeZenTheme(this.value)" style="width: 100%; height: 35px; border: none; cursor: pointer; border-radius: 4px; background: none; margin-top: 5px;">
+        <div class="forest-hunt-dock">
+          <span style="font-size:11px; font-family:'Orbitron', sans-serif; letter-spacing:2px; color:#00f0ff; margin-bottom:4px;">TARGET SECTOR ANOMALIES</span>
+          <div class="target-items-manifest">
+            <div id="manifest-0" class="manifest-card" onclick="game.selectForestTracker(0)">1. HOLO SPHERE</div>
+            <div id="manifest-1" class="manifest-card" onclick="game.selectForestTracker(1)">2. ENERGY PRISM</div>
+            <div id="manifest-2" class="manifest-card" onclick="game.selectForestTracker(2)">3. DATA ORE</div>
+            <div id="manifest-3" class="manifest-card" onclick="game.selectForestTracker(3)">4. LIGHT BEACON</div>
           </div>
-
-          <div style="margin-top: 5px; background: rgba(255,170,0,0.05); padding: 10px; border-radius: 6px; border: 1px solid rgba(255,170,0,0.15);">
-            <span style="font-size: 11px; font-family: 'Orbitron', sans-serif; color: #ffaa00; letter-spacing: 1px;">CUSTOM BACKGROUND</span>
-            <input type="file" id="zen-bg-upload" accept="image/*" onchange="game.uploadCustomBackground(event)" style="display: none;">
-            <button class="btn" onclick="document.getElementById('zen-bg-upload').click()" style="width: 100%; margin-top: 5px; border-color: #ffaa00; color: #ffaa00; font-size: 10px; padding: 8px;">🖼 UPLOAD IMAGE</button>
-          </div>
-
-          <hr class="cyber-divider" style="margin: 10px 0;"/>
-          <button class="btn btn-zen" onclick="game.washAwaySand()" style="padding: 12px; font-size: 13px; margin-bottom: 5px;">🌊 CLEAR SAND</button>
         </div>
       </div>
 
       <div id="screen-jolly" class="game-screen">
         <div class="jolly-header">
-          <div class="brand-title" style="font-size:24px; font-family:'Orbitron', sans-serif; font-weight:900;">JOLLY<span style="color:#ff6b9d;">POP</span></div>
-          <div class="jolly-score-box glass-panel">
-            <div class="jolly-score-label">Happiness Index</div>
-            <div id="jolly-score" class="jolly-score-val">0</div>
+          <div class="brand-title" style="font-size:24px; font-family:'Orbitron', sans-serif; font-weight:900;">HEAVEN<span style="color:#ff6b9d;">HARMONY</span></div>
+          <div style="display: flex; gap: 15px; align-items:center;">
+            <div id="jolly-counter-box" class="jolly-counter-hud">POPPED: 0 / 5</div>
+            <div class="jolly-score-box glass-panel">
+              <div class="jolly-score-label">Harmony Level</div>
+              <div id="jolly-score" class="jolly-score-val">0</div>
+            </div>
           </div>
         </div>
+
         <div class="jolly-footer">
-          <div class="jolly-tip">🎈 Tap the cosmic bubbles!</div>
+          <button class="glass-back-portal" onclick="game.terminateAndResetToMenu()">◀ EXIT TO SYSTEM CORE</button>
+          <div class="jolly-tip" id="jolly-instruction-tip">🎈 Click 5 balloons and memorize their tracking keywords as they burst!</div>
         </div>
       </div>
 
@@ -410,18 +482,52 @@
       </div>
     </div>
 
+    <div id="modal-mode-prompt" class="modal-overlay">
+      <div class="modal-box glass-panel" style="text-align: center; border-color: #ff5500;">
+        <h2 style="font-size: 22px; color: #ff5500; text-shadow: 0 0 15px rgba(255,85,0,0.4);">ENGAGEMENT VECTOR</h2>
+        <div class="cyber-divider"></div>
+        <p style="font-size: 13px; color: #cbd5e0; line-height: 1.5; margin-bottom: 15px;">Configure target parameters for your upcoming HeliosStrike matrix match.</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <button class="btn btn-primary" onclick="game.selectEngagementMode(false)" style="padding: 12px; background: #ff5500; border-color: #ff5500; color: #fff;">VS COMPUTER AI</button>
+          <button class="btn btn-accent" onclick="game.selectEngagementMode(true)" style="padding: 12px; border-color: #00f0ff; color: #00f0ff; background: rgba(0,240,255,0.05);">LOCAL 2-PLAYER PASS & PLAY</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-jolly-level" class="modal-overlay">
+      <div class="modal-box glass-panel" style="text-align: center; border-color: #ff4081;">
+        <h2 style="font-size: 22px; color: #ff4081; text-shadow: 0 0 15px rgba(255,64,129,0.4);">MEMORY HARMONY LEVEL</h2>
+        <div class="cyber-divider"></div>
+        <p style="font-size: 13px; color: #cbd5e0; line-height: 1.5; margin-bottom: 15px;">Select difficulty criteria. Each possesses a 100-word randomized bank.</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <button class="btn btn-zen" onclick="game.startJollyPopMode('EASY')" style="padding: 12px;">EASY (3-4 LETTERS / 100 WORDS)</button>
+          <button class="btn btn-primary" onclick="game.startJollyPopMode('MEDIUM')" style="padding: 12px; background: #fff37a; color: #000; border-color: #fff37a;">MEDIUM (5-7 LETTERS / 100 WORDS)</button>
+          <button class="btn btn-danger" onclick="game.startJollyPopMode('HARD')" style="padding: 12px;">HARD (8+ LETTERS / 100 WORDS)</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-pass-device" class="modal-overlay" style="z-index: 99999;">
+      <div class="modal-box glass-panel" style="text-align: center; max-width: 380px; border-color: #ffaa00;">
+        <h2 style="color: #ffaa00; font-size: 24px; text-shadow: 0 0 15px rgba(255,170,0,0.4);">ARRANGEMENT COLD LOCK</h2>
+        <div class="cyber-divider"></div>
+        <p id="lbl-pass-message" style="font-size: 14px; line-height: 1.6; color: #fff; margin-bottom: 15px;">Player 1 fleet layout has been hidden securely.<br><strong>Pass the interactive terminal to Player 2.</strong></p>
+        <button class="btn btn-primary" onclick="game.acknowledgePlayerHandover()" style="width: 100%; padding: 12px;">I AM PLAYER 2 (BEGIN SETUP)</button>
+      </div>
+    </div>
+
     <div id="modal-tutorial" class="modal-overlay">
       <div class="modal-box glass-panel">
         <h2 style="font-size: 20px; text-shadow: 0 0 15px #00f0ff; border-bottom: 1px solid rgba(0,240,255,0.3); padding-bottom: 8px; margin-bottom: 8px;">TACTICAL OPERATIONS MANUAL</h2>
         <div style="max-height: 45vh; overflow-y: auto; padding-right: 8px;">
-          <h3 style="color: #fff;">COMBAT PHASE</h3>
-          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Deploy vessels. Click crimson sectors to fire. Destroy all 14 enemy hull segments.</p>
+          <h3 style="color: #fff;">HELIOSSTRIKE PHASE</h3>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Deploy vessels. Click coordinate sectors to fire. Destroy all enemy hull segments. Local Pass & Play hides hulls automatically to ensure strategic blind matches while sitting together.</p>
           <h3 style="color: #ffaa00;">STREAK BONUS (CRITICAL)</h3>
           <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Scoring a direct HIT grants an immediate extra turn.</p>
-          <h3 style="color: #00f0ff;">ZEN GARDEN</h3>
-          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Enter Zen Mode to freely rake sand, or start typing to carve words and relax your mind.</p>
-          <h3 style="color: #ff6b9d;">JOLLY POP</h3>
-          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">A cosmic, colorful bubble pop simulation mapping Major Pentatonic chimes onto custom WebGL matrices.</p>
+          <h3 style="color: #00f0ff;">HIDDEN FOREST HUNT</h3>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Scan the interactive terrain layout. Trace the 4 item types listed at the bottom with your clues. Use the scan hint tool to focus the operational perspective scope camera directly on the target object matrix coordinate fields.</p>
+          <h3 style="color: #ff4081;">HEAVEN HARMONY: COGNITIVE POPS</h3>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">1. Click 5 balloons and memorize their values as they display dynamically on blast.<br>2. When the recall panel engages, type out your guessed sequences.<br>3. Check assessment lists to identify your mistakes and review the correct ones instantly!</p>
         </div>
         <button class="btn btn-primary" style="margin-top: 8px;" onclick="ui.closeModal('modal-tutorial')">ACKNOWLEDGE</button>
       </div>
@@ -440,18 +546,17 @@
           <button id="btn-audio-toggle" class="btn" onclick="game.toggleAudio()" style="width: 140px; text-align: center;">AUDIO: ON</button>
         </div>
         
-        <div id="intro-return-container" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px;">
+        <div id="intro-return-container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px;">
           <span style="font-size: 13px; font-weight: bold; color: #ffaa00; letter-spacing: 1px;">SYSTEM CORE</span>
           <button class="btn btn-accent" onclick="game.returnToIntro()" style="width: 140px; text-align: center;">CHANGE VIBE</button>
         </div>
 
-        <div id="exit-action-container" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px;">
-          <span style="font-size: 13px; font-weight: bold; color: #ff3333; letter-spacing: 1px;">OPERATIONS</span>
-          <button class="btn btn-danger" onclick="game.abortActiveMatch()" style="width: 140px; text-align: center;">EXIT MODE</button>
-        </div>
-
         <div class="cyber-divider"></div>
-        <button class="btn btn-primary" onclick="ui.closeModal('modal-settings')" style="width:100%;">RESUME ENVIRONMENT</button>
+        
+        <div style="display: flex; gap: 10px; width: 100%;">
+          <button class="btn btn-accent" onclick="game.abortActiveMatch()" style="flex: 1; font-size: 10px; padding: 10px 4px;">◀ PREV PAGE (MENU)</button>
+          <button class="btn btn-primary" onclick="ui.closeModal('modal-settings')" style="flex: 1; font-size: 10px; padding: 10px 4px;">RESUME ENVIRONMENT</button>
+        </div>
       </div>
     </div>
 
@@ -468,22 +573,34 @@
       let ambientLight, mainLight, secLight;
       let shipBlueprint;
       let isVertical = false, isHoveringValid = false, isInputLocked = false;
-      let currentPhase = 'INTRO'; 
+      let currentPhase = 'PORTAL'; 
       let selectedTrackVibe = 'COMBAT'; 
       
       let activeProjectiles = [], activeParticles = [], angryHitMarkers = [], uiCache = {};
       let playerHumanOperator, aiHumanOperator, playerRightArmJoint, aiRightArmJoint;
       let playerArmAnimTimer = 0, aiArmAnimTimer = 0, playerDanceTimer = 0, aiDanceTimer = 0, playerDanceAge = 0, aiDanceAge = 0;
-      let staticStarField, shootingStars = [], tauntTimeout, typingInterval, titanPlanet, titanAtmosphere, zenParticles;
+      let staticStarField, nebulaGrid, shootingStars = [], tauntTimeout, typingInterval, titanPlanet, titanAtmosphere, zenParticles;
       let burningWreckages = [];
 
-      // Zen Sand Map Variables
+      // --- FOREST ENVIRONMENT ARCHITECTURE ARRAYS ---
+      let forestTargetsList = [];
+      let proceduralTreesGroupList = [];
+      let currentSelectedForestIdx = 0;
+      let forestRadarPulseMesh = null;
+      let radarPulseActiveAge = 0;
+
+      const FOREST_ITEMS_SCHEME = [
+        { name: "HOLO SPHERE", clue: "Clue: Hovering deep within the center of the dark grid valley.", hint: "Hint: Camera trace snaps directly to center map coordinates.", color: 0x00f0ff, type: "sphere" },
+        { name: "ENERGY PRISM", clue: "Clue: Hidden beneath the northern tactical operator deck.", hint: "Hint: Camera trace focuses close to the blue fighter joints.", color: 0xffaa00, type: "prism" },
+        { name: "DATA ORE", clue: "Clue: Embedded in the deep southern edge boundaries.", hint: "Hint: Camera trace targets the very bottom borders.", color: 0xff4081, type: "ore" },
+        { name: "LIGHT BEACON", clue: "Clue: Mounted high above the eastern vector zone towers.", hint: "Hint: Camera trace searches near the top of distant right tree groups.", color: 0xa4ff84, type: "beacon" }
+      ];
+
+      // Structural placeholders left for engine reference stability
       let dCanvas, ctx, dTexture, sandMesh, zenHitPlane;
       let isDrawingSand = false, lastDrawPoint = null, isWashingSand = false;
       let zenTextCursor = { x: 512, y: 512 };
       const CANVAS_SIZE = 1024;
-      
-      // Text box structural state tracking
       let isTextBoxToolActive = false;
       let canTypeInSand = false;
       let zenTextSize = 44;
@@ -493,11 +610,54 @@
       let currentTextLine = null;
       let currentStroke = null;
 
-      // Jolly Pop Mode Variables
+      // --- JOLLY POP ENGINE MEMORY RETRIEVAL MATRICES ---
       let bubbles = [], jollyParticles = [];
       let jollyScore = 0;
-      const JOLLY_WORDS = ["JOY!", "WOW!", "HAPPY!", "SWEET!", "BOOM!", "CHILL!", "ALIVE!"];
-      const BUBBLE_COLORS = [0xff6b9b, 0xfff176, 0x4fc3f7, 0x81c784, 0xba68c8, 0xffb74d];
+      let currentComboStreak = 0;
+      let lastPopTime = 0;
+      let activeJollyDifficulty = "EASY";
+      let userTypedBuffer = "";
+      
+      let poppedWordsArray = []; 
+      let recalledAnswersArray = [];
+      let isRecallPhaseActive = false;
+
+      // --- 100-WORD LEVEL MATRIX BANKS ---
+      const MULTI_LEVEL_DICTIONARY = {
+          EASY: [
+              "SUN", "NEO", "WAVE", "GRID", "CHILL", "BEAT", "GLOW", "CORE", "ECHO", "DATA", "ZON", "LINK", "DISK", "BYTE", "SYNC", "LOOP", "CODE", "FLOW", "NODE", "MINT",
+              "ROCK", "BLUE", "STAR", "ROBO", "CHIP", "PLUG", "PORT", "AURA", "HAZE", "BEAM", "RAY", "LASR", "PULZ", "DOCK", "GATE", "HUBS", "TIME", "FAST", "DARK", "LIGHT",
+              "CYON", "PINK", "GOLD", "RIFF", "NOTE", "SONG", "TUNE", "DRUM", "BASS", "VIBE", "BOND", "MELD", "JOIN", "FUSE", "LINK", "MESH", "SPARK", "FIRE", "WIND", "RAIN",
+              "SKYS", "MOON", "MARS", "NOVA", "ATOM", "BIT", "CHIP", "FIBER", "MAIN", "LOAD", "SAVE", "QUIT", "RUN", "TEST", "PING", "HOPS", "ZONE", "GRID", "CELL", "PATH",
+              "UNIT", "TEAM", "BOTS", "MECH", "GEAR", "BOLT", "WIRE", "POLY", "VERT", "FACE", "BASE", "CAMP", "WARS", "SHIP", "BOAT", "JET", "WING", "TAIL", "HEAD", "HELM"
+          ],
+          MEDIUM: [
+              "SYNTH", "PORTAL", "MATRIX", "HELIO", "HARMONY", "HYPER", "ORBIT", "VECTOR", "PULSE", "CYBER", "STATIC", "NEBULA", "COSMIC", "RECALL", "TRACKS", "DYNAMIC", "MODULE", "ENGINE", "SYSTEM", "DIGITAL",
+              "ANALOG", "VERTEX", "BUFFER", "RENDER", "SHADER", "TEXTURE", "CANVAS", "CURSOR", "STRIKE", "COMBAT", "FLEET", "CRUISE", "PATROL", "MISSILE", "FUSION", "PLASMA", "SHIELD", "ARMOR", "SCHEME", "TACTIC",
+              "PROFILE", "MANUAL", "RELOAD", "LAUNCH", "IMPACT", "MARKER", "WRECK", "GRAVITY", "ATMOS", "PLANET", "TITAN", "SPATIAL", "TEMPO", "MELODY", "CHORD", "ACOUSTIC", "CRYSTAL", "VOLUME", "GARDEN", "HEALING",
+              "SANDBOX", "PATTERN", "STREAK", "REWARD", "DOPAMINE", "COMBO", "INTERVAL", "CONSOLE", "CONFIG", "DEVICE", "PASSING", "LOGICAL", "BLUEPRINT", "VESSEL", "CARRIER", "FRIGATE", "CORVETTE", "DESTROYER", "BlueShift", "RedShift",
+              "SPECTRUM", "QUANTUM", "ELECTRON", "GRAVITON", "MAGNETIC", "PROXON", "WARPING", "CONDUIT", "STATION", "BEACON", "SIGNAL", "NETWORK", "ROUTING", "PACKET", "PROTOCOL", "FIREWALL", "TERMINAL", "KEYBOARD", "DISPLAY", "MONITOR"
+          ],
+          HARD: [
+              "ARPEGGIATOR", "HEAVENLY", "RESONANCE", "FREQUENCY", "ATMOSPHERE", "VELOCITY", "ALIGNMENT", "DOPAMINE", "CYBERNETIC", "DISPLACEMENT", "REVERBERATION", "MODULATION", "PENTATONIC", "COGNITIVE", "RESTORATIVE", "SIMULATION", "TRAJECTORY", "PREDICTABLE", "ARRANGEMENT", "DEPLOYMENT",
+              "HOLOGRAPHIC", "PERFORMANCE", "ENGAGEMENT", "REVOLUTIONARY", "STRATAGEM", "ARCHITECTURE", "PROXIMITY", "PROPULSION", "MULTIPLIER", "ACCELERATION", "OSCILLATOR", "INSTRUMENT", "SYNCHRONOUS", "CALIBRATION", "GENERATOR", "DECENTRALIZED", "ALGORITHM", "ENCRYPTION", "DECRYPTION", "SIGNATURE",
+              "TRANSMISSION", "BROADCAST", "WAVELENGTH", "MULTIPLEX", "SATELLITE", "NAVIGATION", "AUTONOMOUS", "CONTROLLER", "PERIPHERAL", "MOTHERBOARD", "PROCESSOR", "TRANSISTOR", "CAPACITOR", "CONDUCTIVITY", "THERMODYNAMIC", "FLUIDITY", "VISCOSITY", "COMBUSTION", "SUPERSONIC", "HYPERSONIC",
+              "INTERSTELLAR", "CONSTELLATION", "ASTROPHYSICS", "SINGULARITY", "EXPONENTIAL", "LOGARITHMIC", "DIFFERENTIAL", "INTEGRATION", "COORDINATES", "PROBABILITY", "STATISTICS", "DIAGNOSTIC", "MAINTENANCE", "OPERATIONAL", "INFRASTRUCTURE", "FRAMEWORK", "REPOSITORIES", "COMPILATION", "ARCHITECTURE", "METAMORPHIC",
+              "CRYSTALLINE", "LUMINESCENCE", "PHOSPHOROUS", "FLUORESCENT", "INCANDESCENT", "TRANSLUCENT", "TRANSPARENCY", "SUBTERRANEAN", "ATMOSPHERIC", "STRATOSPHERE", "IONOSPHERE", "EXOSPHERE", "TROPOSPHERE", "MESOSPHERE", "MAGNETOSPHERE", "GRAVITATIONAL", "CENTRIFUGAL", "OSCILLATION", "INTERACTIVE", "ADAPTATION"
+          ]
+      };
+      const BUBBLE_COLORS = [0xff6b9d, 0xfff176, 0x4fc3f7, 0x81c784, 0xba68c8, 0xffb74d];
+
+      // Local 2-Player Passing State Frameworks
+      let isLocalPvP = false;
+      let activeDeployingPlayer = 1; 
+      let p1ShipsGroupList = [], p2ShipsGroupList = [];
+      let player1LogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0));
+      let player2LogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0));
+      let player1ShipsTrack = [{ name: 'Aircraft Carrier', size: 5 }, { name: 'Heavy Destroyer', size: 4 }, { name: 'Stealth Frigate', size: 3 }, { name: 'Corvette Patrol', size: 2 }].map(s => ({ ...s, hits: 0, coords: [], isVertical: false }));
+      let player2ShipsTrack = [{ name: 'Aircraft Carrier', size: 5 }, { name: 'Heavy Destroyer', size: 4 }, { name: 'Stealth Frigate', size: 3 }, { name: 'Corvette Patrol', size: 2 }].map(s => ({ ...s, hits: 0, coords: [], isVertical: false }));
+      let player1Performance = { hits: 0, misses: 0 };
+      let player2Performance = { hits: 0, misses: 0 };
 
       /* Audio Variables */
       let audioCtx = null, isAudioMuted = false, proceduralMusicInterval = null, musicVolumeLevel = 0.7, beatCounter = 0;
@@ -519,14 +679,15 @@
 
       function switchEnvironmentVibe(vibe) {
           if (vibe === 'ZEN') {
-              scene.background.setHex(0xe8c37b); // Infinite sand environment color background
-              if (scene.fog) { scene.fog.color.setHex(0xe8c37b); scene.fog.density = 0.022; }
-              ambientLight.intensity = 0.5;
-              mainLight.intensity = 1.0; mainLight.color.setHex(0xfffaed); 
-              secLight.intensity = 0.3; secLight.color.setHex(0xd2b48c);
+              scene.background.setHex(0x020f0a); 
+              if (scene.fog) { scene.fog.color.setHex(0x020f0a); scene.fog.density = 0.035; }
+              ambientLight.intensity = 0.6;
+              mainLight.intensity = 1.3; mainLight.color.setHex(0xa3ffd0); 
+              secLight.intensity = 0.7; secLight.color.setHex(0x00e1ff);
               
               if(titanPlanet) titanPlanet.visible = false;
               if(titanAtmosphere) titanAtmosphere.visible = false;
+              if(nebulaGrid) nebulaGrid.visible = false;
               shootingStars.forEach(ss => ss.visible = false);
               if(zenParticles) zenParticles.visible = true;
           } else if (vibe === 'JOLLY') {
@@ -538,15 +699,13 @@
               
               if(titanPlanet) titanPlanet.visible = false;
               if(titanAtmosphere) titanAtmosphere.visible = false;
+              if(nebulaGrid) nebulaGrid.visible = true; 
               shootingStars.forEach(ss => ss.visible = false);
               if(zenParticles) zenParticles.visible = false;
 
               const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh") meshesToRemove.push(child); });
               meshesToRemove.forEach(m => scene.remove(m));
               bubbles = [];
-              for(let i = 0; i < 15; i++) {
-                  spawnBubble((Math.random() - 0.5) * 8);
-              }
           } else {
               scene.background.setHex(0x020306);
               if (scene.fog) { scene.fog.color.setHex(0x020306); scene.fog.density = 0.012; }
@@ -556,6 +715,7 @@
               
               if(titanPlanet) titanPlanet.visible = true;
               if(titanAtmosphere) titanAtmosphere.visible = true;
+              if(nebulaGrid) nebulaGrid.visible = true;
               shootingStars.forEach(ss => ss.visible = true);
               if(zenParticles) zenParticles.visible = false;
           }
@@ -567,21 +727,21 @@
           
           if (vibeChoice === 'COMBAT') {
               document.getElementById('home-subtitle').textContent = "TACTICAL NAVAL COMBAT";
-              document.getElementById('home-title').innerHTML = "TITAN<span>ARMADA</span>";
+              document.getElementById('home-title').innerHTML = "HELIOS<span>STRIKE</span>";
               document.getElementById('btn-start-combat').style.display = "block";
               document.getElementById('btn-start-zen').style.display = "none";
               document.getElementById('btn-start-jolly').style.display = "none";
               switchEnvironmentVibe('COMBAT');
           } else if (vibeChoice === 'ZEN') {
-              document.getElementById('home-subtitle').textContent = "DIGITAL SANDBOX";
-              document.getElementById('home-title').innerHTML = "ZEN<span>GARDEN</span>";
+              document.getElementById('home-subtitle').textContent = "CYBER SEARCH ENVIRONMENT";
+              document.getElementById('home-title').innerHTML = "HIDDEN<span>FOREST</span>";
               document.getElementById('btn-start-combat').style.display = "none";
               document.getElementById('btn-start-zen').style.display = "block";
               document.getElementById('btn-start-jolly').style.display = "none";
               switchEnvironmentVibe('ZEN');
           } else if (vibeChoice === 'JOLLY') {
               document.getElementById('home-subtitle').textContent = "COSMIC SYMPHONY";
-              document.getElementById('home-title').innerHTML = "JOLLY<span>POP</span>";
+              document.getElementById('home-title').innerHTML = "HEAVEN<span>HARMONY</span>";
               document.getElementById('btn-start-combat').style.display = "none";
               document.getElementById('btn-start-zen').style.display = "none";
               document.getElementById('btn-start-jolly').style.display = "block";
@@ -600,51 +760,53 @@
           if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
           
           proceduralMusicInterval = setInterval(() => {
-              if (isAudioMuted || musicVolumeLevel <= 0 || currentPhase === 'MENU' || currentPhase === 'GAMEOVER') return;
+              if (isAudioMuted || musicVolumeLevel <= 0 || currentPhase === 'MENU' || currentPhase === 'GAMEOVER' || currentPhase === 'PORTAL') return;
               const now = audioCtx.currentTime;
               
               if (selectedTrackVibe === 'COMBAT') {
-                  const bassNotes = [55, 55, 65, 55, 48, 48, 52, 50];
-                  const currentPitch = bassNotes[beatCounter % bassNotes.length];
-                  const bassOsc = audioCtx.createOscillator(), bassGain = audioCtx.createGain();
-                  bassOsc.type = 'sawtooth'; bassOsc.frequency.setValueAtTime(currentPitch, now);
-                  bassOsc.frequency.exponentialRampToValueAtTime(currentPitch / 2, now + 0.3);
-                  bassGain.gain.setValueAtTime(musicVolumeLevel * 0.18, now);
-                  bassGain.gain.linearRampToValueAtTime(0.001, now + 0.35);
-                  bassOsc.connect(bassGain); bassGain.connect(audioCtx.destination);
-                  bassOsc.start(now); bassOsc.stop(now + 0.36);
+                  const melodies = [329.63, 392.00, 440.00, 523.25, 587.33, 659.25]; 
+                  const leadNote = melodies[beatCounter % melodies.length];
+                  
+                  const leadOsc = audioCtx.createOscillator(), leadGain = audioCtx.createGain();
+                  leadOsc.type = (beatCounter % 4 === 0) ? 'triangle' : 'sine';
+                  leadOsc.frequency.setValueAtTime(leadNote, now);
+                  leadGain.gain.setValueAtTime(musicVolumeLevel * 0.12, now);
+                  leadGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                  leadOsc.connect(leadGain); leadGain.connect(audioCtx.destination);
+                  leadOsc.start(now); leadOsc.stop(now + 0.42);
 
-                  if (beatCounter % 2 === 0) {
-                      const ticOsc = audioCtx.createOscillator(), ticGain = audioCtx.createGain();
-                      ticOsc.type = 'triangle'; ticOsc.frequency.setValueAtTime(1200, now);
-                      ticGain.gain.setValueAtTime(musicVolumeLevel * 0.04, now);
-                      ticGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-                      ticOsc.connect(ticGain); ticGain.connect(audioCtx.destination);
-                      ticOsc.start(now); ticOsc.stop(now + 0.06);
+                  if (Math.random() > 0.4) {
+                      const fireOsc = audioCtx.createOscillator(), fireGain = audioCtx.createGain();
+                      fireOsc.type = 'sawtooth';
+                      fireOsc.frequency.setValueAtTime(65 + (Math.random() * 45), now);
+                      fireGain.gain.setValueAtTime(musicVolumeLevel * 0.05, now);
+                      fireGain.gain.linearRampToValueAtTime(0.001, now + 0.15);
+                      fireOsc.connect(fireGain); fireGain.connect(audioCtx.destination);
+                      fireOsc.start(now); fireOsc.stop(now + 0.16);
                   }
               } else if (selectedTrackVibe === 'ZEN') {
-                  const zenMelody = [220, 293, 329, 440, 392, 293, 329, 220];
+                  const zenMelody = [147, 165, 196, 220, 246, 293, 330, 392];
                   if (beatCounter % 4 === 0) {
                       const currentZenPitch = zenMelody[Math.floor(beatCounter / 4) % zenMelody.length];
                       const zenOsc = audioCtx.createOscillator(), zenGain = audioCtx.createGain();
                       zenOsc.type = 'sine'; zenOsc.frequency.setValueAtTime(currentZenPitch, now);
                       zenGain.gain.setValueAtTime(0.001, now);
-                      zenGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.25, now + 0.6);
-                      zenGain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+                      zenGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.22, now + 0.8);
+                      zenGain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
                       zenOsc.connect(zenGain); zenGain.connect(audioCtx.destination);
-                      zenOsc.start(now); zenOsc.stop(now + 1.6);
+                      zenOsc.start(now); zenOsc.stop(now + 1.9);
                   }
               } else if (selectedTrackVibe === 'JOLLY') {
-                  const popMelody = [261.63, 329.63, 392.00, 523.25];
-                  if (beatCounter % 8 === 0) {
-                      const currentPopPitch = popMelody[Math.floor(beatCounter / 8) % popMelody.length];
-                      const popOsc = audioCtx.createOscillator(), popGain = audioCtx.createGain();
-                      popOsc.type = 'sine'; popOsc.frequency.setValueAtTime(currentPopPitch, now);
-                      popGain.gain.setValueAtTime(0.001, now);
-                      popGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.15, now + 0.4);
-                      popGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
-                      popOsc.connect(popGain); popGain.connect(audioCtx.destination);
-                      popOsc.start(now); popOsc.stop(now + 1.2);
+                  const ambientScale = [130.81, 164.81, 196.00, 220.00];
+                  if (beatCounter % 16 === 0) {
+                      const baseChordNote = ambientScale[Math.floor(beatCounter / 16) % ambientScale.length];
+                      const padOsc = audioCtx.createOscillator(), padGain = audioCtx.createGain();
+                      padOsc.type = 'sine'; padOsc.frequency.setValueAtTime(baseChordNote, now);
+                      padGain.gain.setValueAtTime(0.001, now);
+                      padGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.18, now + 1.0);
+                      padGain.gain.exponentialRampToValueAtTime(0.001, now + 3.8);
+                      padOsc.connect(padGain); padGain.connect(audioCtx.destination);
+                      padOsc.start(now); padOsc.stop(now + 4.0);
                   }
               }
               beatCounter++;
@@ -654,6 +816,7 @@
       function stopInGameCombatMusic() { clearInterval(proceduralMusicInterval); proceduralMusicInterval = null; }
 
       function triggerAITaunt(category) {
+          if (isLocalPvP) return;
           const lines = AI_LINES[category];
           const fullMessage = `AI: "${lines[Math.floor(Math.random() * lines.length)]}"`;
           const tauntBox = document.getElementById('ai-taunt');
@@ -671,9 +834,39 @@
           try {
               if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
               if (audioCtx.state === 'suspended') audioCtx.resume();
+              const now = audioCtx.currentTime;
+              
+              if (type === 'hit' && selectedTrackVibe === 'JOLLY') {
+                  const harmonyScale = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+                  let burstCounter = poppedWordsArray.length;
+                  let targetFreq = harmonyScale[Math.min(burstCounter, harmonyScale.length - 1)];
+
+                  const chimeOsc = audioCtx.createOscillator();
+                  const chimeGain = audioCtx.createGain();
+                  chimeOsc.type = 'sine';
+                  chimeOsc.frequency.setValueAtTime(targetFreq, now);
+                  
+                  const colorOsc = audioCtx.createOscillator();
+                  const colorGain = audioCtx.createGain();
+                  colorOsc.type = 'triangle';
+                  colorOsc.frequency.setValueAtTime(targetFreq * 1.5, now);
+
+                  chimeGain.gain.setValueAtTime(musicVolumeLevel * 0.35, now);
+                  chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                  colorGain.gain.setValueAtTime(musicVolumeLevel * 0.12, now);
+                  colorGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+                  chimeOsc.connect(chimeGain); chimeGain.connect(audioCtx.destination);
+                  colorOsc.connect(colorGain); colorGain.connect(audioCtx.destination);
+                  
+                  chimeOsc.start(now); chimeOsc.stop(now + 0.65);
+                  colorOsc.start(now); colorOsc.stop(now + 0.35);
+                  return;
+              }
+
               const osc = audioCtx.createOscillator(), gainNode = audioCtx.createGain();
               osc.connect(gainNode); gainNode.connect(audioCtx.destination);
-              const now = audioCtx.currentTime;
+              
               if (type === 'click') { osc.type = 'sine'; osc.frequency.setValueAtTime(800, now); gainNode.gain.setValueAtTime(0.08, now); gainNode.gain.exponentialRampToValueAtTime(0.005, now + 0.05); osc.start(now); osc.stop(now + 0.05); } 
               else if (type === 'launch') { osc.type = 'triangle'; osc.frequency.setValueAtTime(140, now); osc.frequency.exponentialRampToValueAtTime(550, now + 0.25); gainNode.gain.setValueAtTime(0.12, now); gainNode.gain.linearRampToValueAtTime(0.005, now + 0.25); osc.start(now); osc.stop(now + 0.25); } 
               else if (type === 'hit') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(180, now); osc.frequency.linearRampToValueAtTime(45, now + 0.4); gainNode.gain.setValueAtTime(0.3, now); gainNode.gain.exponentialRampToValueAtTime(0.005, now + 0.4); osc.start(now); osc.stop(now + 0.4); } 
@@ -681,24 +874,36 @@
           } catch (e) {}
       }
 
-      function playJollyChord() {
+      function playEnhancedHarmonyArpeggio(comboBonus) {
           if (isAudioMuted || !audioCtx) return;
           if (audioCtx.state === 'suspended') audioCtx.resume();
-          const now = audioCtx.currentTime;
-          const pentatonic = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
-          const rootNote = pentatonic[Math.floor(Math.random() * pentatonic.length)];
           
-          [rootNote, rootNote * 1.5].forEach((freq) => {
+          const now = audioCtx.currentTime;
+          const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
+          const baseIndex = Math.floor(Math.random() * 4);
+          
+          const notesToPlay = [
+              scale[baseIndex],
+              scale[baseIndex + 2],
+              scale[baseIndex + 4] + (comboBonus * 12)
+          ];
+
+          notesToPlay.forEach((freq, index) => {
+              const noteTime = now + (index * 0.08);
               const osc = audioCtx.createOscillator();
-              const gain = audioCtx.createGain();
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(freq, now);
-              gain.gain.setValueAtTime(0.15, now);
-              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-              osc.connect(gain);
-              gain.connect(audioCtx.destination);
-              osc.start(now);
-              osc.stop(now + 0.6);
+              const delayFeedbackGain = audioCtx.createGain();
+              
+              osc.type = index === 2 ? 'triangle' : 'sine';
+              osc.frequency.setValueAtTime(freq, noteTime);
+              
+              delayFeedbackGain.gain.setValueAtTime(0.14, noteTime);
+              delayFeedbackGain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.5);
+              
+              osc.connect(delayFeedbackGain);
+              delayFeedbackGain.connect(audioCtx.destination);
+              
+              osc.start(noteTime);
+              osc.stop(noteTime + 0.52);
           });
       }
 
@@ -729,46 +934,42 @@
           if (isHologram) { 
               hullMat = wingMat = glowMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.4, emissive: 0x00f0ff, emissiveIntensity: 0.6, wireframe: true }); 
           } else {
-              hullMat = new THREE.MeshStandardMaterial({ color: 0x224a75, transparent: true, opacity: 0.6, roughness: 0.1, metalness: 0.9 });
-              wingMat = new THREE.MeshStandardMaterial({ color: 0x0f253d, transparent: true, opacity: 0.65, roughness: 0.2, metalness: 0.8 });
-              glowMat = new THREE.MeshStandardMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.8, emissive: 0x00ffcc, emissiveIntensity: 0.9 });
+              hullMat = new THREE.MeshStandardMaterial({ color: 0x1188cc, transparent: true, opacity: 0.5, roughness: 0.05, metalness: 0.95 });
+              wingMat = new THREE.MeshStandardMaterial({ color: 0x023366, transparent: true, opacity: 0.6, roughness: 0.1, metalness: 0.85 });
+              glowMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, transparent: true, opacity: 0.75, emissive: 0x00f0ff, emissiveIntensity: 1.2 });
           }
           
-          const shipHeight = 0.45; 
-          const hullLength = cellWidth * 0.75;
+          const shipHeight = 0.5; 
+          const hullLength = cellWidth * 0.8;
           
-          const hull = new THREE.Mesh(new THREE.BoxGeometry(hullLength, shipHeight, 0.6), hullMat); 
-          hull.position.set(-cellWidth * 0.05, shipHeight / 2, 0); 
-          group.add(hull);
+          const mainChassis = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.4, hullLength, 6), hullMat);
+          mainChassis.rotation.z = Math.PI / 2;
+          mainChassis.position.set(0, shipHeight / 2, 0);
+          group.add(mainChassis);
           
-          const bridge = new THREE.Mesh(new THREE.ConeGeometry(0.28, shipHeight * 2, 4), wingMat);
-          bridge.rotation.x = Math.PI / 4;
-          bridge.position.set(-cellWidth * 0.15, shipHeight, 0);
-          group.add(bridge);
+          const bridgeTower = new THREE.Mesh(new THREE.BoxGeometry(cellWidth * 0.2, 0.6, 0.35), wingMat);
+          bridgeTower.position.set(-cellWidth * 0.15, shipHeight + 0.2, 0);
+          group.add(bridgeTower);
 
-          const leftWing = new THREE.Mesh(new THREE.BoxGeometry(hullLength * 0.5, 0.08, 0.75), wingMat);
-          leftWing.position.set(-cellWidth * 0.2, shipHeight / 3, 0.55);
-          leftWing.rotation.y = -Math.PI / 6; 
-          group.add(leftWing);
+          const wingLeft = new THREE.Mesh(new THREE.ConeGeometry(0.4, hullLength * 0.5, 4), wingMat);
+          wingLeft.rotation.z = -Math.PI / 2.3;
+          wingLeft.rotation.x = Math.PI / 5;
+          wingLeft.position.set(-cellWidth * 0.08, shipHeight / 2, 0.7);
+          group.add(wingLeft);
 
-          const rightWing = leftWing.clone();
-          rightWing.position.z = -0.55;
-          rightWing.rotation.y = Math.PI / 6;
-          group.add(rightWing);
+          const wingRight = wingLeft.clone();
+          wingRight.rotation.x = -Math.PI / 5;
+          wingRight.position.z = -0.7;
+          group.add(wingRight);
 
-          const bow = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.3, cellWidth * 0.2, 4), hullMat); 
-          bow.rotation.z = -Math.PI / 2; 
-          bow.rotation.y = Math.PI / 4; 
-          bow.position.set(hullLength/2 - cellWidth * 0.05 + (cellWidth * 0.1), shipHeight / 2, 0); 
-          group.add(bow);
+          const bowSensor = new THREE.Mesh(new THREE.BoxGeometry(cellWidth * 0.18, 0.08, 0.45), glowMat);
+          bowSensor.position.set(hullLength / 2 + (cellWidth * 0.05), shipHeight / 2, 0);
+          group.add(bowSensor);
           
-          const thrusterL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.25, 0.18), glowMat);
-          thrusterL.position.set(-hullLength / 2 - cellWidth * 0.05, shipHeight / 2, 0.18);
-          group.add(thrusterL);
-          
-          const thrusterR = thrusterL.clone();
-          thrusterR.position.z = -0.18;
-          group.add(thrusterR);
+          const thrusterEngine = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.25, 6), glowMat);
+          thrusterEngine.rotation.z = Math.PI / 2;
+          thrusterEngine.position.set(-hullLength / 2 - 0.1, shipHeight / 2, 0);
+          group.add(thrusterEngine);
           
           return group;
        }
@@ -792,6 +993,22 @@
           starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
           staticStarField = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.38, transparent: true, opacity: 0.75 })); scene.add(staticStarField);
 
+          const gridGeometry = new THREE.BufferGeometry();
+          const gridSegments = 40;
+          const gridPositions = [];
+          for (let i = -gridSegments; i <= gridSegments; i += 4) {
+              for (let j = -gridSegments; j <= gridSegments; j += 4) {
+                  gridPositions.push(i, -6, j);
+                  gridPositions.push(i, -6, j + 4);
+                  gridPositions.push(i, -6, j);
+                  gridPositions.push(i + 4, -6, j);
+              }
+          }
+          gridGeometry.setAttribute('position', new THREE.Float32BufferAttribute(gridPositions, 3));
+          const gridMaterial = new THREE.LineBasicMaterial({ color: 0x005577, transparent: true, opacity: 0.4 });
+          nebulaGrid = new THREE.LineSegments(gridGeometry, gridMaterial);
+          scene.add(nebulaGrid);
+
           const ssGeo = new THREE.CylinderGeometry(0.015, 0.015, 5, 4); ssGeo.rotateX(Math.PI / 2); 
           const ssMat = new THREE.MeshBasicMaterial({ color: 0xffaa44, transparent: true, opacity: 0.6 });
           for(let i = 0; i < 4; i++) { const ss = new THREE.Mesh(ssGeo, ssMat); scene.add(ss); shootingStars.push(resetShootingStar(ss)); }
@@ -799,6 +1016,7 @@
           const titanGroup = new THREE.Group(); titanGroup.position.set(0, -1, -15);
           titanPlanet = new THREE.Mesh(new THREE.SphereGeometry(7, 32, 32), new THREE.MeshStandardMaterial({ color: 0xe67e22, roughness: 0.9, metalness: 0.1 })); titanGroup.add(titanPlanet);
           titanAtmosphere = new THREE.Mesh(new THREE.SphereGeometry(7.3, 32, 32), new THREE.MeshBasicMaterial({ color: 0xd35400, transparent: true, opacity: 0.22, side: THREE.BackSide })); titanGroup.add(titanAtmosphere); scene.add(titanGroup);
+          titanPlanet.visible = false; titanAtmosphere.visible = false; 
 
           const zenPartGeo = new THREE.BufferGeometry(); const zenPartPos = new Float32Array(150 * 3);
           for(let i = 0; i < 450; i++) zenPartPos[i] = (Math.random() - 0.5) * 40;
@@ -806,7 +1024,6 @@
           zenParticles = new THREE.Points(zenPartGeo, new THREE.PointsMaterial({ color: 0x88eeff, size: 0.15, transparent: true, opacity: 0.6 }));
           zenParticles.visible = false; scene.add(zenParticles);
 
-          // Dedicated dynamic light objects
           ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
           mainLight = new THREE.DirectionalLight(0xffddaa, 1.8);
           mainLight.position.set(30, 20, 10);
@@ -822,118 +1039,194 @@
           animateEngineFrame();
       }
 
-      function redrawSandBase(targetColor = '#e8c37b') {
-          if (!ctx) return;
-          if (uploadedBgImage) {
-              ctx.drawImage(uploadedBgImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
-          } else {
-              ctx.fillStyle = targetColor;
-              ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-              for (let i = 0; i < 6000; i++) {
-                  ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)';
-                  ctx.fillRect(Math.random() * CANVAS_SIZE, Math.random() * CANVAS_SIZE, 2, 2);
-              }
+      // --- GENERATE INTERACTIVE 3D REALISTIC FOREST SCENE ---
+      function buildInteractiveForestEnvironment() {
+          proceduralTreesGroupList = [];
+          
+          // Realistic dark multi-layered terrain canvas floor mesh
+          const fieldFloor = new THREE.Mesh(
+              new THREE.BoxGeometry(42, 0.3, 42), 
+              new THREE.MeshStandardMaterial({ color: 0x04160d, roughness: 0.95, metalness: 0.05 })
+          );
+          fieldFloor.position.y = -0.15;
+          fieldFloor.name = "gameplayMesh";
+          scene.add(fieldFloor);
+
+          // Render randomized digital tree lines across the terrain matrix with swaying components
+          for(let t=0; t<42; t++) {
+              const treeGroup = new THREE.Group();
+              const trX = (Math.random() - 0.5) * 36;
+              const trZ = (Math.random() - 0.5) * 36;
+              
+              // Skip positions near the structural item spawn anchors
+              if (Math.abs(trX) < 4 && Math.abs(trZ) < 4) continue;
+
+              const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.28, 3.6, 6), new THREE.MeshStandardMaterial({ color: 0x0d281a, roughness: 0.9 }));
+              trunk.position.y = 1.8;
+              
+              const leavesMat = new THREE.MeshStandardMaterial({ color: 0x063b20, roughness: 0.7, flatShading: true });
+              const leaves = new THREE.Mesh(new THREE.ConeGeometry(1.3, 3.2, 5), leavesMat);
+              leaves.position.y = 4.0;
+
+              treeGroup.add(trunk, leaves);
+              treeGroup.position.set(trX, 0, trZ);
+              treeGroup.name = "gameplayMesh";
+              
+              // Seed custom oscillation variables for unique wind swaying behaviors
+              treeGroup.userData = {
+                  swayOffset: Math.random() * 100,
+                  swaySpeed: 0.8 + Math.random() * 1.2
+              };
+
+              scene.add(treeGroup);
+              proceduralTreesGroupList.push(treeGroup);
           }
-          if (dTexture) dTexture.needsUpdate = true;
+
+          // Build item geometries and distribute them into secluded sectors
+          forestTargetsList = [];
+          const positionsAnchors = [
+              new THREE.Vector3(0, 1.4, 0),       // Center Ground Core
+              new THREE.Vector3(-6, 0.9, -10),    // Northern Operator Base Left
+              new THREE.Vector3(2, 0.7, 14),      // Deep Southern Limit Row
+              new THREE.Vector3(12, 3.0, -4)       // Eastern High Canopy Point
+          ];
+
+          FOREST_ITEMS_SCHEME.forEach((def, index) => {
+              let itemGeo;
+              if (def.type === "sphere") itemGeo = new THREE.SphereGeometry(0.55, 16, 16);
+              else if (def.type === "prism") itemGeo = new THREE.ConeGeometry(0.45, 1.1, 4);
+              else if (def.type === "ore") itemGeo = new THREE.BoxGeometry(0.75, 0.75, 0.75);
+              else itemGeo = new THREE.CylinderGeometry(0.18, 0.35, 1.4, 6);
+
+              const itemMat = new THREE.MeshStandardMaterial({
+                  color: def.color,
+                  emissive: def.color,
+                  emissiveIntensity: 0.85,
+                  roughness: 0.15,
+                  metalness: 0.85
+              });
+
+              const mesh = new THREE.Mesh(itemGeo, itemMat);
+              mesh.position.copy(positionsAnchors[index]);
+              mesh.name = "gameplayMesh";
+              mesh.userData = { schemeIndex: index, name: def.name, found: false };
+
+              scene.add(mesh);
+              forestTargetsList.push(mesh);
+          });
+
+          // Build a global scalable radar pulse highlight structure placeholder
+          forestRadarPulseMesh = new THREE.Mesh(
+              new THREE.SphereGeometry(1.5, 16, 16),
+              new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0 })
+          );
+          forestRadarPulseMesh.name = "gameplayMesh";
+          scene.add(forestRadarPulseMesh);
       }
 
-      function redrawAllZen() {
-          let currentColor = document.getElementById('zen-color-picker').value;
-          redrawSandBase(currentColor);
-          
-          // Render vector brush lines
-          ctx.lineCap = 'round'; ctx.lineWidth = 14; ctx.strokeStyle = '#1a1005'; ctx.shadowBlur = 4; ctx.shadowColor = '#1a1005';
-          zenStrokes.forEach(stroke => {
-              if (stroke.length < 1) return;
-              ctx.beginPath();
-              ctx.moveTo(stroke[0].x, stroke[0].y);
-              for(let i = 1; i < stroke.length; i++) {
-                  ctx.lineTo(stroke[i].x, stroke[i].y);
-              }
-              ctx.stroke();
-          });
-          
-          // Render layout text boxes
-          zenTextLines.forEach(line => {
-              ctx.font = `bold ${line.size}px "Orbitron", sans-serif`;
-              ctx.fillStyle = '#1a1005';
-              ctx.textAlign = 'left';
-              ctx.textBaseline = 'middle';
-              ctx.shadowBlur = 4;
-              ctx.shadowColor = '#1a1005';
-              ctx.fillText(line.text, line.x, line.y);
-          });
-          
-          dTexture.needsUpdate = true;
-      }
-
-      function buildZenSandEnvironment() {
-          dCanvas = document.getElementById('displacement-canvas');
-          ctx = dCanvas.getContext('2d');
-          
-          redrawSandBase('#e8c37b');
-          dTexture = new THREE.CanvasTexture(dCanvas);
-          
-          const sandGeo = new THREE.PlaneGeometry(55, 55, 200, 200); 
-          sandGeo.rotateX(-Math.PI / 2);
-          
-          const sandMat = new THREE.MeshStandardMaterial({ 
-              color: 0xffffff, 
-              map: dTexture,   
-              roughness: 1.0, 
-              metalness: 0.02,
-              displacementMap: dTexture, 
-              displacementScale: 2.2,
-              bumpMap: dTexture,
-              bumpScale: 1.2,
-              flatShading: false 
-          });
-          
-          sandMesh = new THREE.Mesh(sandGeo, sandMat);
-          sandMesh.name = "gameplayMesh"; 
-          scene.add(sandMesh);
-
-          zenHitPlane = new THREE.Mesh(new THREE.PlaneGeometry(55, 55), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
-          zenHitPlane.rotateX(-Math.PI / 2);
-          zenHitPlane.position.y = 1.5; 
-          zenHitPlane.name = "gameplayMesh";
-          scene.add(zenHitPlane);
-      }
-
-      function spawnBubble(yOffset = -8) {
-          const radius = 0.4 + Math.random() * 0.5;
-          const geometry = new THREE.SphereGeometry(radius, 32, 32);
+      function spawnBubble(yOffset = -8, specificWord = null) {
+          const radius = 0.55 + Math.random() * 0.25;
+          const geometry = new THREE.IcosahedronGeometry(radius, 2); 
           const randomColor = BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)];
           const material = new THREE.MeshStandardMaterial({
               color: randomColor,
-              roughness: 0.1,
+              roughness: 0.05,
               metalness: 0.1,
               transparent: true,
-              opacity: 0.85,
+              opacity: 0.75,
               emissive: randomColor,
-              emissiveIntensity: 0.2
+              emissiveIntensity: 0.35
           });
 
           const mesh = new THREE.Mesh(geometry, material);
-          mesh.position.x = (Math.random() - 0.5) * 10;
+          mesh.position.x = (Math.random() - 0.5) * 12;
           mesh.position.y = yOffset;
-          mesh.position.z = (Math.random() - 0.5) * 4;
+          mesh.position.z = (Math.random() - 0.5) * 2;
           mesh.name = "gameplayMesh";
+
+          if (!specificWord) {
+              const pool = MULTI_LEVEL_DICTIONARY[activeJollyDifficulty];
+              specificWord = pool[Math.floor(Math.random() * pool.length)];
+          }
           
           mesh.userData = {
-              speedY: 0.03 + Math.random() * 0.04,
-              wobbleSpeed: 1 + Math.random() * 3,
-              wobbleAmount: 0.005 + Math.random() * 0.01,
-              seed: Math.random() * 100
+              speedY: 0.016 + Math.random() * 0.015,
+              wobbleSpeed: 1.5 + Math.random() * 2,
+              wobbleAmount: 0.012 + Math.random() * 0.01,
+              seed: Math.random() * 100,
+              associatedWord: specificWord.toUpperCase()
           };
 
           scene.add(mesh);
           bubbles.push(mesh);
       }
 
+      function engageJollyRecallSequence() {
+          isRecallPhaseActive = true;
+          userTypedBuffer = "";
+          recalledAnswersArray = [];
+          
+          document.getElementById('recall-echo').textContent = "";
+          document.getElementById('assessment-box').style.display = "none";
+          document.getElementById('btn-recall-submit').style.display = "none";
+          document.getElementById('recall-instructions-lbl').textContent = "Type one of the 5 hidden burst words from your memory core, then press ENTER.";
+
+          for (let s = 0; s < 5; s++) {
+              let slotNode = document.getElementById(`slot-${s}`);
+              slotNode.textContent = `WORD ${s+1}`;
+              slotNode.className = "tracker-slot popped";
+          }
+
+          document.getElementById('recall-screen-panel').style.display = "flex";
+
+          bubbles.forEach(b => {
+              scene.remove(b);
+              b.geometry.dispose();
+              b.material.dispose();
+          });
+          bubbles = [];
+      }
+
+      function processMemoryAssessmentResults() {
+          const box = document.getElementById('assessment-box');
+          box.innerHTML = "";
+          box.style.display = "block";
+          
+          let roundHits = 0;
+          
+          for (let i = 0; i < 5; i++) {
+              const targetedWord = poppedWordsArray[i];
+              const userProvided = recalledAnswersArray[i] || "";
+              const row = document.createElement('div');
+              row.className = "assessment-row";
+
+              const slotNode = document.getElementById(`slot-${i}`);
+              
+              if (userProvided.toUpperCase() === targetedWord) {
+                  roundHits++;
+                  row.innerHTML = `<span>Slot ${i+1}: Perfect Match</span><span class="status-correct">${targetedWord}</span>`;
+                  if(slotNode) slotNode.className = "tracker-slot verified";
+              } else {
+                  row.innerHTML = `<span>Slot ${i+1}: Wrong Input (${userProvided || 'None'})</span><span class="status-missed">Correct: ${targetedWord}</span>`;
+                  if(slotNode) {
+                      slotNode.textContent = "MISSED";
+                      slotNode.style.borderColor = "#ff3366";
+                      slotNode.style.color = "#ff3366";
+                  }
+              }
+              box.appendChild(row);
+          }
+
+          jollyScore += (roundHits * 50);
+          document.getElementById('jolly-score').textContent = jollyScore;
+
+          document.getElementById('recall-instructions-lbl').textContent = `Assessment Complete! Sequence Score: +${roundHits * 50} Points.`;
+          document.getElementById('btn-recall-submit').style.display = "block"; 
+      }
+
       function triggerConfettiBurst(pos, colorHex) {
-          const particleCount = 25;
-          const pGeometry = new THREE.BoxGeometry(0.08, 0.08, 0.08);
+          const particleCount = 30;
+          const pGeometry = new THREE.BoxGeometry(0.06, 0.06, 0.06);
           const pMaterial = new THREE.MeshBasicMaterial({ color: colorHex, transparent: true, opacity: 1 });
 
           for (let i = 0; i < particleCount; i++) {
@@ -943,27 +1236,27 @@
               
               pMesh.userData = {
                   velocity: new THREE.Vector3(
-                      (Math.random() - 0.5) * 0.2,
-                      (Math.random() - 0.3) * 0.2,
-                      (Math.random() - 0.5) * 0.2
+                      (Math.random() - 0.5) * 0.25,
+                      (Math.random() - 0.3) * 0.25,
+                      (Math.random() - 0.5) * 0.25
                   ),
-                  gravity: -0.003,
+                  gravity: -0.002,
                   life: 1.0,
-                  decay: 0.02 + Math.random() * 0.02
+                  decay: 0.015 + Math.random() * 0.02
               };
               scene.add(pMesh);
               jollyParticles.push(pMesh);
           }
       }
 
-      function createFloatingWord(x, y) {
+      function createFloatingWord(x, y, labelText) {
           const div = document.createElement('div');
           div.className = 'pop-word';
           div.style.left = `${x}px`;
           div.style.top = `${y}px`;
-          div.textContent = JOLLY_WORDS[Math.floor(Math.random() * JOLLY_WORDS.length)];
+          div.textContent = labelText;
           document.body.appendChild(div);
-          setTimeout(() => div.remove(), 800);
+          setTimeout(() => div.remove(), 1800);
       }
 
       function initCombatWorld() {
@@ -983,7 +1276,27 @@
           const planeGeo = new THREE.PlaneGeometry(100, 100); planeGeo.rotateX(-Math.PI / 2);
           trackingPlane = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ visible: false })); scene.add(trackingPlane);
 
-          updateDeploymentHologram(); generateAICorePlacements(); renderUIPanels();
+          p1ShipsGroupList = []; p2ShipsGroupList = [];
+          player1LogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0));
+          player2LogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0));
+          player1ShipsTrack = SHIP_TYPES.map(s => ({ ...s, hits: 0, coords: [], isVertical: false }));
+          player2ShipsTrack = SHIP_TYPES.map(s => ({ ...s, hits: 0, coords: [], isVertical: false }));
+          player1Performance = { hits: 0, misses: 0 };
+          player2Performance = { hits: 0, misses: 0 };
+
+          activeDeployingPlayer = 1; 
+          currentDeployIndex = 0; 
+          
+          if (isLocalPvP) {
+              document.getElementById('deploy-title-label').textContent = "FLEET ARRANGE: PLAYER 1";
+              document.getElementById('lbl-tactical-profile-desc').innerHTML = "• Match Type: HeliosStrike<br>• Grid Matrix: 6x6 Cells<br>• Threat Mode: PASS & PLAY";
+          } else {
+              document.getElementById('deploy-title-label').textContent = "FLEET ARRANGEMENT";
+              document.getElementById('lbl-tactical-profile-desc').innerHTML = "• Match Type: HeliosStrike<br>• Grid Matrix: 6x6 Cells<br>• Threat Mode: AI COMPUTER";
+              generateAICorePlacements();
+          }
+
+          updateDeploymentHologram(); renderUIPanels();
       }
 
       function resetShootingStar(mesh) { mesh.position.set((Math.random() - 0.5) * 80, 15 + Math.random() * 20, -50); mesh.userData = { velX: (Math.random() - 0.5) * 1.5, velY: -0.4 - Math.random() * 0.4, velZ: 1.5 + Math.random() * 1.5 }; mesh.lookAt(mesh.position.clone().add(new THREE.Vector3(mesh.userData.velX, mesh.userData.velY, mesh.userData.velZ))); return mesh; }
@@ -994,24 +1307,25 @@
           const isPortrait = aspect < 1;
           const isMobileLandscape = aspect > 1 && window.innerHeight < 500;
 
-          if (currentPhase === 'INTRO' || currentPhase === 'MENU') { 
+          if (currentPhase === 'INTRO' || currentPhase === 'MENU' || currentPhase === 'PORTAL') { 
               camera.position.set(0, 5, 25); camera.lookAt(0, 1, 0); 
           }
           else if (currentPhase === 'DEPLOY') { 
-              if (isPortrait) camera.position.set(P_X, 14 / aspect, 12 / aspect); 
-              else if (isMobileLandscape) camera.position.set(P_X, 10, 12);
-              else camera.position.set(P_X, 10, 10); 
-              camera.lookAt(P_X, -1, 0); 
+              let gridFocusX = (isLocalPvP && activeDeployingPlayer === 2) ? A_X : P_X;
+              if (isPortrait) camera.position.set(gridFocusX, 14 / aspect, 12 / aspect); 
+              else if (isMobileLandscape) camera.position.set(gridFocusX, 10, 12);
+              else camera.position.set(gridFocusX, 10, 10); 
+              camera.lookAt(gridFocusX, -1, 0); 
           } 
           else if (currentPhase === 'ZEN_MODE') { 
-              if (isPortrait) camera.position.set(0, 25 / aspect, 2 / aspect);
-              else if (isMobileLandscape) camera.position.set(0, 16, 2);
-              else camera.position.set(0, 20, 2); 
-              camera.lookAt(0, 0, 0); 
+              if (isPortrait) camera.position.set(0, 24 / aspect, 16 / aspect);
+              else if (isMobileLandscape) camera.position.set(0, 14, 15);
+              else camera.position.set(0, 18, 16); 
+              camera.lookAt(0, 1, 0); 
           }
           else if (currentPhase === 'JOLLY_MODE') {
-              camera.position.set(0, 0, 10);
-              camera.lookAt(0, 0, 0);
+              camera.position.set(0, 1, 10);
+              camera.lookAt(0, 1, 0);
           }
           else { 
               if (isPortrait) { camera.position.set(0, 26 / aspect, 18 / aspect); camera.lookAt(0, -3.5, 0); } 
@@ -1023,7 +1337,8 @@
       function updateDeploymentHologram() {
           if (shipBlueprint) scene.remove(shipBlueprint);
           const currentDef = SHIP_TYPES[currentDeployIndex]; if (!currentDef) return;
-          shipBlueprint = generateVesselMesh(currentDef.size, true); shipBlueprint.position.set(P_X, 0.2, 0);
+          let offsetAnchorX = (isLocalPvP && activeDeployingPlayer === 2) ? A_X : P_X;
+          shipBlueprint = generateVesselMesh(currentDef.size, true); shipBlueprint.position.set(offsetAnchorX, 0.2, 0);
           if (isVertical) shipBlueprint.rotation.y = Math.PI / 2; scene.add(shipBlueprint);
           document.getElementById('deploy-ship-name').textContent = currentDef.name.toUpperCase(); document.getElementById('deploy-ship-size').textContent = `Length: ${currentDef.size} Sectors`;
       }
@@ -1036,14 +1351,57 @@
           if(titanPlanet && titanPlanet.visible) titanPlanet.rotation.y += 0.0006;
           if (staticStarField) { staticStarField.rotation.y += 0.00015; staticStarField.rotation.x += 0.00005; }
           
+          if (nebulaGrid && nebulaGrid.visible) {
+              if (selectedTrackVibe === 'JOLLY' && currentPhase === 'JOLLY_MODE') {
+                  nebulaGrid.rotation.y = time * 0.05;
+                  nebulaGrid.position.y = -5 + Math.sin(time * 2 + currentComboStreak) * (0.15 + currentComboStreak * 0.1);
+              } else {
+                  nebulaGrid.rotation.y = Math.sin(time * 0.1) * 0.05;
+                  nebulaGrid.position.y = -6 + Math.cos(time * 0.25) * 0.2;
+              }
+          }
+
           if(shootingStars[0] && shootingStars[0].visible) {
               shootingStars.forEach(ss => { ss.position.x += ss.userData.velX; ss.position.y += ss.userData.velY; ss.position.z += ss.userData.velZ; if (ss.position.y < -10 || ss.position.z > 40) resetShootingStar(ss); });
           }
 
           if (zenParticles && zenParticles.visible) {
-              zenParticles.position.y += 0.005;
-              if (zenParticles.position.y > 10) zenParticles.position.y = -10;
-              zenParticles.rotation.y += 0.001;
+              zenParticles.position.y += 0.004;
+              if (zenParticles.position.y > 12) zenParticles.position.y = -8;
+              zenParticles.rotation.y += 0.0008;
+          }
+
+          // Spin items and execute tree wind sway animations within the forest scene frame
+          if (currentPhase === 'ZEN_MODE') {
+              if (forestTargetsList.length > 0) {
+                  forestTargetsList.forEach(mesh => {
+                      if (!mesh.userData.found) {
+                          mesh.rotation.y += 0.02;
+                          mesh.rotation.x += 0.005;
+                          mesh.position.y += Math.sin(time * 3 + mesh.userData.schemeIndex) * 0.003;
+                      }
+                  });
+              }
+
+              if (proceduralTreesGroupList.length > 0) {
+                  proceduralTreesGroupList.forEach(tree => {
+                      const swayOffset = tree.userData.swayOffset;
+                      const speed = tree.userData.swaySpeed;
+                      tree.rotation.z = Math.sin(time * speed + swayOffset) * 0.015;
+                      tree.rotation.x = Math.cos(time * speed * 0.8 + swayOffset) * 0.012;
+                  });
+              }
+
+              // Animate interactive locator target mesh expansion
+              if (forestRadarPulseMesh && forestRadarPulseMesh.visible) {
+                  radarPulseActiveAge += 0.04;
+                  let growthScale = 1 + radarPulseActiveAge * 3.5;
+                  forestRadarPulseMesh.scale.set(growthScale, growthScale, growthScale);
+                  forestRadarPulseMesh.material.opacity = Math.max(0, 1 - radarPulseActiveAge / 2.0);
+                  if (radarPulseActiveAge >= 2.0) {
+                      forestRadarPulseMesh.visible = false;
+                  }
+              }
           }
           
           if (burningWreckages.length > 0 && Math.random() < 0.25) {
@@ -1064,15 +1422,19 @@
               let m = angryHitMarkers[i]; m.userData.age += 0.06; let pulseFactor = 0.5 + Math.abs(Math.sin(m.userData.age * 5)) * 0.5; m.material.emissiveIntensity = pulseFactor * 2.0; m.material.opacity = 0.6 + Math.sin(m.userData.age * 2) * 0.2;
           }
 
-          // Active background processing loop for Jolly Mode environment
-          if (selectedTrackVibe === 'JOLLY' && currentPhase !== 'INTRO') {
+          if (selectedTrackVibe === 'JOLLY' && currentPhase !== 'INTRO' && currentPhase !== 'PORTAL') {
+              if (Date.now() - lastPopTime > 5000 && currentComboStreak > 0) {
+                  currentComboStreak = 0;
+              }
+
               for (let i = bubbles.length - 1; i >= 0; i--) {
                   let b = bubbles[i];
-                  b.position.y += b.userData.speedY;
+                  b.position.y += b.userData.speedY * (1 + currentComboStreak * 0.12);
                   b.position.x += Math.sin(time + b.userData.seed) * b.userData.wobbleAmount;
+
                   if (b.position.y > 6) {
-                      b.position.y = -6;
-                      b.position.x = (Math.random() - 0.5) * 10;
+                      b.position.y = -5;
+                      b.position.x = (Math.random() - 0.5) * 11;
                   }
               }
 
@@ -1093,7 +1455,7 @@
 
               if (scene) {
                   const bgHue = 0.85 + Math.sin(time * 0.1) * 0.05;
-                  scene.background.setHSL(bgHue, 0.9, 0.88);
+                  scene.background.setHSL(bgHue, 0.9, 0.88 - Math.min(currentComboStreak * 0.02, 0.15));
                   scene.fog.color.setHSL(bgHue, 0.9, 0.88);
               }
           }
@@ -1130,59 +1492,32 @@
               mouse.x = (clientX / window.innerWidth) * 2 - 1; mouse.y = -(clientY / window.innerHeight) * 2 + 1;
               raycaster.setFromCamera(mouse, camera);
 
-              if (currentPhase === 'ZEN_MODE' && zenHitPlane) {
-                  const intersects = raycaster.intersectObject(zenHitPlane);
-                  if (intersects.length > 0) {
-                      const currentPoint = { x: intersects[0].uv.x * CANVAS_SIZE, y: (1 - intersects[0].uv.y) * CANVAS_SIZE };
-                      
-                      if (isPointerDown) {
-                          if (isTextBoxToolActive) {
-                              // Drop text box anchor coordinate point explicitly
-                              zenTextCursor.x = currentPoint.x;
-                              zenTextCursor.y = currentPoint.y;
-                              zenTextCursor.startX = currentPoint.x; 
-                              canTypeInSand = true;
-                              
-                              currentTextLine = { text: "", x: currentPoint.x, y: currentPoint.y, startX: currentPoint.x, size: zenTextSize };
-                              zenTextLines.push(currentTextLine);
-                              
-                              redrawAllZen();
-                              game.toggleTextBoxTool();
-                              isDrawingSand = false; 
-                          } else {
-                              // Fluid vector line capture tracking 
-                              if (!isWashingSand) {
-                                  if (!lastDrawPoint) {
-                                      lastDrawPoint = currentPoint;
-                                      currentStroke = [currentPoint];
-                                      zenStrokes.push(currentStroke);
-                                  }
-                                  currentStroke.push(currentPoint);
-                                  
-                                  ctx.lineCap = 'round'; ctx.lineWidth = 14; ctx.strokeStyle = '#1a1005'; ctx.shadowBlur = 4; ctx.shadowColor = '#1a1005';
-                                  ctx.beginPath(); ctx.moveTo(lastDrawPoint.x, lastDrawPoint.y); ctx.lineTo(currentPoint.x, currentPoint.y); ctx.stroke();
-                                  dTexture.needsUpdate = true; lastDrawPoint = currentPoint;
-                              }
-                          }
+              if (currentPhase === 'ZEN_MODE') {
+                  // Raycast execution against forest item objects
+                  const itemHits = raycaster.intersectObjects(forestTargetsList);
+                  if (itemHits.length > 0 && isPointerDown) {
+                      const clickedItem = itemHits[0].object;
+                      if (!clickedItem.userData.found) {
+                          game.collectForestItemToChest(clickedItem);
                       }
                   }
-              } else if (currentPhase === 'JOLLY_MODE') {
-                  // No complex drag actions mapped inside pop protocol loops
               } else if (trackingPlane) {
                   const hits = raycaster.intersectObject(trackingPlane);
                   if (hits.length > 0) {
                       const pt = hits[0].point;
                       if (currentPhase === 'DEPLOY' && currentDeployIndex < SHIP_TYPES.length) {
-                          let cellCol = Math.floor((pt.x - P_X + H_WIDTH) / C_SIZE), cellRow = Math.floor((pt.z + H_WIDTH) / C_SIZE);
+                          let deployGridOffset = (isLocalPvP && activeDeployingPlayer === 2) ? A_X : P_X;
+                          let cellCol = Math.floor((pt.x - deployGridOffset + H_WIDTH) / C_SIZE), cellRow = Math.floor((pt.z + H_WIDTH) / C_SIZE);
                           if (cellCol >= 0 && cellCol < BOARD_SIZE && cellRow >= 0 && cellRow < BOARD_SIZE) {
                               isHoveringValid = evaluatePlacementValidity(cellRow, cellCol, SHIP_TYPES[currentDeployIndex].size, isVertical);
                               let offsetWidth = SHIP_TYPES[currentDeployIndex].size * C_SIZE;
-                              shipBlueprint.position.x = (cellCol * C_SIZE) - H_WIDTH + (isVertical ? C_SIZE / 2 : offsetWidth / 2) + P_X;
+                              shipBlueprint.position.x = (cellCol * C_SIZE) - H_WIDTH + (isVertical ? C_SIZE / 2 : offsetWidth / 2) + deployGridOffset;
                               shipBlueprint.position.z = (cellRow * C_SIZE) - H_WIDTH + (isVertical ? offsetWidth / 2 : C_SIZE / 2);
                               currentSnappedCoords.r = cellRow; currentSnappedCoords.c = cellCol; toggleHologramWireColor(isHoveringValid ? 0x00f0ff : 0xff0044);
                           } else { isHoveringValid = false; toggleHologramWireColor(0xff0044); }
-                      } else if (currentPhase === 'BATTLE_PLAYER') {
-                          let cellCol = Math.floor((pt.x - A_X + H_WIDTH) / C_SIZE), cellRow = Math.floor((pt.z + H_WIDTH) / C_SIZE);
+                      } else if (currentPhase === 'BATTLE_PLAYER' || currentPhase === 'BATTLE_PVP_P2') {
+                          let firingTargetGridX = (currentPhase === 'BATTLE_PLAYER') ? A_X : P_X;
+                          let cellCol = Math.floor((pt.x - firingTargetGridX + H_WIDTH) / C_SIZE), cellRow = Math.floor((pt.z + H_WIDTH) / C_SIZE);
                           if (cellCol >= 0 && cellCol < BOARD_SIZE && cellRow >= 0 && cellRow < BOARD_SIZE) { currentSnappedCoords.r = cellRow; currentSnappedCoords.c = cellCol; isHoveringValid = true; } else isHoveringValid = false;
                       }
                   }
@@ -1191,10 +1526,12 @@
 
           window.addEventListener('pointerdown', (e) => { 
               isPointerDown = true; 
-              isDrawingSand = isTextBoxToolActive ? false : true; 
+              isDrawingSand = false; 
               currentStroke = null;
               
               if (currentPhase === 'JOLLY_MODE') {
+                  if (isRecallPhaseActive) return; 
+
                   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                   mouse.x = (e.clientX / window.innerWidth) * 2 - 1; 
                   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -1204,17 +1541,25 @@
                   if (intersects.length > 0) {
                       const popped = intersects[0].object;
                       const index = bubbles.indexOf(popped);
-                      if (index !== -1) {
+                      if (index !== -1 && poppedWordsArray.length < 5) {
                           bubbles.splice(index, 1);
                           triggerConfettiBurst(popped.position, popped.material.color.getHex());
-                          playJollyChord();
-                          createFloatingWord(e.clientX, e.clientY);
+                          
+                          const targetedWord = popped.userData.associatedWord;
+                          poppedWordsArray.push(targetedWord);
+
+                          playSynthesizedSound('hit');
+
+                          document.getElementById('jolly-counter-box').textContent = `POPPED: ${poppedWordsArray.length} / 5`;
+                          createFloatingWord(e.clientX, e.clientY, targetedWord);
+                          
                           scene.remove(popped);
                           popped.geometry.dispose();
                           popped.material.dispose();
-                          jollyScore += 10;
-                          document.getElementById('jolly-score').textContent = jollyScore;
-                          setTimeout(() => { if(currentPhase === 'JOLLY_MODE') spawnBubble(-6); }, 400);
+
+                          if (poppedWordsArray.length === 5) {
+                              engageJollyRecallSequence();
+                          }
                       }
                   }
               } else {
@@ -1222,70 +1567,103 @@
                   if (!isHoveringValid || isInputLocked) return; 
                   if (currentPhase === 'DEPLOY') lockPlayerVesselPlacement(currentSnappedCoords.r, currentSnappedCoords.c, SHIP_TYPES[currentDeployIndex].size, isVertical); 
                   else if (currentPhase === 'BATTLE_PLAYER') initiatePlayerWeaponLaunch(currentSnappedCoords.r, currentSnappedCoords.c); 
+                  else if (currentPhase === 'BATTLE_PVP_P2') initiatePvPPlayer2Launch(currentSnappedCoords.r, currentSnappedCoords.c); 
               }
           });
           
-          window.addEventListener('pointermove', (e) => { if (isPointerDown || currentPhase === 'DEPLOY' || currentPhase === 'BATTLE_PLAYER' || currentPhase === 'ZEN_MODE') processPointer(e.clientX, e.clientY); });
+          window.addEventListener('pointermove', (e) => { if (isPointerDown || currentPhase === 'DEPLOY' || currentPhase === 'BATTLE_PLAYER' || currentPhase === 'BATTLE_PVP_P2' || currentPhase === 'ZEN_MODE') processPointer(e.clientX, e.clientY); });
           window.addEventListener('pointerup', () => { isPointerDown = false; isDrawingSand = false; lastDrawPoint = null; currentStroke = null; });
           
           window.addEventListener('keydown', (e) => { 
               if (e.key.toLowerCase() === 'r' && currentPhase === 'DEPLOY') game.rotateDeployShip(); 
-              if (e.key.toLowerCase() === 'w' && currentPhase === 'ZEN_MODE') game.washAwaySand(); 
               
-              // Typing feature bound exclusively to dropped text box insertions
-              if (currentPhase === 'ZEN_MODE' && canTypeInSand) {
-                  if (!isWashingSand) {
-                      if (e.key === 'Enter') {
-                          e.preventDefault();
-                          zenTextCursor.y += (zenTextSize + 6);
-                          zenTextCursor.x = zenTextCursor.startX; // Return carriage to precise custom start column!
-                          currentTextLine = { text: "", x: zenTextCursor.x, y: zenTextCursor.y, startX: zenTextCursor.startX, size: zenTextSize };
-                          zenTextLines.push(currentTextLine);
-                          redrawAllZen();
-                      } else if (e.key === 'Backspace') {
-                          e.preventDefault();
-                          if (currentTextLine && currentTextLine.text.length > 0) {
-                              currentTextLine.text = currentTextLine.text.slice(0, -1);
-                          } else if (zenTextLines.length > 1) {
-                              zenTextLines.pop();
-                              currentTextLine = zenTextLines[zenTextLines.length - 1];
-                          } else if (currentTextLine) {
-                              currentTextLine.text = "";
-                          }
+              if (currentPhase === 'JOLLY_MODE' && isRecallPhaseActive && recalledAnswersArray.length < 5) {
+                  const echoBox = document.getElementById('recall-echo');
+
+                  if (e.key === 'Enter') {
+                      const submission = userTypedBuffer.trim().toUpperCase();
+                      if (submission.length > 0) {
+                          recalledAnswersArray.push(submission);
                           
-                          if (currentTextLine) {
-                              ctx.font = `bold ${currentTextLine.size}px "Orbitron", sans-serif`;
-                              zenTextCursor.x = currentTextLine.x + ctx.measureText(currentTextLine.text).width;
-                              zenTextCursor.y = currentTextLine.y;
-                              zenTextCursor.startX = currentTextLine.startX;
-                          }
-                          redrawAllZen();
-                      } else if (e.key.length === 1) { 
-                          if (e.key === ' ') {
-                              if (currentTextLine) currentTextLine.text += " ";
-                              zenTextCursor.x += (zenTextSize * 0.45);
-                          } else {
-                              if (currentTextLine) {
-                                  currentTextLine.text += e.key.toUpperCase();
-                                  ctx.font = `bold ${currentTextLine.size}px "Orbitron", sans-serif`;
-                                  zenTextCursor.x = currentTextLine.x + ctx.measureText(currentTextLine.text).width;
-                              }
-                          }
-                          redrawAllZen();
+                          const currentSlotIdx = recalledAnswersArray.length - 1;
+                          const slotNode = document.getElementById(`slot-${currentSlotIdx}`);
+                          if(slotNode) slotNode.textContent = "SAVED";
+
+                          playSynthesizedSound('click');
                       }
+                      userTypedBuffer = "";
+                      echoBox.textContent = "";
+
+                      if (recalledAnswersArray.length === 5) {
+                          processMemoryAssessmentResults();
+                      }
+                  } else if (e.key === 'Backspace') {
+                      userTypedBuffer = userTypedBuffer.slice(0, -1);
+                      echoBox.textContent = userTypedBuffer;
+                  } else if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+                      userTypedBuffer += e.key.toUpperCase();
+                      echoBox.textContent = userTypedBuffer;
+                      playSynthesizedSound('click');
                   }
               }
           });
       }
 
       function toggleHologramWireColor(hex) { if (!shipBlueprint) return; shipBlueprint.traverse((child) => { if (child.material && child.material.color) child.material.color.setHex(hex); }); }
-      function evaluatePlacementValidity(r, c, s, v) { if (v ? (r + s > BOARD_SIZE) : (c + s > BOARD_SIZE)) return false; for (let i = 0; i < s; i++) if (playerLogicalGrid[r + (v ? i : 0)][c + (v ? 0 : i)] !== 0) return false; return true; }
+      function evaluatePlacementValidity(r, c, s, v) { if (v ? (r + s > BOARD_SIZE) : (c + s > BOARD_SIZE)) return false; let targetGrid = (isLocalPvP && activeDeployingPlayer === 2) ? player2LogicalGrid : playerLogicalGrid; for (let i = 0; i < s; i++) if (targetGrid[r + (v ? i : 0)][c + (v ? 0 : i)] !== 0) return false; return true; }
 
       function lockPlayerVesselPlacement(row, col, size, vertical) {
-          playSynthesizedSound('click'); let shipID = 10 + currentDeployIndex; playerShipsTrack[currentDeployIndex].isVertical = vertical;
-          for (let i = 0; i < size; i++) { let r = row + (vertical ? i : 0), c = col + (vertical ? 0 : i); playerLogicalGrid[r][c] = shipID; playerShipsTrack[currentDeployIndex].coords.push({ r: r, c: c }); }
+          playSynthesizedSound('click'); 
+          let shipID = 10 + currentDeployIndex;
+          let targetGrid = (isLocalPvP && activeDeployingPlayer === 2) ? player2LogicalGrid : playerLogicalGrid;
+          let targetTrack = (isLocalPvP && activeDeployingPlayer === 2) ? player2ShipsTrack : playerShipsTrack;
+          let targetGroupList = (isLocalPvP && activeDeployingPlayer === 2) ? p2ShipsGroupList : p1ShipsGroupList;
+
+          targetTrack[currentDeployIndex].isVertical = vertical;
+          for (let i = 0; i < size; i++) { 
+              let r = row + (vertical ? i : 0), c = col + (vertical ? 0 : i); 
+              targetGrid[r][c] = shipID; 
+              targetTrack[currentDeployIndex].coords.push({ r: r, c: c }); 
+          }
+          
           const mesh = generateVesselMesh(size, false); mesh.position.copy(shipBlueprint.position); mesh.rotation.copy(shipBlueprint.rotation); mesh.name = "gameplayMesh"; scene.add(mesh);
-          currentDeployIndex++; if (currentDeployIndex < SHIP_TYPES.length) updateDeploymentHologram(); else { if (shipBlueprint) scene.remove(shipBlueprint); shipBlueprint = null; isHoveringValid = false; currentPhase = 'BATTLE_PLAYER'; document.getElementById('screen-deploy').classList.remove('active'); document.getElementById('screen-battle').classList.add('active'); updateCameraAngle(); triggerAITaunt('aiMiss'); } renderUIPanels();
+          targetGroupList.push(mesh); 
+
+          currentDeployIndex++; 
+          if (currentDeployIndex < SHIP_TYPES.length) {
+              updateDeploymentHologram(); 
+          } else {
+              if (isLocalPvP && activeDeployingPlayer === 1) {
+                  p1ShipsGroupList.forEach(m => m.visible = false);
+                  if (shipBlueprint) scene.remove(shipBlueprint);
+                  shipBlueprint = null;
+                  
+                  document.getElementById('lbl-pass-message').innerHTML = "Player 1 fleet setup has been completed and hidden.<br><strong>Pass the computer terminal over to Player 2.</strong>";
+                  document.getElementById('modal-pass-device').style.display = "flex";
+              } 
+              else if (isLocalPvP && activeDeployingPlayer === 2) {
+                  p2ShipsGroupList.forEach(m => m.visible = false);
+                  if (shipBlueprint) scene.remove(shipBlueprint);
+                  shipBlueprint = null;
+                  
+                  isHoveringValid = false;
+                  currentPhase = 'BATTLE_PLAYER';
+                  document.getElementById('screen-deploy').classList.remove('active');
+                  document.getElementById('screen-battle').classList.add('active');
+                  updateCameraAngle();
+                  
+                  document.getElementById('lbl-p1-title').textContent = "COMMANDER 1"; document.getElementById('lbl-p1-sub').textContent = "FLEET READY";
+                  document.getElementById('lbl-p2-title').textContent = "COMMANDER 2"; document.getElementById('lbl-p2-sub').textContent = "FLEET READY";
+                  document.getElementById('lbl-perf-header').textContent = "PERFORMANCE (P1)";
+                  uiCache.turn.textContent = "PLAYER 1 OPERATIONAL STRIKE TURN";
+                  uiCache.turn.style.color = "#00f0ff";
+                  renderUIPanels();
+              }
+              else {
+                  if (shipBlueprint) scene.remove(shipBlueprint); shipBlueprint = null; isHoveringValid = false; currentPhase = 'BATTLE_PLAYER'; document.getElementById('screen-deploy').classList.remove('active'); document.getElementById('screen-battle').classList.add('active'); updateCameraAngle(); triggerAITaunt('aiMiss');
+              }
+          } 
+          renderUIPanels();
       }
 
       function generateAICorePlacements() {
@@ -1301,17 +1679,62 @@
       }
 
       function initiatePlayerWeaponLaunch(row, col) {
-          let cellState = aiLogicalGrid[row][col]; if (cellState === 2 || cellState === 3) return; 
+          let targetGrid = isLocalPvP ? player2LogicalGrid : aiLogicalGrid;
+          let cellState = targetGrid[row][col]; if (cellState === 2 || cellState === 3) return; 
           isInputLocked = true; isHoveringValid = false; playerArmAnimTimer = 1.0; 
           const targetX = (col * C_SIZE) - H_WIDTH + (C_SIZE/2) + A_X, targetZ = (row * C_SIZE) - H_WIDTH + (C_SIZE/2);
           spawnMissileAttackProjectile(P_X, 0, targetX, targetZ, () => {
               if (cellState >= 10) {
-                  playSynthesizedSound('hit'); aiLogicalGrid[row][col] = 2; playerStats.hits++; triggerParticleExplosionCloud(targetX, targetZ, 0xff0011, 35); spawnAngryHitVisualMarker(targetX, targetZ);
-                  let shipIdx = cellState - 10; aiShipsTrack[shipIdx].hits++; if (aiShipsTrack[shipIdx].hits >= aiShipsTrack[shipIdx].size) { revealSunkShipOnGrid('AI', shipIdx); playerDanceTimer = 3.5; }
-                  updatePerformanceStatsHUD(); if (checkGameOverConditions()) return; triggerAITaunt('playerHit'); isInputLocked = false; isHoveringValid = true;
+                  playSynthesizedSound('hit'); targetGrid[row][col] = 2; 
+                  if(isLocalPvP) player1Performance.hits++; else playerStats.hits++; 
+                  triggerParticleExplosionCloud(targetX, targetZ, 0xff0011, 35); spawnAngryHitVisualMarker(targetX, targetZ);
+                  
+                  let shipIdx = cellState - 10; 
+                  let trackTarget = isLocalPvP ? player2ShipsTrack : aiShipsTrack;
+                  trackTarget[shipIdx].hits++; 
+                  if (trackTarget[shipIdx].hits >= trackTarget[shipIdx].size) { revealSunkShipOnGrid('AI', shipIdx); playerDanceTimer = 3.5; }
+                  updatePerformanceStatsHUD(); if (checkGameOverConditions()) return; if(!isLocalPvP) triggerAITaunt('playerHit'); isInputLocked = false; isHoveringValid = true;
               } else {
-                  playSynthesizedSound('miss'); aiLogicalGrid[row][col] = 3; playerStats.misses++; triggerParticleExplosionCloud(targetX, targetZ, 0x4466aa, 10); spawnVisualMarker(targetX, targetZ, 0x223355);
-                  updatePerformanceStatsHUD(); if (checkGameOverConditions()) return; triggerAITaunt('playerMiss'); currentPhase = 'BATTLE_AI'; uiCache.turn.textContent = "AI CORE SECTOR PROCESSING..."; uiCache.turn.style.color = "#ffaa00"; setTimeout(executeAICoreTurnStrike, 800);
+                  playSynthesizedSound('miss'); targetGrid[row][col] = 3; 
+                  if(isLocalPvP) player1Performance.misses++; else playerStats.misses++;
+                  triggerParticleExplosionCloud(targetX, targetZ, 0x4466aa, 10); spawnVisualMarker(targetX, targetZ, 0x223355);
+                  updatePerformanceStatsHUD(); if (checkGameOverConditions()) return; 
+                  
+                  if (isLocalPvP) {
+                      currentPhase = 'BATTLE_PVP_P2';
+                      document.getElementById('lbl-perf-header').textContent = "PERFORMANCE (P2)";
+                      uiCache.turn.textContent = "PLAYER 2 OPERATIONAL STRIKE TURN";
+                      uiCache.turn.style.color = "#ff3366";
+                      updatePerformanceStatsHUD();
+                      isInputLocked = false; isHoveringValid = true;
+                  } else {
+                      triggerAITaunt('playerMiss'); currentPhase = 'BATTLE_AI'; uiCache.turn.textContent = "AI CORE SECTOR PROCESSING..."; uiCache.turn.style.color = "#ffaa00"; setTimeout(executeAICoreTurnStrike, 800);
+                  }
+              }
+          });
+      }
+
+      function initiatePvPPlayer2Launch(row, col) {
+          let cellState = playerLogicalGrid[row][col]; if (cellState === 2 || cellState === 3) return;
+          isInputLocked = true; isHoveringValid = false; aiArmAnimTimer = 1.0;
+          const targetX = (col * C_SIZE) - H_WIDTH + (C_SIZE/2) + P_X, targetZ = (row * C_SIZE) - H_WIDTH + (C_SIZE/2);
+          spawnMissileAttackProjectile(A_X, 0, targetX, targetZ, () => {
+              if (cellState >= 10) {
+                  playSynthesizedSound('hit'); playerLogicalGrid[row][col] = 2; player2Performance.hits++;
+                  triggerParticleExplosionCloud(targetX, targetZ, 0xff1100, 30); spawnAngryHitVisualMarker(targetX, targetZ);
+                  let shipIdx = cellState - 10; player1ShipsTrack[shipIdx].hits++; if (player1ShipsTrack[shipIdx].hits >= player1ShipsTrack[shipIdx].size) { revealSunkShipOnGrid('PLAYER', shipIdx); aiDanceTimer = 3.5; }
+                  updatePerformanceStatsHUD(); if (checkGameOverConditions()) return; isInputLocked = false; isHoveringValid = true;
+              } else {
+                  playSynthesizedSound('miss'); playerLogicalGrid[row][col] = 3; player2Performance.misses++;
+                  triggerParticleExplosionCloud(targetX, targetZ, 0x55bbff, 8); spawnVisualMarker(targetX, targetZ, 0x334455);
+                  updatePerformanceStatsHUD(); if (checkGameOverConditions()) return; 
+                  
+                  currentPhase = 'BATTLE_PLAYER';
+                  document.getElementById('lbl-perf-header').textContent = "PERFORMANCE (P1)";
+                  uiCache.turn.textContent = "PLAYER 1 OPERATIONAL STRIKE TURN";
+                  uiCache.turn.style.color = "#00f0ff";
+                  updatePerformanceStatsHUD();
+                  isInputLocked = false; isHoveringValid = true;
               }
           });
       }
@@ -1338,7 +1761,7 @@
       function spawnVisualMarker(x, z, hexColor) { const marker = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.1, 8), new THREE.MeshBasicMaterial({ color: hexColor })); marker.position.set(x, 0.05, z); marker.name = "gameplayMesh"; scene.add(marker); }
 
       function revealSunkShipOnGrid(side, shipIndex) {
-          let tracker = (side === 'AI') ? aiShipsTrack[shipIndex] : playerShipsTrack[shipIndex], startCoord = tracker.coords[0], isVert = tracker.isVertical;
+          let tracker = (side === 'AI') ? (isLocalPvP ? player2ShipsTrack[shipIndex] : aiShipsTrack[shipIndex]) : playerShipsTrack[shipIndex], startCoord = tracker.coords[0], isVert = tracker.isVertical;
           let pivotX = (startCoord.c * C_SIZE) - H_WIDTH + (isVert ? C_SIZE / 2 : (tracker.size * C_SIZE) / 2) + (side === 'AI' ? A_X : P_X), pivotZ = (startCoord.r * C_SIZE) - H_WIDTH + (isVert ? (tracker.size * C_SIZE) / 2 : C_SIZE / 2);
           
           const mesh = generateVesselMesh(tracker.size, false); 
@@ -1366,23 +1789,46 @@
       }
 
       function checkGameOverConditions() {
-          let aiSunkCount = 0, playerSunkCount = 0;
-          for(let r=0; r<BOARD_SIZE; r++) for(let c=0; c<BOARD_SIZE; c++) { if (aiLogicalGrid[r][c] === 2) aiSunkCount++; if (playerLogicalGrid[r][c] === 2) playerSunkCount++; }
-          if (aiSunkCount >= 14 || playerSunkCount >= 14) {
-              currentPhase = 'GAMEOVER'; document.getElementById('screen-battle').classList.remove('active'); document.getElementById('screen-gameover').classList.add('active'); document.getElementById('exit-action-container').style.display = 'none';
-              const isWin = aiSunkCount >= 14; document.getElementById('go-title').textContent = isWin ? "VICTORY ACHIEVED" : "DEFEAT DETECTED"; document.getElementById('go-title').style.color = isWin ? "#00f0ff" : "#ff0055"; document.getElementById('go-acc').textContent = uiCache.accuracy.textContent; document.getElementById('go-hits').textContent = playerStats.hits; document.getElementById('go-miss').textContent = playerStats.misses; stopInGameCombatMusic(); return true;
+          let map1SunkCount = 0, map2SunkCount = 0;
+          let targetGrid2 = isLocalPvP ? player2LogicalGrid : aiLogicalGrid;
+          for(let r=0; r<BOARD_SIZE; r++) {
+              for(let c=0; c<BOARD_SIZE; c++) { 
+                  if (targetGrid2[r][c] === 2) map2SunkCount++; 
+                  if (playerLogicalGrid[r][c] === 2) map1SunkCount++; 
+              }
+          }
+          if (map2SunkCount >= 14 || map1SunkCount >= 14) {
+              currentPhase = 'GAMEOVER'; document.getElementById('screen-battle').classList.remove('active'); document.getElementById('screen-gameover').classList.add('active');
+              if (isLocalPvP) {
+                  document.getElementById('go-title').textContent = (map2SunkCount >= 14) ? "PLAYER 1 WINS MATRIX" : "PLAYER 2 WINS MATRIX";
+                  document.getElementById('go-title').style.color = "#00f0ff";
+              } else {
+                  const isWin = map2SunkCount >= 14; document.getElementById('go-title').textContent = isWin ? "VICTORY ACHIEVED" : "DEFEAT DETECTED"; document.getElementById('go-title').style.color = isWin ? "#00f0ff" : "#ff0055";
+              }
+              document.getElementById('go-acc').textContent = uiCache.accuracy.textContent; document.getElementById('go-hits').textContent = playerStats.hits; document.getElementById('go-miss').textContent = playerStats.misses; stopInGameCombatMusic(); return true;
           } return false;
       }
 
-      function updatePerformanceStatsHUD() { const totalAttacks = playerStats.hits + playerStats.misses; uiCache.accuracy.textContent = `${totalAttacks > 0 ? Math.round((playerStats.hits / totalAttacks) * 100) : 0}%`; uiCache.hits.textContent = playerStats.hits; uiCache.miss.textContent = playerStats.misses; }
-      function renderUIPanels() { if (uiCache.pFleet) uiCache.pFleet.innerHTML = playerShipsTrack.map(s => `<div class="ship-status-item"><span>${s.name}</span><span class="${s.hits >= s.size ? 'status-sunk':'status-active'}">${s.hits >= s.size ? 'SUNK':'ONLINE'}</span></div>`).join(''); }
+      function updatePerformanceStatsHUD() { 
+          let h = playerStats.hits, m = playerStats.misses;
+          if (isLocalPvP) {
+              if (currentPhase === 'BATTLE_PLAYER') { h = player1Performance.hits; m = player1Performance.misses; } 
+              else { h = player2Performance.hits; m = player2Performance.misses; }
+          }
+          const totalAttacks = h + m; 
+          uiCache.accuracy.textContent = `${totalAttacks > 0 ? Math.round((h / totalAttacks) * 100) : 0}%`; uiCache.hits.textContent = h; uiCache.miss = document.getElementById('p-miss').textContent = m; 
+      }
+
+      function renderUIPanels() { 
+          let activeTrack = (isLocalPvP && currentPhase === 'BATTLE_PVP_P2') ? player2ShipsTrack : player1ShipsTrack;
+          if (uiCache.pFleet) uiCache.pFleet.innerHTML = activeTrack.map(s => `<div class="ship-status-item"><span>${s.name}</span><span class="${s.hits >= s.size ? 'status-sunk':'status-active'}">${s.hits >= s.size ? 'SUNK':'ONLINE'}</span></div>`).join(''); 
+      }
 
       window.ui = {
           openModal: function(id) { 
               playSynthesizedSound('click'); 
               if (id === 'modal-settings') {
-                  document.getElementById('exit-action-container').style.display = (currentPhase === 'DEPLOY' || currentPhase.startsWith('BATTLE') || currentPhase === 'ZEN_MODE' || currentPhase === 'JOLLY_MODE') ? 'flex' : 'none'; 
-                  document.getElementById('intro-return-container').style.display = (currentPhase === 'MENU') ? 'flex' : 'none';
+                  document.getElementById('intro-return-container').style.display = 'flex';
               }
               document.getElementById(id).style.display = 'flex'; 
           },
@@ -1390,83 +1836,192 @@
       };
 
       window.game = {
-          startNewGame: function() { playSynthesizedSound('click'); currentPhase = 'DEPLOY'; document.getElementById('screen-home').classList.remove('active'); document.getElementById('screen-deploy').classList.add('active'); initCombatWorld(); startInGameCombatMusic(); },
-          startZenGardenMode: function() { playSynthesizedSound('click'); currentPhase = 'ZEN_MODE'; document.getElementById('screen-home').classList.remove('active'); document.getElementById('screen-zen').classList.add('active'); buildZenSandEnvironment(); updateCameraAngle(); startInGameCombatMusic(); },
-          startJollyPopMode: function() {
+          enterCoreSuite: function() {
               playSynthesizedSound('click');
-              currentPhase = 'JOLLY_MODE';
-              jollyScore = 0;
-              document.getElementById('jolly-score').textContent = 0;
-              document.getElementById('screen-home').classList.remove('active');
-              document.getElementById('screen-jolly').classList.add('active');
+              currentPhase = 'INTRO';
+              document.body.className = 'mode-intro';
+              document.getElementById('screen-portal').classList.remove('active');
+              document.getElementById('screen-intro').classList.add('active');
               updateCameraAngle();
+          },
+          backToPortal: function() {
+              playSynthesizedSound('click');
+              currentPhase = 'PORTAL';
+              document.body.className = '';
+              document.getElementById('screen-intro').classList.remove('active');
+              document.getElementById('screen-portal').classList.add('active');
+              
+              const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh") meshesToRemove.push(child); });
+              meshesToRemove.forEach(m => scene.remove(m)); bubbles = [];
+              if(titanPlanet) titanPlanet.visible = false;
+              if(titanAtmosphere) titanAtmosphere.visible = false;
+              if(nebulaGrid) nebulaGrid.visible = true;
+              updateCameraAngle();
+          },
+          promptEngagementVector: function() {
+              playSynthesizedSound('click');
+              document.getElementById('modal-mode-prompt').style.display = 'flex';
+          },
+          selectEngagementMode: function(pvpChoice) {
+              document.getElementById('modal-mode-prompt').style.display = 'none';
+              isLocalPvP = pvpChoice;
+              
+              currentPhase = 'DEPLOY'; 
+              selectedTrackVibe = 'COMBAT'; 
+              document.getElementById('screen-home').classList.remove('active'); 
+              document.getElementById('screen-deploy').classList.add('active'); 
+              initCombatWorld(); 
               startInGameCombatMusic();
           },
-          washAwaySand: function() {
-              if (isWashingSand || currentPhase !== 'ZEN_MODE') return; isWashingSand = true; playSynthesizedSound('click');
-              let frames = 0;
-              let currentColor = document.getElementById('zen-color-picker').value;
-              const washInterval = setInterval(() => { 
-                  ctx.save();
-                  ctx.globalAlpha = 0.2;
-                  if (uploadedBgImage) {
-                      ctx.drawImage(uploadedBgImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
-                  } else {
-                      ctx.fillStyle = currentColor;
-                      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-                  }
-                  ctx.restore();
-                  dTexture.needsUpdate = true; frames++;
-                  if (frames >= 20) { 
-                      clearInterval(washInterval); 
-                      zenStrokes = [];
-                      zenTextLines = [];
-                      currentTextLine = null;
-                      canTypeInSand = false;
-                      redrawSandBase(currentColor);
-                      isWashingSand = false; 
-                  }
-              }, 30);
+          acknowledgePlayerHandover: function() {
+              document.getElementById('modal-pass-device').style.display = 'none';
+              activeDeployingPlayer = 2;
+              currentDeployIndex = 0;
+              document.getElementById('deploy-title-label').textContent = "FLEET ARRANGE: PLAYER 2";
+              updateCameraAngle();
+              updateDeploymentHologram();
           },
-          toggleTextBoxTool: function() {
+          
+          // --- HIDDEN FOREST HUNT LOGICS WITH INTEGRATED RADAR HINT ---
+          startZenGardenMode: function() { 
+              playSynthesizedSound('click'); 
+              currentPhase = 'ZEN_MODE'; 
+              selectedTrackVibe = 'ZEN'; 
+              document.body.className = 'mode-zen'; 
+              switchEnvironmentVibe('ZEN'); 
+              document.getElementById('screen-home').classList.remove('active'); 
+              document.getElementById('screen-zen').classList.add('active'); 
+              
+              // Clear old scene items
+              const oldMeshes = []; scene.traverse((c) => { if (c.name === "gameplayMesh") oldMeshes.push(c); });
+              oldMeshes.forEach(m => scene.remove(m));
+              
+              currentSelectedForestIdx = 0;
+              radarPulseActiveAge = 0;
+
+              // Restore interface default values
+              for(let s=0; s<4; s++) {
+                  let tokenNode = document.getElementById(`chest-${s}`);
+                  tokenNode.textContent = "?"; tokenNode.className = "chest-item-token";
+                  let cardNode = document.getElementById(`manifest-${s}`);
+                  cardNode.className = "manifest-card";
+              }
+
+              buildInteractiveForestEnvironment(); 
+              this.selectForestTracker(0); // Auto-focus first log indices
+              updateCameraAngle(); 
+              startInGameCombatMusic(); 
+          },
+
+          selectForestTracker: function(index) {
               playSynthesizedSound('click');
-              isTextBoxToolActive = !isTextBoxToolActive;
-              const btn = document.getElementById('btn-zen-textbox');
-              if (isTextBoxToolActive) {
-                  btn.textContent = "🎯 TAP TO DROP BOX";
-                  btn.style.background = "rgba(0, 240, 255, 0.25)";
-                  btn.style.borderColor = "#00f0ff";
+              currentSelectedForestIdx = index;
+              
+              for (let s=0; s<4; s++) {
+                  let node = document.getElementById(`manifest-${s}`);
+                  if (node.classList.contains('found')) continue;
+                  if (s === index) node.className = "manifest-card selected";
+                  else node.className = "manifest-card";
+              }
+
+              const itemDef = FOREST_ITEMS_SCHEME[index];
+              document.getElementById('forest-clue-label').textContent = itemDef.clue;
+              document.getElementById('forest-hint-label').textContent = itemDef.hint;
+          },
+
+          triggerRadarGlowHint: function() {
+              const targetMesh = forestTargetsList[currentSelectedForestIdx];
+              if (!targetMesh || targetMesh.userData.found) {
+                  playSynthesizedSound('miss');
+                  return;
+              }
+
+              playSynthesizedSound('launch');
+              
+              // Direct Focus Hint: Modifies the 3D target view to point towards and highlight the object directly
+              camera.position.set(targetMesh.position.x, targetMesh.position.y + 4, targetMesh.position.z + 5);
+              camera.lookAt(targetMesh.position);
+
+              forestRadarPulseMesh.position.copy(targetMesh.position);
+              forestRadarPulseMesh.material.color.setHex(FOREST_ITEMS_SCHEME[currentSelectedForestIdx].color);
+              forestRadarPulseMesh.visible = true;
+              radarPulseActiveAge = 0;
+
+              // Run localized subtle particle bursts around item space to double highlight it
+              triggerParticleExplosionCloud(targetMesh.position.x, targetMesh.position.z, FOREST_ITEMS_SCHEME[currentSelectedForestIdx].color, 12);
+          },
+
+          collectForestItemToChest: function(meshObject) {
+              const idx = meshObject.userData.schemeIndex;
+              meshObject.userData.found = true;
+              
+              playSynthesizedSound('hit');
+              triggerParticleExplosionCloud(meshObject.position.x, meshObject.position.z, FOREST_ITEMS_SCHEME[idx].color, 25);
+              
+              document.getElementById(`chest-${idx}`).textContent = "✔";
+              document.getElementById(`chest-${idx}`).className = "chest-item-token stored";
+              document.getElementById(`manifest-${idx}`).className = "manifest-card found";
+
+              // Instantly hide locator meshes if active over harvested coordinates
+              if(forestRadarPulseMesh) forestRadarPulseMesh.visible = false;
+
+              meshObject.position.y = -60;
+              
+              // Validate final win matrices inside the forest layout
+              let winCheck = true;
+              forestTargetsList.forEach(m => { if(!m.userData.found) winCheck = false; });
+              if (winCheck) {
+                  document.getElementById('forest-clue-label').textContent = "SECTOR SECURED: All anomalies successfully transferred into storage chest!";
+                  document.getElementById('forest-hint-label').textContent = "Matrix Cleared. Use the System Settings tool to restart or choose a new operational grid.";
+                  updateCameraAngle(); // Returns view to defaults on win
               } else {
-                  btn.textContent = "📝 ACTIVATE TEXT BOX";
-                  btn.style.background = "rgba(0, 240, 255, 0.05)";
-                  btn.style.borderColor = "rgba(0, 240, 255, 0.4)";
+                  // Cycle scanner choice onto following unharvested item index automatically
+                  let nextIdx = (idx + 1) % 4;
+                  while (forestTargetsList[nextIdx].userData.found) {
+                      nextIdx = (nextIdx + 1) % 4;
+                  }
+                  this.selectForestTracker(nextIdx);
+                  updateCameraAngle(); // Resets the direct look angle back to structural default overview
               }
           },
-          changeZenTextSize: function(val) {
-              zenTextSize = parseInt(val);
-              document.getElementById('lbl-zen-text-size').textContent = val + "px";
-              if (currentTextLine && currentTextLine.text.length === 0) {
-                  currentTextLine.size = zenTextSize;
+
+          promptJollyDifficulty: function() {
+              playSynthesizedSound('click');
+              document.getElementById('modal-jolly-level').style.display = 'flex';
+          },
+          startJollyPopMode: function(difficultyChoice) {
+              playSynthesizedSound('click');
+              document.getElementById('modal-jolly-level').style.display = 'none';
+              
+              activeJollyDifficulty = difficultyChoice;
+              currentPhase = 'JOLLY_MODE';
+              selectedTrackVibe = 'JOLLY';
+              document.body.className = 'mode-jolly';
+              switchEnvironmentVibe('JOLLY');
+              
+              jollyScore = 0;
+              currentComboStreak = 0;
+              userTypedBuffer = "";
+              poppedWordsArray = [];
+              recalledAnswersArray = [];
+              isRecallPhaseActive = false;
+              
+              document.getElementById('jolly-score').textContent = 0;
+              document.getElementById('jolly-counter-box').textContent = "POPPED: 0 / 5";
+              document.getElementById('screen-home').classList.remove('active');
+              document.getElementById('screen-jolly').classList.add('active');
+              document.getElementById('recall-screen-panel').style.display = "none";
+              
+              updateCameraAngle();
+              startInGameCombatMusic();
+
+              for (let i = 0; i < 15; i++) {
+                  spawnBubble(-1 - (i * 1.1));
               }
           },
-          uploadCustomBackground: function(event) {
-              const file = event.target.files[0];
-              if (!file) return;
-              const reader = new FileReader();
-              reader.onload = function(e) {
-                  const img = new Image();
-                  img.onload = function() {
-                      uploadedBgImage = img;
-                      redrawAllZen();
-                  };
-                  img.src = e.target.result;
-              };
-              reader.readAsDataURL(file);
-          },
-          changeZenTheme: function(hexColor) {
-              if (sandMesh && sandMesh.material) {
-                  redrawAllZen();
-              }
+          exitRecallToJollyMode: function() {
+              playSynthesizedSound('click');
+              this.startJollyPopMode(activeJollyDifficulty);
           },
           rotateDeployShip: function() { playSynthesizedSound('click'); if (shipBlueprint) { isVertical = !isVertical; shipBlueprint.rotation.y = isVertical ? Math.PI / 2 : 0; } },
           adjustMusicVolume: function(val) { musicVolumeLevel = val / 100; },
@@ -1474,32 +2029,37 @@
           returnToIntro: function() {
               playSynthesizedSound('click'); ui.closeModal('modal-settings');
               currentPhase = 'INTRO';
+              document.body.className = 'mode-intro';
               document.getElementById('screen-home').classList.remove('active');
               document.getElementById('screen-intro').classList.add('active');
               
-              scene.background.setHex(0x000000); scene.fog.color.setHex(0x000000);
+              scene.background.setHex(0x020306); scene.fog.color.setHex(0x020306);
               if(titanPlanet) titanPlanet.visible = false;
               if(titanAtmosphere) titanAtmosphere.visible = false;
+              if(nebulaGrid) nebulaGrid.visible = true; 
               if(shootingStars[0]) shootingStars.forEach(ss => ss.visible = false);
               if(zenParticles) zenParticles.visible = false;
               
-              const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh") meshesToRemove.push(child); });
+              const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh" || child === trackingPlane || child === shipBlueprint || child === zenHitPlane) meshesToRemove.push(child); });
               meshesToRemove.forEach(m => scene.remove(m)); bubbles = [];
               uploadedBgImage = null; canTypeInSand = false; isTextBoxToolActive = false;
-              zenStrokes = []; zenTextLines = []; currentTextLine = null;
+              zenStrokes = []; zenTextLines = []; currentTextLine = null; forestTargetsList = []; proceduralTreesGroupList = []; forestRadarPulseMesh = null;
               
               updateCameraAngle();
           },
           abortActiveMatch: function() { playSynthesizedSound('click'); ui.closeModal('modal-settings'); this.terminateAndResetToMenu(); },
           terminateAndResetToMenu: function() {
               currentPhase = 'MENU'; isInputLocked = false; isHoveringValid = false; currentDeployIndex = 0; activeProjectiles = []; activeParticles = []; angryHitMarkers = []; burningWreckages = []; bubbles = []; jollyParticles = []; stopInGameCombatMusic();
-              uploadedBgImage = null; canTypeInSand = false; isTextBoxToolActive = false;
-              zenStrokes = []; zenTextLines = []; currentTextLine = null;
+              uploadedBgImage = null; canTypeInSand = false; isTextBoxToolActive = false; p1ShipsGroupList = []; p2ShipsGroupList = []; forestTargetsList = []; proceduralTreesGroupList = []; forestRadarPulseMesh = null;
+              zenStrokes = []; zenTextLines = []; currentTextLine = null; currentComboStreak = 0; userTypedBuffer = "";
+              poppedWordsArray = []; recalledAnswersArray = []; isRecallPhaseActive = false;
+              
+              document.getElementById('recall-screen-panel').style.display = "none";
               
               const meshesToRemove = []; scene.traverse((child) => { if (child.name === "gameplayMesh" || child === trackingPlane || child === shipBlueprint || child === zenHitPlane) meshesToRemove.push(child); });
               meshesToRemove.forEach(m => scene.remove(m)); if (shipBlueprint) scene.remove(shipBlueprint); shipBlueprint = null; trackingPlane = null; sandMesh = null; zenHitPlane = null;
-              playerLogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)); aiLogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)); playerStats = { hits: 0, misses: 0 };
-              playerShipsTrack.forEach(s => { s.hits = 0; s.coords = []; }); aiShipsTrack.forEach(s => { s.hits = 0; s.coords = []; });
+              playerLogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)); aiLogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)); player2LogicalGrid = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0)); playerStats = { hits: 0, misses: 0 };
+              playerShipsTrack.forEach(s => { s.hits = 0; s.coords = []; }); aiShipsTrack.forEach(s => { s.hits = 0; s.coords = []; }); player2ShipsTrack.forEach(s => { s.hits = 0; s.coords = []; });
               
               switchEnvironmentVibe(selectedTrackVibe); 
               updateCameraAngle();

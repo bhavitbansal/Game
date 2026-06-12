@@ -10,14 +10,13 @@
     
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      /* user-select: none prevents accidental highlighting while playing the game */
       body, html { width: 100vw; height: 100vh; overflow: hidden; background-color: #010204; font-family: 'Rajdhani', sans-serif; color: #ffffff; user-select: none; -webkit-user-select: none; }
       #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: auto; }
       #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; display: flex; flex-direction: column; }
       
       .glass-panel, .battle-header, .modal-box, .vibe-card, .portal-box, .glass-back-portal { pointer-events: auto !important; touch-action: auto !important; }
       
-      .game-screen { display: none; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; padding: 15px; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .game-screen { display: none; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; padding: 15px; overflow-x: hidden; overflow-y: hidden; }
       .game-screen.active { display: flex; }
 
       body.mode-intro, body.mode-intro * { cursor: default !important; }
@@ -40,7 +39,7 @@
       .glass-back-portal { background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(0, 240, 255, 0.4); color: #00f0ff; padding: 10px 20px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 11px; letter-spacing: 2px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, border-color 0.3s, box-shadow 0.3s; cursor: pointer; }
       .glass-back-portal:hover { transform: scale(1.05) translateY(-2px); background: rgba(0, 240, 255, 0.15); border-color: #ffffff; box-shadow: 0 12px 40px rgba(0, 240, 255, 0.5), 0 0 15px rgba(255, 255, 255, 0.3); color: #fff; }
 
-      #screen-intro { background-color: #010409; flex-direction: column; justify-content: center; align-items: center; gap: 20px; z-index: 100; transition: background-color 1s ease; }
+      #screen-intro { background-color: #010409; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; z-index: 100; transition: background-color 1s ease; overflow-y: auto; padding-top: 40px; }
       .intro-header-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1200px; padding: 0 25px; margin-bottom: 5px; }
       .intro-headline { font-family: 'Orbitron', sans-serif; font-size: 20px; letter-spacing: 4px; color: #8a99ad; text-shadow: 0 0 10px rgba(255,255,255,0.1); text-transform: uppercase; }
       .vibe-deck { display: flex; gap: 20px; justify-content: center; align-items: stretch; width: 100%; max-width: 1200px; perspective: 1000px; padding: 10px; }
@@ -69,7 +68,7 @@
       .zen-variant .pulse-dot { background: #00f0ff; animation: zenPulse 1.5s infinite; }
       .jolly-variant .pulse-dot { background: #ff4081; animation: jollyPulse 1.5s infinite; }
 
-      .glass-panel { background: rgba(8, 12, 24, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 12px; padding: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); }
+      .glass-panel { background: rgba(8, 12, 24, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 12px; padding: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); pointer-events: auto; }
       
       #screen-home { flex-direction: column; justify-content: center; align-items: center; gap: 30px; pointer-events: auto; }
       .logo-container { text-align: center; }
@@ -79,37 +78,37 @@
       
       .home-menu { display: flex; flex-direction: column; gap: 14px; width: 280px; }
       
-      #screen-deploy { flex-direction: row; justify-content: space-between; align-items: flex-start; pointer-events: none; }
-      .deploy-sidebar-left { position: absolute; left: 15px; top: 15px; width: 260px; display: flex; flex-direction: column; gap: 12px; pointer-events: auto; }
-      .deploy-sidebar-right { position: absolute; right: 15px; top: 15px; width: 240px; pointer-events: auto; }
+      /* Desktop Layouts for Game Screens */
+      #screen-deploy { flex-direction: row; justify-content: space-between; align-items: flex-start; }
+      .deploy-sidebar-left { width: 260px; display: flex; flex-direction: column; gap: 12px; }
+      .deploy-sidebar-right { width: 240px; }
       
-      #screen-battle { flex-direction: column; justify-content: space-between; pointer-events: none; }
-      .battle-header { width: calc(100% - 30px); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: absolute; top: 15px; left: 15px; border-radius: 8px; }
+      #screen-battle { flex-direction: column; justify-content: space-between; align-items: flex-start; }
+      .battle-header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-radius: 8px; }
+      .hud-main-containers { display: flex; justify-content: space-between; width: 100%; height: auto; }
+      .sidebar-left { width: 240px; display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; }
       
-      #screen-zen { flex-direction: column; justify-content: space-between; padding: 20px; pointer-events: none; }
-      .forest-upper-hud { width: 100%; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: auto; }
+      #screen-zen { flex-direction: column; justify-content: space-between; align-items: stretch; }
+      .forest-upper-hud { width: 100%; display: flex; justify-content: space-between; align-items: flex-start; }
       .clue-terminal-panel { width: 340px; display: flex; flex-direction: column; gap: 8px; }
       .chest-vault-panel { background: rgba(5, 15, 10, 0.85); border: 1px solid #00f0ff; width: 220px; padding: 12px; border-radius: 10px; text-align: center; }
       .chest-slot-container { display: flex; gap: 6px; justify-content: center; margin-top: 8px; }
       .chest-item-token { width: 32px; height: 32px; border: 1px dashed rgba(0, 240, 255, 0.4); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: rgba(0,0,0,0.4); transition: all 0.3s ease; }
       .chest-item-token.stored { border-style: solid; border-color: #00f0ff; background: rgba(0, 240, 255, 0.15); box-shadow: 0 0 8px rgba(0, 240, 255, 0.4); color: #00f0ff; }
-      .forest-hunt-dock { width: 100%; margin-top: auto; display: flex; flex-direction: column; gap: 10px; pointer-events: auto; background: rgba(2, 6, 12, 0.88); border: 1px solid rgba(0, 240, 255, 0.3); padding: 16px; border-radius: 12px; box-shadow: 0 -10px 30px rgba(0,0,0,0.7); }
+      .forest-hunt-dock { width: 100%; display: flex; flex-direction: column; gap: 10px; background: rgba(2, 6, 12, 0.88); border: 1px solid rgba(0, 240, 255, 0.3); padding: 16px; border-radius: 12px; box-shadow: 0 -10px 30px rgba(0,0,0,0.7); }
       .target-items-manifest { display: flex; justify-content: space-around; width: 100%; gap: 10px; }
-      .manifest-card { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); text-align: center; font-family: 'Orbitron', sans-serif; font-size: 12px; letter-spacing: 1px; color: #a0aec0; transition: all 0.3s; cursor: pointer; }
+      .manifest-card { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); text-align: center; font-family: 'Orbitron', sans-serif; font-size: 12px; letter-spacing: 1px; color: #a0aec0; transition: all 0.3s; cursor: pointer; pointer-events: auto; }
       .manifest-card.selected { border-color: #00f0ff; color: #fff; background: rgba(0,240,255,0.15); box-shadow: 0 0 10px rgba(0,240,255,0.3); }
       .manifest-card.found { border-color: #00f0ff; background: rgba(0, 240, 255, 0.08); color: #00f0ff; text-shadow: 0 0 8px rgba(0,240,255,0.5); text-decoration: line-through; opacity: 0.75; }
 
-      #screen-jolly { flex-direction: column; justify-content: space-between; padding: 25px; pointer-events: none; }
+      #screen-jolly { flex-direction: column; justify-content: space-between; align-items: center; }
       .jolly-header { width: 100%; display: flex; justify-content: space-between; align-items: center; }
       .jolly-score-box { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.35); box-shadow: 0 8px 32px rgba(255, 140, 180, 0.25); text-align: center; padding: 10px 20px; }
       .jolly-score-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #ff66aa; font-weight: 700; }
       .jolly-score-val { font-family: 'Orbitron', sans-serif; font-size: 32px; color: #fff; text-shadow: 0 0 12px rgba(255,255,255,0.6); }
-      .jolly-counter-hud { background: rgba(4,6,16,0.85); border: 1px dashed #ff4081; padding: 8px 16px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 14px; color: #fff; text-shadow: 0 0 10px #ff4081; }
+      .jolly-counter-hud { background: rgba(4,6,16,0.85); border: 1px dashed #ff4081; padding: 8px 16px; border-radius: 6px; font-family: 'Orbitron', sans-serif; font-size: 14px; color: #fff; text-shadow: 0 0 10px #ff4081; pointer-events: auto; }
 
-      .recall-panel-overlay { display: none; flex-direction: column; gap: 20px; align-items: center; justify-content: center; background: rgba(2, 4, 10, 0.94); position: absolute; width: 100vw; height: 100vh; top:0; left:0; z-index: 5000; padding: 30px; pointer-events: auto; }
-      .recall-card { background: rgba(8, 12, 28, 0.8); border: 1px solid rgba(0, 240, 255, 0.3); max-width: 600px; width: 100%; padding: 30px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
-      
-      /* CRITICAL FIX: ENABLE TYPING ON MOBILE */
+      /* Input fix for mobile typing */
       #recall-mobile-input {
           user-select: text !important;
           -webkit-user-select: text !important;
@@ -118,6 +117,9 @@
           touch-action: manipulation;
           pointer-events: auto;
       }
+
+      .recall-panel-overlay { display: none; flex-direction: column; gap: 20px; align-items: center; justify-content: center; background: rgba(2, 4, 10, 0.94); position: absolute; width: 100vw; height: 100vh; top:0; left:0; z-index: 5000; padding: 30px; pointer-events: auto; }
+      .recall-card { background: rgba(8, 12, 28, 0.8); border: 1px solid rgba(0, 240, 255, 0.3); max-width: 600px; width: 100%; padding: 30px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
       .recall-echo-box { font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 900; color: #fff37a; min-height: 50px; letter-spacing: 4px; text-transform: uppercase; margin: 15px 0; text-shadow: 0 0 15px rgba(255,243,122,0.8); }
       
       .jolly-tracker-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; width: 100%; justify-content: center; }
@@ -130,14 +132,12 @@
       .status-correct { color: #a4ff84; font-weight: bold; }
       .status-missed { color: #ff3366; font-weight: bold; }
 
-      .jolly-footer { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: auto; pointer-events: auto; }
-      .jolly-tip { font-size: 14px; color: #ff6b9d; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); pointer-events: none; }
+      .jolly-footer { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+      .jolly-tip { font-size: 14px; color: #ff6b9d; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
 
       #settings-trigger-container { position: absolute; bottom: 15px; right: 15px; z-index: 20; pointer-events: auto; }
       #ai-taunt { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; color: #ffaa00; text-shadow: 0 0 15px rgba(255, 170, 0, 0.6); z-index: 20; opacity: 0; transition: opacity 0.3s; pointer-events: none; text-align: center; background: rgba(4, 6, 14, 0.9); padding: 12px 24px; border-radius: 6px; border: 1px solid rgba(255,170,0,0.3); max-width: 80%; min-height: 45px; }
 
-      .hud-main-containers { display: flex; justify-content: space-between; width: 100%; height: 100%; align-items: flex-end; }
-      .sidebar-left { position: absolute; left: 15px; bottom: 15px; width: 240px; display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; pointer-events: auto; }
       .hud-item .label { font-size: 9px; color: #00f0ff; letter-spacing: 1px; opacity: 0.7; }
       .hud-item .val { font-size: 15px; font-weight: 700; font-family: 'Orbitron', sans-serif; }
       #turn-indicator { font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 900; color: #00f0ff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.5); text-align: center; }
@@ -147,7 +147,7 @@
       .stat-box .label { font-size: 8px; color: #a0aec0; }
       .stat-box .val { font-size: 12px; font-weight: bold; color: #00f0ff; }
       
-      .btn { background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.4); color: #00f0ff; padding: 10px 16px; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; border-radius: 6px; transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s, box-shadow 0.25s; text-align: center; cursor: pointer; }
+      .btn { background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.4); color: #00f0ff; padding: 10px 16px; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; border-radius: 6px; transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s, box-shadow 0.25s; text-align: center; cursor: pointer; pointer-events: auto; }
       .btn:hover { transform: scale(1.04) translateY(-1px); background: rgba(0, 240, 255, 0.15); border-color: #00f0ff; box-shadow: 0 8px 20px rgba(0, 240, 255, 0.3); }
       .btn-primary { background: #00f0ff; color: #000; border-color: #00f0ff; }
       .btn-primary:hover { background: #ffffff; color: #000; border-color: #ffffff; box-shadow: 0 8px 20px rgba(255, 255, 255, 0.4); }
@@ -165,7 +165,7 @@
       .cyber-slider { -webkit-appearance: none; width: 140px; height: 6px; background: rgba(0, 240, 255, 0.2); border-radius: 3px; outline: none; pointer-events: auto; }
       .cyber-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #00f0ff; cursor: pointer; box-shadow: 0 0 10px #00f0ff; }
       
-      #screen-gameover { justify-content: center; align-items: center; background: rgba(2, 3, 7, 0.4); }
+      #screen-gameover { flex-direction: column; justify-content: center; align-items: center; background: rgba(2, 3, 7, 0.4); }
       .gameover-box { width: 340px; text-align: center; display: flex; flex-direction: column; gap: 18px; border-color: #ff0055; }
       .gameover-stats { display: flex; flex-direction: column; gap: 8px; text-align: left; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 6px; }
       .stat-row { display: flex; justify-content: space-between; font-size: 14px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -177,7 +177,7 @@
       .ship-size { font-size: 11px; color: #00f0ff; }
       .cyber-divider { border: none; height: 1px; background: rgba(0,240,255,0.15); margin: 8px 0; }
       .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 3, 7, 0.85); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 20px; }
-      .modal-box { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 14px; max-height: 90vh; overflow-y: auto; }
+      .modal-box { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 14px; max-height: 90vh; overflow-y: auto; pointer-events: auto; }
       .ships-list { display: flex; flex-direction: column; gap: 5px; font-size: 12px; }
       .ship-status-item { display: flex; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 4px 8px; border-radius: 4px; gap: 10px; }
       .status-active { color: #00f0ff; font-weight: bold; }
@@ -191,7 +191,7 @@
       }
       .pop-word { position: absolute; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 32px; color: #fff37a; text-shadow: 0 0 20px rgba(0, 240, 255, 0.8); pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); animation: popUpWord 1.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; }
 
-      /* --- RESPONSIVE ENGINE BREAKPOINTS --- */
+      /* --- NEW CLEAN FLEXBOX MOBILE MEDIA QUERIES --- */
       @media (max-width: 1024px) {
         .vibe-deck { max-width: 95%; gap: 15px; }
         .vibe-card { width: 240px; padding: 20px; font-size: 13px; }
@@ -202,90 +202,62 @@
       @media (max-width: 767px) {
         .logo-text { font-size: 36px; letter-spacing: 3px; }
         .subtitle { font-size: 10px; letter-spacing: 5px; }
-        .glass-panel { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); background: rgba(8, 12, 24, 0.85); padding: 12px; }
+        .glass-panel { padding: 12px; }
         .home-menu { width: 90%; max-width: 300px; }
         
-        #screen-portal { padding: 15px; }
         .portal-box { padding: 25px 15px; width: 100%; }
         .portal-title { font-size: 26px; }
         .portal-punchline { font-size: 12px; letter-spacing: 2px; }
         
-        #screen-intro { gap: 10px; padding: 15px 10px; justify-content: flex-start; }
-        .intro-header-bar { flex-direction: column; gap: 8px; align-items: center; text-align: center; }
-        .intro-headline { font-size: 14px; }
-        .vibe-deck { flex-direction: column; gap: 10px; perspective: none; align-items: center; width: 100%; overflow-y: auto; max-height: 75vh; padding-bottom: 20px; }
-        .vibe-card { width: 100%; max-width: 300px; padding: 15px; min-height: unset; gap: 10px; }
-        .vibe-card:hover { transform: translateY(-2px) scale(1.01); }
-        .vibe-description { font-size: 11.5px; }
+        #screen-intro { padding-top: 20px; }
+        .intro-header-bar { flex-direction: column; gap: 8px; text-align: center; }
+        .vibe-deck { flex-direction: column; align-items: center; }
+        .vibe-card { width: 100%; max-width: 300px; min-height: unset; gap: 10px; }
         
-        /* DEPLOY SCREEN COMPRESSION */
-        #screen-deploy { display: block; pointer-events: none; }
-        .deploy-sidebar-right { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 8px; pointer-events: auto; z-index: 20; }
-        .deploy-sidebar-left { position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 10px; gap: 6px; pointer-events: auto; z-index: 20; }
-        #deploy-title-label { font-size: 13px; }
+        /* CLEAN FLEXBOX FOR DEPLOY (No more absolute overlap) */
+        #screen-deploy { flex-direction: column; justify-content: space-between; align-items: center; padding: 10px; }
+        .deploy-sidebar-right { width: 100%; max-width: 340px; order: 1; }
+        .deploy-sidebar-left { width: 100%; max-width: 340px; order: 2; margin-top: auto; position: relative; padding-bottom: 20px; }
+        
+        /* MASSIVE FLOATING ROTATE BUTTON */
+        #btn-rotate { position: absolute; bottom: 80px; right: 10px; width: 80px; height: 80px; border-radius: 50%; font-size: 10px; padding: 0; box-shadow: 0 5px 25px rgba(255, 0, 85, 0.6); border: 2px solid #ffaa00; background: rgba(255, 0, 85, 0.9); z-index: 100; text-align: center; line-height: 1.2; display: flex; align-items: center; justify-content: center; }
 
-        /* CRITICAL FIX: MASSIVE FLOATING ROTATE BUTTON FOR MOBILE */
-        #btn-rotate {
-            position: fixed;
-            bottom: 120px;
-            right: 15px;
-            width: auto;
-            min-width: 130px;
-            z-index: 9999;
-            padding: 15px 20px;
-            font-size: 13px;
-            border-radius: 40px;
-            background: rgba(255, 0, 85, 0.85);
-            color: #ffffff;
-            border: 2px solid #ffaa00;
-            box-shadow: 0 10px 30px rgba(255, 0, 85, 0.6);
-        }
-        
-        /* BATTLE SCREEN COMPRESSION */
-        .battle-header { top: 5px; left: 5px; width: calc(100% - 10px); padding: 6px 10px; font-size: 10px; gap: 5px; }
+        /* CLEAN FLEXBOX FOR BATTLE */
+        #screen-battle { flex-direction: column; justify-content: space-between; align-items: center; padding: 10px; }
+        .battle-header { width: 100%; max-width: 360px; position: static; order: 1; }
         .battle-header .hud-item .val { font-size: 11px; }
         #turn-indicator { font-size: 10px; }
-        #ai-taunt { top: 60px; bottom: unset; font-size: 12px; width: 90%; padding: 6px 12px; }
-        .hud-main-containers { display: block; pointer-events: none; }
-        .sidebar-left { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 10px; max-height: 30vh; pointer-events: auto; z-index: 20; }
-        
-        /* ZEN MODE COMPRESSION */
-        #screen-zen { display: block; pointer-events: none; }
-        .forest-upper-hud { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); flex-direction: column; align-items: center; gap: 8px; width: 95%; max-width: 320px; pointer-events: auto; z-index: 20; }
+        #ai-taunt { top: 70px; bottom: unset; font-size: 12px; width: 90%; }
+        .hud-main-containers { flex-direction: column; align-items: center; justify-content: flex-end; order: 2; margin-top: auto; }
+        .sidebar-left { width: 100%; max-width: 360px; position: static; max-height: 35vh; }
+
+        /* CLEAN FLEXBOX FOR ZEN */
+        #screen-zen { flex-direction: column; justify-content: space-between; align-items: center; padding: 10px; }
+        .forest-upper-hud { width: 100%; max-width: 360px; flex-direction: column; align-items: center; gap: 8px; order: 1; }
         .clue-terminal-panel, .chest-vault-panel { width: 100%; padding: 10px; }
-        .forest-hunt-dock { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 10px; margin-bottom: 0; pointer-events: auto; z-index: 20; }
-        .target-items-manifest { flex-wrap: wrap; gap: 4px; }
-        .manifest-card { width: calc(50% - 2px); font-size: 10px; padding: 6px; }
+        .forest-hunt-dock { width: 100%; max-width: 360px; order: 2; margin-top: auto; }
+        .manifest-card { font-size: 9px; padding: 6px; }
 
-        #settings-trigger-container { bottom: 15px; right: 15px; transform: none; width: auto; max-width: unset; z-index: 30; }
-        #btn-universal-settings { width: auto; padding: 8px; font-size: 10px; }
+        /* CLEAN FLEXBOX FOR JOLLY */
+        #screen-jolly { flex-direction: column; justify-content: space-between; align-items: center; padding: 10px; }
+        .jolly-header { flex-direction: column; gap: 5px; width: 100%; order: 1; }
+        .jolly-footer { flex-direction: column-reverse; gap: 10px; width: 100%; order: 2; margin-top: auto; padding-bottom: 10px; }
+        .jolly-tip { width: 100%; max-width: 320px; font-size: 10px; }
 
-        .jolly-header { flex-direction: column; gap: 5px; align-items: center; text-align: center; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 95%; z-index: 20; }
-        .jolly-score-val { font-size: 24px; }
-        .jolly-footer { flex-direction: column-reverse; gap: 10px; align-items: center; width: 100%; position: absolute; bottom: 15px; left: 0; padding: 0 15px; z-index: 20;}
-        .jolly-tip { font-size: 10px; padding: 6px 10px; text-align: center; width: 100%; max-width: 320px; }
+        #settings-trigger-container { position: absolute; bottom: 15px; right: 15px; z-index: 50; }
         
-        /* MODALS */
-        .modal-box { max-height: 85vh; padding: 15px; }
-        .recall-card { padding: 15px 10px; width: 95%; overflow-y: auto; max-height: 90vh; }
-        .recall-echo-box { font-size: 18px; min-height: 40px; margin: 10px 0; padding: 10px; }
-        .jolly-tracker-grid { gap: 4px; }
-        .tracker-slot { width: 30%; font-size: 10px; height: 28px; }
+        .recall-card { width: 95%; max-height: 90vh; overflow-y: auto; padding: 15px; }
+        .recall-echo-box { font-size: 16px; min-height: 40px; }
+        .tracker-slot { width: 30%; font-size: 9px; }
       }
 
       @media (max-height: 500px) and (orientation: landscape) {
-        .game-screen { justify-content: flex-start !important; padding-bottom: 10px; overflow-y: auto; }
-        #screen-home { flex-direction: row; gap: 20px; align-items: center; justify-content: center !important; }
-        .vibe-deck { flex-direction: row; overflow-x: auto; overflow-y: hidden; justify-content: flex-start; align-items: stretch; height: auto; max-height: 80vh; padding: 10px; }
+        .game-screen { flex-direction: row; justify-content: center !important; flex-wrap: wrap; padding: 10px; overflow-y: auto; }
+        .vibe-deck { flex-direction: row; overflow-x: auto; height: auto; align-items: flex-start; }
         .vibe-card { width: 220px; flex-shrink: 0; }
-        .sidebar-left, .deploy-sidebar-left { position: fixed; right: 10px; left: unset; bottom: 10px; width: 240px; max-height: 80vh; margin-bottom: 0; }
-        .deploy-sidebar-right { display: none; } 
-        .forest-upper-hud { flex-direction: row; gap: 10px; align-items: flex-start; }
-        .clue-terminal-panel, .chest-vault-panel { flex: 1; max-width: 250px; }
-        .forest-hunt-dock { position: fixed; bottom: 10px; left: 10px; width: 250px; margin-bottom: 0; padding: 8px; }
-        #settings-trigger-container { bottom: 5px; right: 5px; transform: none; width: auto; }
-        #btn-universal-settings { width: auto; }
-        #btn-rotate { position: relative; bottom: unset; right: unset; width: 100%; } /* Reset massive mobile rotate button on landscape */
+        .sidebar-left, .deploy-sidebar-left { width: 240px; margin-right: 10px; }
+        .deploy-sidebar-right { display: none; }
+        #btn-rotate { position: relative; bottom: unset; right: unset; width: 100%; height: auto; border-radius: 6px; }
       }
     </style>
   </head>
@@ -299,8 +271,8 @@
           <h2 style="font-size:24px; color: #ff4081; font-family:'Orbitron', sans-serif;">DATA RECALL TERMINAL</h2>
           <p id="recall-instructions-lbl" style="font-size:13px; color:#cbd5e0; margin-top:5px;">Type out the 5 hidden burst words from your memory core.</p>
           
-          <div id="mobile-input-container" style="display: flex; gap: 10px; margin: 15px 0;">
-             <input type="text" id="recall-mobile-input" class="recall-echo-box" placeholder="TAP TO TYPE..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex: 1; margin: 0; background: rgba(0,0,0,0.5); border: 1px dashed #fff37a; color: #fff37a; text-align: center; outline: none; pointer-events: auto;">
+          <div id="mobile-input-container" style="display: flex; gap: 10px; margin: 15px 0; width: 100%;">
+             <input type="text" id="recall-mobile-input" class="recall-echo-box" placeholder="TAP TO TYPE..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex: 1; width: 100%; margin: 0; background: rgba(0,0,0,0.5); border: 1px dashed #fff37a; color: #fff37a; text-align: center; outline: none; pointer-events: auto;">
              <button class="btn btn-primary" onclick="game.submitRecallWord()" style="padding: 0 15px; font-size: 12px; pointer-events: auto;">SUBMIT</button>
           </div>
           
@@ -373,6 +345,10 @@
       </div>
 
       <div id="screen-deploy" class="game-screen">
+        <div class="deploy-sidebar-right glass-panel">
+          <h3>TACTICAL PROFILE</h3>
+          <p id="lbl-tactical-profile-desc" style="font-size:11px; color:#cbd5e0; line-height:1.5; margin-top:4px;">• Match Type: HeliosStrike<br>• Board Dimension: 6x6 Cells<br>• Threat Level: AI COMPUTER</p>
+        </div>
         <div class="deploy-sidebar-left glass-panel">
           <h2 id="deploy-title-label">FLEET DEPLOYMENT</h2>
           <p style="font-size:11px; color:#cbd5e0; line-height:1.4;">Position war assets on your light matrix. Click grid cells to lock.</p>
@@ -381,11 +357,7 @@
             <div id="deploy-ship-name" class="ship-name">-</div>
             <div id="deploy-ship-size" class="ship-size">-</div>
           </div>
-          <button id="btn-rotate" class="btn btn-accent" onclick="game.rotateDeployShip()">ROTATE AXIS (R)</button>
-        </div>
-        <div class="deploy-sidebar-right glass-panel">
-          <h3>TACTICAL PROFILE</h3>
-          <p id="lbl-tactical-profile-desc" style="font-size:11px; color:#cbd5e0; line-height:1.5; margin-top:4px;">• Match Type: HeliosStrike<br>• Board Dimension: 6x6 Cells<br>• Threat Level: AI COMPUTER</p>
+          <button id="btn-rotate" class="btn btn-accent" onclick="game.rotateDeployShip()">ROTATE (R)</button>
         </div>
       </div>
 
@@ -419,7 +391,7 @@
             <div class="cyber-divider" style="margin:4px 0;"></div>
             <div style="font-size:11px; color:#ffaa00; font-weight:bold;">TACTICAL HINT:</div>
             <p id="forest-hint-label" style="font-size:12px; color:#cbd5e0; line-height:1.3; margin-bottom:8px;">Explore around the geometric cyber tree lines to discover anomalies.</p>
-            <button id="btn-forest-hint-trigger" class="btn btn-primary" onclick="game.triggerRadarGlowHint()" style="width:100%; padding:8px 12px; font-size:11px;">💡 SCAN AND POINT TO OBJECT</button>
+            <button id="btn-forest-hint-trigger" class="btn btn-primary" onclick="game.triggerRadarGlowHint()" style="width:100%; padding:8px 12px; font-size:11px;">💡 SCAN & POINT</button>
           </div>
           
           <div class="chest-vault-panel glass-panel">
@@ -436,10 +408,10 @@
         <div class="forest-hunt-dock">
           <span style="font-size:11px; font-family:'Orbitron', sans-serif; letter-spacing:2px; color:#00f0ff; margin-bottom:4px;">TARGET SECTOR ANOMALIES</span>
           <div class="target-items-manifest">
-            <div id="manifest-0" class="manifest-card" onclick="game.selectForestTracker(0)">1. HOLO SPHERE</div>
-            <div id="manifest-1" class="manifest-card" onclick="game.selectForestTracker(1)">2. ENERGY PRISM</div>
-            <div id="manifest-2" class="manifest-card" onclick="game.selectForestTracker(2)">3. DATA ORE</div>
-            <div id="manifest-3" class="manifest-card" onclick="game.selectForestTracker(3)">4. LIGHT BEACON</div>
+            <div id="manifest-0" class="manifest-card" onclick="game.selectForestTracker(0)">1. SPHERE</div>
+            <div id="manifest-1" class="manifest-card" onclick="game.selectForestTracker(1)">2. PRISM</div>
+            <div id="manifest-2" class="manifest-card" onclick="game.selectForestTracker(2)">3. ORE</div>
+            <div id="manifest-3" class="manifest-card" onclick="game.selectForestTracker(3)">4. BEACON</div>
           </div>
         </div>
       </div>
@@ -463,7 +435,7 @@
       </div>
 
       <div id="settings-trigger-container">
-        <button id="btn-universal-settings" class="btn glass-panel" onclick="ui.openModal('modal-settings')" style="padding: 8px 14px; background: rgba(3,4,8,0.6); border-color: rgba(0,240,255,0.45);">⚙ SYSTEM CONFIG</button>
+        <button id="btn-universal-settings" class="btn glass-panel" onclick="ui.openModal('modal-settings')" style="padding: 8px 14px; background: rgba(3,4,8,0.6); border-color: rgba(0,240,255,0.45);">⚙ CONFIG</button>
       </div>
 
       <div id="screen-gameover" class="game-screen">
@@ -488,7 +460,7 @@
         <p style="font-size: 13px; color: #cbd5e0; line-height: 1.5; margin-bottom: 15px;">Configure target parameters for your upcoming HeliosStrike matrix match.</p>
         <div style="display: flex; flex-direction: column; gap: 12px;">
           <button class="btn btn-primary" onclick="game.selectEngagementMode(false)" style="padding: 12px; background: #ff5500; border-color: #ff5500; color: #fff;">VS COMPUTER AI</button>
-          <button class="btn btn-accent" onclick="game.selectEngagementMode(true)" style="padding: 12px; border-color: #00f0ff; color: #00f0ff; background: rgba(0,240,255,0.05);">LOCAL 2-PLAYER PASS & PLAY</button>
+          <button class="btn btn-accent" onclick="game.selectEngagementMode(true)" style="padding: 12px; border-color: #00f0ff; color: #00f0ff; background: rgba(0,240,255,0.05);">LOCAL PASS & PLAY</button>
         </div>
       </div>
     </div>
@@ -499,9 +471,9 @@
         <div class="cyber-divider"></div>
         <p style="font-size: 13px; color: #cbd5e0; line-height: 1.5; margin-bottom: 15px;">Select difficulty criteria. Each possesses a 100-word randomized bank.</p>
         <div style="display: flex; flex-direction: column; gap: 12px;">
-          <button class="btn btn-zen" onclick="game.startJollyPopMode('EASY')" style="padding: 12px;">EASY (3-4 LETTERS / 100 WORDS)</button>
-          <button class="btn btn-primary" onclick="game.startJollyPopMode('MEDIUM')" style="padding: 12px; background: #fff37a; color: #000; border-color: #fff37a;">MEDIUM (5-7 LETTERS / 100 WORDS)</button>
-          <button class="btn btn-danger" onclick="game.startJollyPopMode('HARD')" style="padding: 12px;">HARD (8+ LETTERS / 100 WORDS)</button>
+          <button class="btn btn-zen" onclick="game.startJollyPopMode('EASY')" style="padding: 12px;">EASY (3-4 LETTERS)</button>
+          <button class="btn btn-primary" onclick="game.startJollyPopMode('MEDIUM')" style="padding: 12px; background: #fff37a; color: #000; border-color: #fff37a;">MEDIUM (5-7 LETTERS)</button>
+          <button class="btn btn-danger" onclick="game.startJollyPopMode('HARD')" style="padding: 12px;">HARD (8+ LETTERS)</button>
         </div>
       </div>
     </div>
@@ -520,13 +492,13 @@
         <h2 style="font-size: 20px; text-shadow: 0 0 15px #00f0ff; border-bottom: 1px solid rgba(0,240,255,0.3); padding-bottom: 8px; margin-bottom: 8px;">TACTICAL OPERATIONS MANUAL</h2>
         <div style="max-height: 45vh; overflow-y: auto; padding-right: 8px;">
           <h3 style="color: #fff;">HELIOSSTRIKE PHASE</h3>
-          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Deploy vessels. Click coordinate sectors to fire. Destroy all enemy hull segments. Local Pass & Play hides hulls automatically to ensure strategic blind matches while sitting together.</p>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Deploy vessels. Click coordinate sectors to fire. Destroy all enemy hulls. Local Pass & Play hides hulls automatically.</p>
           <h3 style="color: #ffaa00;">STREAK BONUS (CRITICAL)</h3>
           <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Scoring a direct HIT grants an immediate extra turn.</p>
           <h3 style="color: #00f0ff;">HIDDEN FOREST HUNT</h3>
-          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Scan the interactive terrain layout. Trace the 4 item types listed at the bottom with your clues. Use the scan hint tool to focus the operational perspective scope camera directly on the target object matrix coordinate fields.</p>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Scan the interactive terrain layout. Find all 4 anomalies based on the provided tracking clues.</p>
           <h3 style="color: #ff4081;">HEAVEN HARMONY: COGNITIVE POPS</h3>
-          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">1. Click 5 balloons and memorize their values as they display dynamically on blast.<br>2. When the recall panel engages, type out your guessed sequences.<br>3. Check assessment lists to identify your mistakes and review the correct ones instantly!</p>
+          <p style="font-size:12px; color:#cbd5e0; line-height:1.5; margin-bottom: 10px;">Click 5 balloons and memorize their values. When the panel engages, type out your sequences to review your score.</p>
         </div>
         <button class="btn btn-primary" style="margin-top: 8px;" onclick="ui.closeModal('modal-tutorial')">ACKNOWLEDGE</button>
       </div>
@@ -553,8 +525,8 @@
         <div class="cyber-divider"></div>
         
         <div style="display: flex; gap: 10px; width: 100%;">
-          <button class="btn btn-accent" onclick="game.abortActiveMatch()" style="flex: 1; font-size: 10px; padding: 10px 4px;">◀ PREV PAGE (MENU)</button>
-          <button class="btn btn-primary" onclick="ui.closeModal('modal-settings')" style="flex: 1; font-size: 10px; padding: 10px 4px;">RESUME ENVIRONMENT</button>
+          <button class="btn btn-accent" onclick="game.abortActiveMatch()" style="flex: 1; font-size: 10px; padding: 10px 4px;">◀ MENU</button>
+          <button class="btn btn-primary" onclick="ui.closeModal('modal-settings')" style="flex: 1; font-size: 10px; padding: 10px 4px;">RESUME</button>
         </div>
       </div>
     </div>
@@ -594,19 +566,6 @@
         { name: "LIGHT BEACON", clue: "Clue: Mounted high above the eastern vector zone towers.", hint: "Hint: Camera trace searches near the top of distant right tree groups.", color: 0xa4ff84, type: "beacon" }
       ];
 
-      let dCanvas, ctx, dTexture, sandMesh, zenHitPlane;
-      let isDrawingSand = false, lastDrawPoint = null, isWashingSand = false;
-      let zenTextCursor = { x: 512, y: 512 };
-      const CANVAS_SIZE = 1024;
-      let isTextBoxToolActive = false;
-      let canTypeInSand = false;
-      let zenTextSize = 44;
-      let uploadedBgImage = null;
-      let zenStrokes = [];
-      let zenTextLines = [];
-      let currentTextLine = null;
-      let currentStroke = null;
-
       let bubbles = [], jollyParticles = [];
       let jollyScore = 0;
       let currentComboStreak = 0;
@@ -630,15 +589,12 @@
               "SYNTH", "PORTAL", "MATRIX", "HELIO", "HARMONY", "HYPER", "ORBIT", "VECTOR", "PULSE", "CYBER", "STATIC", "NEBULA", "COSMIC", "RECALL", "TRACKS", "DYNAMIC", "MODULE", "ENGINE", "SYSTEM", "DIGITAL",
               "ANALOG", "VERTEX", "BUFFER", "RENDER", "SHADER", "TEXTURE", "CANVAS", "CURSOR", "STRIKE", "COMBAT", "FLEET", "CRUISE", "PATROL", "MISSILE", "FUSION", "PLASMA", "SHIELD", "ARMOR", "SCHEME", "TACTIC",
               "PROFILE", "MANUAL", "RELOAD", "LAUNCH", "IMPACT", "MARKER", "WRECK", "GRAVITY", "ATMOS", "PLANET", "TITAN", "SPATIAL", "TEMPO", "MELODY", "CHORD", "ACOUSTIC", "CRYSTAL", "VOLUME", "GARDEN", "HEALING",
-              "SANDBOX", "PATTERN", "STREAK", "REWARD", "DOPAMINE", "COMBO", "INTERVAL", "CONSOLE", "CONFIG", "DEVICE", "PASSING", "LOGICAL", "BLUEPRINT", "VESSEL", "CARRIER", "FRIGATE", "CORVETTE", "DESTROYER", "BlueShift", "RedShift",
-              "SPECTRUM", "QUANTUM", "ELECTRON", "GRAVITON", "MAGNETIC", "PROXON", "WARPING", "CONDUIT", "STATION", "BEACON", "SIGNAL", "NETWORK", "ROUTING", "PACKET", "PROTOCOL", "FIREWALL", "TERMINAL", "KEYBOARD", "DISPLAY", "MONITOR"
+              "SANDBOX", "PATTERN", "STREAK", "REWARD", "DOPAMINE", "COMBO", "INTERVAL", "CONSOLE", "CONFIG", "DEVICE", "PASSING", "LOGICAL", "BLUEPRINT", "VESSEL", "CARRIER", "FRIGATE", "CORVETTE", "DESTROYER"
           ],
           HARD: [
               "ARPEGGIATOR", "HEAVENLY", "RESONANCE", "FREQUENCY", "ATMOSPHERE", "VELOCITY", "ALIGNMENT", "DOPAMINE", "CYBERNETIC", "DISPLACEMENT", "REVERBERATION", "MODULATION", "PENTATONIC", "COGNITIVE", "RESTORATIVE", "SIMULATION", "TRAJECTORY", "PREDICTABLE", "ARRANGEMENT", "DEPLOYMENT",
               "HOLOGRAPHIC", "PERFORMANCE", "ENGAGEMENT", "REVOLUTIONARY", "STRATAGEM", "ARCHITECTURE", "PROXIMITY", "PROPULSION", "MULTIPLIER", "ACCELERATION", "OSCILLATOR", "INSTRUMENT", "SYNCHRONOUS", "CALIBRATION", "GENERATOR", "DECENTRALIZED", "ALGORITHM", "ENCRYPTION", "DECRYPTION", "SIGNATURE",
-              "TRANSMISSION", "BROADCAST", "WAVELENGTH", "MULTIPLEX", "SATELLITE", "NAVIGATION", "AUTONOMOUS", "CONTROLLER", "PERIPHERAL", "MOTHERBOARD", "PROCESSOR", "TRANSISTOR", "CAPACITOR", "CONDUCTIVITY", "THERMODYNAMIC", "FLUIDITY", "VISCOSITY", "COMBUSTION", "SUPERSONIC", "HYPERSONIC",
-              "INTERSTELLAR", "CONSTELLATION", "ASTROPHYSICS", "SINGULARITY", "EXPONENTIAL", "LOGARITHMIC", "DIFFERENTIAL", "INTEGRATION", "COORDINATES", "PROBABILITY", "STATISTICS", "DIAGNOSTIC", "MAINTENANCE", "OPERATIONAL", "INFRASTRUCTURE", "FRAMEWORK", "REPOSITORIES", "COMPILATION", "ARCHITECTURE", "METAMORPHIC",
-              "CRYSTALLINE", "LUMINESCENCE", "PHOSPHOROUS", "FLUORESCENT", "INCANDESCENT", "TRANSLUCENT", "TRANSPARENCY", "SUBTERRANEAN", "ATMOSPHERIC", "STRATOSPHERE", "IONOSPHERE", "EXOSPHERE", "TROPOSPHERE", "MESOSPHERE", "MAGNETOSPHERE", "GRAVITATIONAL", "CENTRIFUGAL", "OSCILLATION", "INTERACTIVE", "ADAPTATION"
+              "TRANSMISSION", "BROADCAST", "WAVELENGTH", "MULTIPLEX", "SATELLITE", "NAVIGATION", "AUTONOMOUS", "CONTROLLER", "PERIPHERAL", "MOTHERBOARD", "PROCESSOR", "TRANSISTOR", "CAPACITOR", "CONDUCTIVITY", "THERMODYNAMIC", "FLUIDITY", "VISCOSITY", "COMBUSTION", "SUPERSONIC", "HYPERSONIC"
           ]
       };
       const BUBBLE_COLORS = [0xff6b9d, 0xfff176, 0x4fc3f7, 0x81c784, 0xba68c8, 0xffb74d];
@@ -800,16 +756,13 @@
                       zenOsc.start(now); zenOsc.stop(now + 1.9);
                   }
               } else if (selectedTrackVibe === 'JOLLY') {
-                  // ✨ NEW SOOTHING MELODIOUS MUSIC FOR JOLLY MODE ✨
-                  
-                  // 1. Warm Background Chords (Swells every 8 beats)
+                  // Beautiful warm chords for mobile speakers
                   if (beatCounter % 8 === 0) {
-                      // Beautiful ambient chord progression (C, F, Dm, G)
                       const chords = [
-                          [261.63, 329.63, 392.00], // C Major
-                          [349.23, 440.00, 523.25], // F Major
-                          [293.66, 349.23, 440.00], // D Minor
-                          [392.00, 493.88, 587.33]  // G Major
+                          [261.63, 329.63, 392.00], // C
+                          [349.23, 440.00, 523.25], // F
+                          [293.66, 349.23, 440.00], // Dm
+                          [392.00, 493.88, 587.33]  // G
                       ];
                       const chord = chords[Math.floor(beatCounter / 8) % chords.length];
                       
@@ -818,23 +771,23 @@
                           padOsc.type = 'sine'; 
                           padOsc.frequency.setValueAtTime(freq, now);
                           padGain.gain.setValueAtTime(0.001, now);
-                          padGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.1, now + 1.0);
+                          padGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.15, now + 1.0);
                           padGain.gain.exponentialRampToValueAtTime(0.001, now + 3.0);
                           padOsc.connect(padGain); padGain.connect(audioCtx.destination);
                           padOsc.start(now); padOsc.stop(now + 3.5);
                       });
                   }
 
-                  // 2. Gentle Arpeggiated Melody (Sparkles randomly on beats)
+                  // Sparkly arpeggios that phones can easily reproduce
                   if (Math.random() > 0.35) {
-                      const scale = [392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00]; // High Pentatonic
+                      const scale = [392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00]; 
                       const note = scale[Math.floor(Math.random() * scale.length)];
                       
                       const arpOsc = audioCtx.createOscillator(), arpGain = audioCtx.createGain();
-                      arpOsc.type = 'triangle'; // Soft bell-like tone
+                      arpOsc.type = 'triangle'; 
                       arpOsc.frequency.setValueAtTime(note, now);
                       arpGain.gain.setValueAtTime(0.001, now);
-                      arpGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.08, now + 0.05);
+                      arpGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.1, now + 0.05);
                       arpGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
                       
                       arpOsc.connect(arpGain); arpGain.connect(audioCtx.destination);

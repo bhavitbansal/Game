@@ -10,7 +10,8 @@
     
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body, html { width: 100vw; height: 100vh; overflow: hidden; background-color: #010204; font-family: 'Rajdhani', sans-serif; color: #ffffff; user-select: none; }
+      /* user-select: none prevents accidental highlighting while playing the game */
+      body, html { width: 100vw; height: 100vh; overflow: hidden; background-color: #010204; font-family: 'Rajdhani', sans-serif; color: #ffffff; user-select: none; -webkit-user-select: none; }
       #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: auto; }
       #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; display: flex; flex-direction: column; }
       
@@ -107,7 +108,17 @@
 
       .recall-panel-overlay { display: none; flex-direction: column; gap: 20px; align-items: center; justify-content: center; background: rgba(2, 4, 10, 0.94); position: absolute; width: 100vw; height: 100vh; top:0; left:0; z-index: 5000; padding: 30px; pointer-events: auto; }
       .recall-card { background: rgba(8, 12, 28, 0.8); border: 1px solid rgba(0, 240, 255, 0.3); max-width: 600px; width: 100%; padding: 30px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
-      .recall-echo-box { font-family: 'Orbitron', sans-serif; font-size: 36px; font-weight: 900; color: #fff37a; min-height: 50px; letter-spacing: 4px; text-transform: uppercase; margin: 15px 0; text-shadow: 0 0 15px rgba(255,243,122,0.8); }
+      
+      /* CRITICAL FIX: ENABLE TYPING ON MOBILE */
+      #recall-mobile-input {
+          user-select: text !important;
+          -webkit-user-select: text !important;
+          -moz-user-select: text !important;
+          -ms-user-select: text !important;
+          touch-action: manipulation;
+          pointer-events: auto;
+      }
+      .recall-echo-box { font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 900; color: #fff37a; min-height: 50px; letter-spacing: 4px; text-transform: uppercase; margin: 15px 0; text-shadow: 0 0 15px rgba(255,243,122,0.8); }
       
       .jolly-tracker-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; width: 100%; justify-content: center; }
       .tracker-slot { width: 90px; height: 35px; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: 'Orbitron', sans-serif; color: #a0aec0; background: rgba(0,0,0,0.4); }
@@ -207,11 +218,28 @@
         .vibe-card:hover { transform: translateY(-2px) scale(1.01); }
         .vibe-description { font-size: 11.5px; }
         
-        /* DEPLOY SCREEN COMPRESSION - FIXED FOR ROTATE BUTTON */
+        /* DEPLOY SCREEN COMPRESSION */
         #screen-deploy { display: block; pointer-events: none; }
         .deploy-sidebar-right { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 8px; pointer-events: auto; z-index: 20; }
-        .deploy-sidebar-left { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 10px; gap: 6px; pointer-events: auto; z-index: 20; }
+        .deploy-sidebar-left { position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 10px; gap: 6px; pointer-events: auto; z-index: 20; }
         #deploy-title-label { font-size: 13px; }
+
+        /* CRITICAL FIX: MASSIVE FLOATING ROTATE BUTTON FOR MOBILE */
+        #btn-rotate {
+            position: fixed;
+            bottom: 120px;
+            right: 15px;
+            width: auto;
+            min-width: 130px;
+            z-index: 9999;
+            padding: 15px 20px;
+            font-size: 13px;
+            border-radius: 40px;
+            background: rgba(255, 0, 85, 0.85);
+            color: #ffffff;
+            border: 2px solid #ffaa00;
+            box-shadow: 0 10px 30px rgba(255, 0, 85, 0.6);
+        }
         
         /* BATTLE SCREEN COMPRESSION */
         .battle-header { top: 5px; left: 5px; width: calc(100% - 10px); padding: 6px 10px; font-size: 10px; gap: 5px; }
@@ -221,7 +249,7 @@
         .hud-main-containers { display: block; pointer-events: none; }
         .sidebar-left { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 10px; max-height: 30vh; pointer-events: auto; z-index: 20; }
         
-        /* ZEN MODE COMPRESSION - FIXED FOR VISIBILITY */
+        /* ZEN MODE COMPRESSION */
         #screen-zen { display: block; pointer-events: none; }
         .forest-upper-hud { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); flex-direction: column; align-items: center; gap: 8px; width: 95%; max-width: 320px; pointer-events: auto; z-index: 20; }
         .clue-terminal-panel, .chest-vault-panel { width: 100%; padding: 10px; }
@@ -257,6 +285,7 @@
         .forest-hunt-dock { position: fixed; bottom: 10px; left: 10px; width: 250px; margin-bottom: 0; padding: 8px; }
         #settings-trigger-container { bottom: 5px; right: 5px; transform: none; width: auto; }
         #btn-universal-settings { width: auto; }
+        #btn-rotate { position: relative; bottom: unset; right: unset; width: 100%; } /* Reset massive mobile rotate button on landscape */
       }
     </style>
   </head>
@@ -346,7 +375,7 @@
       <div id="screen-deploy" class="game-screen">
         <div class="deploy-sidebar-left glass-panel">
           <h2 id="deploy-title-label">FLEET DEPLOYMENT</h2>
-          <p style="font-size:11px; color:#cbd5e0; line-height:1.4;">Position war assets on your light matrix. Click grid cells to lock, press <strong>R</strong> to switch orientation.</p>
+          <p style="font-size:11px; color:#cbd5e0; line-height:1.4;">Position war assets on your light matrix. Click grid cells to lock.</p>
           <div class="deploy-ship-info">
             <div style="font-size:9px; color:#a0aec0;">CURRENT SCHEMATIC:</div>
             <div id="deploy-ship-name" class="ship-name">-</div>
@@ -771,16 +800,45 @@
                       zenOsc.start(now); zenOsc.stop(now + 1.9);
                   }
               } else if (selectedTrackVibe === 'JOLLY') {
-                  const ambientScale = [130.81, 164.81, 196.00, 220.00];
-                  if (beatCounter % 16 === 0) {
-                      const baseChordNote = ambientScale[Math.floor(beatCounter / 16) % ambientScale.length];
-                      const padOsc = audioCtx.createOscillator(), padGain = audioCtx.createGain();
-                      padOsc.type = 'sine'; padOsc.frequency.setValueAtTime(baseChordNote, now);
-                      padGain.gain.setValueAtTime(0.001, now);
-                      padGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.18, now + 1.0);
-                      padGain.gain.exponentialRampToValueAtTime(0.001, now + 3.8);
-                      padOsc.connect(padGain); padGain.connect(audioCtx.destination);
-                      padOsc.start(now); padOsc.stop(now + 4.0);
+                  // ✨ NEW SOOTHING MELODIOUS MUSIC FOR JOLLY MODE ✨
+                  
+                  // 1. Warm Background Chords (Swells every 8 beats)
+                  if (beatCounter % 8 === 0) {
+                      // Beautiful ambient chord progression (C, F, Dm, G)
+                      const chords = [
+                          [261.63, 329.63, 392.00], // C Major
+                          [349.23, 440.00, 523.25], // F Major
+                          [293.66, 349.23, 440.00], // D Minor
+                          [392.00, 493.88, 587.33]  // G Major
+                      ];
+                      const chord = chords[Math.floor(beatCounter / 8) % chords.length];
+                      
+                      chord.forEach(freq => {
+                          const padOsc = audioCtx.createOscillator(), padGain = audioCtx.createGain();
+                          padOsc.type = 'sine'; 
+                          padOsc.frequency.setValueAtTime(freq, now);
+                          padGain.gain.setValueAtTime(0.001, now);
+                          padGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.1, now + 1.0);
+                          padGain.gain.exponentialRampToValueAtTime(0.001, now + 3.0);
+                          padOsc.connect(padGain); padGain.connect(audioCtx.destination);
+                          padOsc.start(now); padOsc.stop(now + 3.5);
+                      });
+                  }
+
+                  // 2. Gentle Arpeggiated Melody (Sparkles randomly on beats)
+                  if (Math.random() > 0.35) {
+                      const scale = [392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00]; // High Pentatonic
+                      const note = scale[Math.floor(Math.random() * scale.length)];
+                      
+                      const arpOsc = audioCtx.createOscillator(), arpGain = audioCtx.createGain();
+                      arpOsc.type = 'triangle'; // Soft bell-like tone
+                      arpOsc.frequency.setValueAtTime(note, now);
+                      arpGain.gain.setValueAtTime(0.001, now);
+                      arpGain.gain.linearRampToValueAtTime(musicVolumeLevel * 0.08, now + 0.05);
+                      arpGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                      
+                      arpOsc.connect(arpGain); arpGain.connect(audioCtx.destination);
+                      arpOsc.start(now); arpOsc.stop(now + 0.85);
                   }
               }
               beatCounter++;
@@ -1521,7 +1579,6 @@
           };
 
           window.addEventListener('mousedown', (e) => { 
-              // Prevent firing ship weapons if clicking the mobile input field
               if(e.target.id === 'recall-mobile-input' || e.target.tagName === 'BUTTON') return;
               handleDownAction(e.clientX, e.clientY); 
           });

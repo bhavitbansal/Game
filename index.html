@@ -79,8 +79,8 @@
       .home-menu { display: flex; flex-direction: column; gap: 14px; width: 280px; }
       
       #screen-deploy { flex-direction: row; justify-content: space-between; align-items: flex-start; pointer-events: none; }
-      .deploy-sidebar-left { position: absolute; left: 15px; top: 15px; width: 260px; display: flex; flex-direction: column; gap: 12px; }
-      .deploy-sidebar-right { position: absolute; right: 15px; top: 15px; width: 240px; }
+      .deploy-sidebar-left { position: absolute; left: 15px; top: 15px; width: 260px; display: flex; flex-direction: column; gap: 12px; pointer-events: auto; }
+      .deploy-sidebar-right { position: absolute; right: 15px; top: 15px; width: 240px; pointer-events: auto; }
       
       #screen-battle { flex-direction: column; justify-content: space-between; pointer-events: none; }
       .battle-header { width: calc(100% - 30px); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: absolute; top: 15px; left: 15px; border-radius: 8px; }
@@ -119,14 +119,14 @@
       .status-correct { color: #a4ff84; font-weight: bold; }
       .status-missed { color: #ff3366; font-weight: bold; }
 
-      .jolly-footer { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-      .jolly-tip { font-size: 14px; color: #ff6b9d; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
+      .jolly-footer { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: auto; pointer-events: auto; }
+      .jolly-tip { font-size: 14px; color: #ff6b9d; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); pointer-events: none; }
 
       #settings-trigger-container { position: absolute; bottom: 15px; right: 15px; z-index: 20; pointer-events: auto; }
       #ai-taunt { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; color: #ffaa00; text-shadow: 0 0 15px rgba(255, 170, 0, 0.6); z-index: 20; opacity: 0; transition: opacity 0.3s; pointer-events: none; text-align: center; background: rgba(4, 6, 14, 0.9); padding: 12px 24px; border-radius: 6px; border: 1px solid rgba(255,170,0,0.3); max-width: 80%; min-height: 45px; }
 
       .hud-main-containers { display: flex; justify-content: space-between; width: 100%; height: 100%; align-items: flex-end; }
-      .sidebar-left { position: absolute; left: 15px; bottom: 15px; width: 240px; display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; }
+      .sidebar-left { position: absolute; left: 15px; bottom: 15px; width: 240px; display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; pointer-events: auto; }
       .hud-item .label { font-size: 9px; color: #00f0ff; letter-spacing: 1px; opacity: 0.7; }
       .hud-item .val { font-size: 15px; font-weight: 700; font-family: 'Orbitron', sans-serif; }
       #turn-indicator { font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 900; color: #00f0ff; text-shadow: 0 0 15px rgba(0, 240, 255, 0.5); text-align: center; }
@@ -207,10 +207,10 @@
         .vibe-card:hover { transform: translateY(-2px) scale(1.01); }
         .vibe-description { font-size: 11.5px; }
         
-        /* DEPLOY SCREEN COMPRESSION */
-        #screen-deploy { flex-direction: column; justify-content: flex-end; align-items: center; padding: 10px; padding-bottom: 20px; pointer-events: none; }
-        .deploy-sidebar-left { position: static; width: 100%; max-width: 320px; padding: 10px; gap: 6px; order: 2; pointer-events: auto; }
-        .deploy-sidebar-right { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 8px; order: 1; pointer-events: auto; }
+        /* DEPLOY SCREEN COMPRESSION - FIXED FOR ROTATE BUTTON */
+        #screen-deploy { display: block; pointer-events: none; }
+        .deploy-sidebar-right { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 8px; pointer-events: auto; z-index: 20; }
+        .deploy-sidebar-left { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 10px; gap: 6px; pointer-events: auto; z-index: 20; }
         #deploy-title-label { font-size: 13px; }
         
         /* BATTLE SCREEN COMPRESSION */
@@ -218,32 +218,29 @@
         .battle-header .hud-item .val { font-size: 11px; }
         #turn-indicator { font-size: 10px; }
         #ai-taunt { top: 60px; bottom: unset; font-size: 12px; width: 90%; padding: 6px 12px; }
+        .hud-main-containers { display: block; pointer-events: none; }
+        .sidebar-left { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 10px; max-height: 30vh; pointer-events: auto; z-index: 20; }
         
-        .hud-main-containers { flex-direction: column; justify-content: flex-end; align-items: center; width: 100%; pointer-events: none; }
-        .sidebar-left { position: static; width: 100%; max-width: 320px; padding: 10px; max-height: 30vh; margin-bottom: 20px; pointer-events: auto; }
-        
-        /* ZEN MODE COMPRESSION */
-        #screen-zen { justify-content: space-between; align-items: center; padding: 10px; }
-        .forest-upper-hud { flex-direction: column; align-items: center; gap: 8px; width: 100%; }
-        .clue-terminal-panel { width: 100%; max-width: 320px; padding: 10px; }
-        .chest-vault-panel { width: 100%; max-width: 320px; }
-        .forest-hunt-dock { width: 100%; max-width: 320px; padding: 10px; margin-bottom: 20px; }
+        /* ZEN MODE COMPRESSION - FIXED FOR VISIBILITY */
+        #screen-zen { display: block; pointer-events: none; }
+        .forest-upper-hud { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); flex-direction: column; align-items: center; gap: 8px; width: 95%; max-width: 320px; pointer-events: auto; z-index: 20; }
+        .clue-terminal-panel, .chest-vault-panel { width: 100%; padding: 10px; }
+        .forest-hunt-dock { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 10px; margin-bottom: 0; pointer-events: auto; z-index: 20; }
         .target-items-manifest { flex-wrap: wrap; gap: 4px; }
         .manifest-card { width: calc(50% - 2px); font-size: 10px; padding: 6px; }
 
-        #settings-trigger-container { bottom: 10px; right: 50%; transform: translateX(50%); width: calc(100% - 20px); max-width: 320px; }
-        #btn-universal-settings { width: 100%; text-align: center; padding: 8px; font-size: 10px; }
+        #settings-trigger-container { bottom: 15px; right: 15px; transform: none; width: auto; max-width: unset; z-index: 30; }
+        #btn-universal-settings { width: auto; padding: 8px; font-size: 10px; }
 
-        .jolly-header { flex-direction: column; gap: 5px; align-items: center; text-align: center; }
+        .jolly-header { flex-direction: column; gap: 5px; align-items: center; text-align: center; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 95%; z-index: 20; }
         .jolly-score-val { font-size: 24px; }
-        .jolly-footer { flex-direction: column-reverse; gap: 10px; align-items: center; width: 100%; margin-bottom: 40px; }
+        .jolly-footer { flex-direction: column-reverse; gap: 10px; align-items: center; width: 100%; position: absolute; bottom: 15px; left: 0; padding: 0 15px; z-index: 20;}
         .jolly-tip { font-size: 10px; padding: 6px 10px; text-align: center; width: 100%; max-width: 320px; }
-        .glass-back-portal { width: 100%; max-width: 320px; text-align: center; }
         
         /* MODALS */
         .modal-box { max-height: 85vh; padding: 15px; }
         .recall-card { padding: 15px 10px; width: 95%; overflow-y: auto; max-height: 90vh; }
-        .recall-echo-box { font-size: 20px; min-height: 30px; margin: 10px 0; }
+        .recall-echo-box { font-size: 18px; min-height: 40px; margin: 10px 0; padding: 10px; }
         .jolly-tracker-grid { gap: 4px; }
         .tracker-slot { width: 30%; font-size: 10px; height: 28px; }
       }
@@ -271,9 +268,12 @@
     <div id="recall-screen-panel" class="recall-panel-overlay">
        <div class="recall-card glass-panel" style="border-color: #ff4081;">
           <h2 style="font-size:24px; color: #ff4081; font-family:'Orbitron', sans-serif;">DATA RECALL TERMINAL</h2>
-          <p id="recall-instructions-lbl" style="font-size:13px; color:#cbd5e0; margin-top:5px;">Type out one of the 5 hidden burst words from your memory core, then press ENTER.</p>
+          <p id="recall-instructions-lbl" style="font-size:13px; color:#cbd5e0; margin-top:5px;">Type out the 5 hidden burst words from your memory core.</p>
           
-          <div id="recall-echo" class="recall-echo-box"></div>
+          <div id="mobile-input-container" style="display: flex; gap: 10px; margin: 15px 0;">
+             <input type="text" id="recall-mobile-input" class="recall-echo-box" placeholder="TAP TO TYPE..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex: 1; margin: 0; background: rgba(0,0,0,0.5); border: 1px dashed #fff37a; color: #fff37a; text-align: center; outline: none; pointer-events: auto;">
+             <button class="btn btn-primary" onclick="game.submitRecallWord()" style="padding: 0 15px; font-size: 12px; pointer-events: auto;">SUBMIT</button>
+          </div>
           
           <div class="jolly-tracker-grid">
             <div id="slot-0" class="tracker-slot popped">WORD 1</div>
@@ -1100,10 +1100,13 @@
           userTypedBuffer = "";
           recalledAnswersArray = [];
           
-          document.getElementById('recall-echo').textContent = "";
           document.getElementById('assessment-box').style.display = "none";
           document.getElementById('btn-recall-submit').style.display = "none";
-          document.getElementById('recall-instructions-lbl').textContent = "Type one of the 5 hidden burst words from your memory core, then press ENTER.";
+          
+          const inputField = document.getElementById('recall-mobile-input');
+          const inputContainer = inputField.parentElement;
+          if (inputContainer) inputContainer.style.display = "flex";
+          inputField.value = "";
 
           for (let s = 0; s < 5; s++) {
               let slotNode = document.getElementById(`slot-${s}`);
@@ -1517,8 +1520,15 @@
               }
           };
 
-          window.addEventListener('mousedown', (e) => { handleDownAction(e.clientX, e.clientY); });
-          window.addEventListener('touchstart', (e) => { if(e.touches.length > 0) { handleDownAction(e.touches[0].clientX, e.touches[0].clientY, true); } }, { passive: true });
+          window.addEventListener('mousedown', (e) => { 
+              // Prevent firing ship weapons if clicking the mobile input field
+              if(e.target.id === 'recall-mobile-input' || e.target.tagName === 'BUTTON') return;
+              handleDownAction(e.clientX, e.clientY); 
+          });
+          window.addEventListener('touchstart', (e) => { 
+              if(e.target.id === 'recall-mobile-input' || e.target.tagName === 'BUTTON') return;
+              if(e.touches.length > 0) { handleDownAction(e.touches[0].clientX, e.touches[0].clientY, true); } 
+          }, { passive: true });
           
           window.addEventListener('mousemove', (e) => { if (isPointerDown || currentPhase === 'DEPLOY' || currentPhase === 'BATTLE_PLAYER' || currentPhase === 'BATTLE_PVP_P2' || currentPhase === 'ZEN_MODE') processPointer(e.clientX, e.clientY); });
           window.addEventListener('touchmove', (e) => { if ((isPointerDown || currentPhase === 'DEPLOY' || currentPhase === 'BATTLE_PLAYER' || currentPhase === 'BATTLE_PVP_P2' || currentPhase === 'ZEN_MODE') && e.touches.length > 0) processPointer(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
@@ -1530,34 +1540,8 @@
           window.addEventListener('keydown', (e) => { 
               if (e.key.toLowerCase() === 'r' && currentPhase === 'DEPLOY') game.rotateDeployShip(); 
               
-              if (currentPhase === 'JOLLY_MODE' && isRecallPhaseActive && recalledAnswersArray.length < 5) {
-                  const echoBox = document.getElementById('recall-echo');
-
-                  if (e.key === 'Enter') {
-                      const submission = userTypedBuffer.trim().toUpperCase();
-                      if (submission.length > 0) {
-                          recalledAnswersArray.push(submission);
-                          
-                          const currentSlotIdx = recalledAnswersArray.length - 1;
-                          const slotNode = document.getElementById(`slot-${currentSlotIdx}`);
-                          if(slotNode) slotNode.textContent = "SAVED";
-
-                          playSynthesizedSound('click');
-                      }
-                      userTypedBuffer = "";
-                      echoBox.textContent = "";
-
-                      if (recalledAnswersArray.length === 5) {
-                          processMemoryAssessmentResults();
-                      }
-                  } else if (e.key === 'Backspace') {
-                      userTypedBuffer = userTypedBuffer.slice(0, -1);
-                      echoBox.textContent = userTypedBuffer;
-                  } else if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
-                      userTypedBuffer += e.key.toUpperCase();
-                      echoBox.textContent = userTypedBuffer;
-                      playSynthesizedSound('click');
-                  }
+              if (currentPhase === 'JOLLY_MODE' && isRecallPhaseActive && e.key === 'Enter') {
+                  game.submitRecallWord();
               }
           });
       }
@@ -1979,6 +1963,34 @@
                   spawnBubble(-1 - (i * 1.1));
               }
           },
+          
+          submitRecallWord: function() {
+              if (currentPhase === 'JOLLY_MODE' && isRecallPhaseActive && recalledAnswersArray.length < 5) {
+                  const inputField = document.getElementById('recall-mobile-input');
+                  const submission = inputField.value.trim().toUpperCase();
+                  
+                  if (submission.length > 0) {
+                      recalledAnswersArray.push(submission);
+                      
+                      const currentSlotIdx = recalledAnswersArray.length - 1;
+                      const slotNode = document.getElementById(`slot-${currentSlotIdx}`);
+                      if(slotNode) slotNode.textContent = "SAVED";
+
+                      playSynthesizedSound('click');
+                  }
+                  
+                  inputField.value = ""; 
+                  inputField.focus(); 
+                  
+                  if (recalledAnswersArray.length === 5) {
+                      inputField.blur();
+                      const inputContainer = document.getElementById('mobile-input-container');
+                      if (inputContainer) inputContainer.style.display = "none";
+                      processMemoryAssessmentResults();
+                  }
+              }
+          },
+
           exitRecallToJollyMode: function() {
               playSynthesizedSound('click');
               this.startJollyPopMode(activeJollyDifficulty);

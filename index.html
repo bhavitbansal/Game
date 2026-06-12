@@ -191,61 +191,73 @@
       @media (max-width: 767px) {
         .logo-text { font-size: 36px; letter-spacing: 3px; }
         .subtitle { font-size: 10px; letter-spacing: 5px; }
-        .glass-panel { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); background: rgba(8, 12, 24, 0.85); padding: 15px; }
-        .home-menu { width: 250px; }
+        .glass-panel { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); background: rgba(8, 12, 24, 0.85); padding: 12px; }
+        .home-menu { width: 90%; max-width: 300px; }
         
         #screen-portal { padding: 15px; }
-        .portal-box { padding: 30px 20px; }
-        .portal-title { font-size: 28px; }
-        .portal-punchline { font-size: 14px; letter-spacing: 3px; }
+        .portal-box { padding: 25px 15px; width: 100%; }
+        .portal-title { font-size: 26px; }
+        .portal-punchline { font-size: 12px; letter-spacing: 2px; }
         
-        #screen-intro { gap: 15px; padding: 20px 15px; justify-content: flex-start; }
-        .intro-header-bar { flex-direction: column; gap: 10px; align-items: center; text-align: center; }
-        .vibe-deck { flex-direction: column; gap: 15px; perspective: none; align-items: center; width: 100%; overflow-y: visible; }
-        .vibe-card { width: 100%; max-width: 320px; padding: 20px; min-height: unset; gap: 12px; }
-        .vibe-card:hover { transform: translateY(-4px) scale(1.02); }
-        .vibe-description { font-size: 12.5px; }
+        #screen-intro { gap: 10px; padding: 15px 10px; justify-content: flex-start; }
+        .intro-header-bar { flex-direction: column; gap: 8px; align-items: center; text-align: center; }
+        .intro-headline { font-size: 14px; }
+        .vibe-deck { flex-direction: column; gap: 10px; perspective: none; align-items: center; width: 100%; overflow-y: auto; max-height: 75vh; padding-bottom: 20px; }
+        .vibe-card { width: 100%; max-width: 300px; padding: 15px; min-height: unset; gap: 10px; }
+        .vibe-card:hover { transform: translateY(-2px) scale(1.01); }
+        .vibe-description { font-size: 11.5px; }
         
-        #screen-deploy { flex-direction: column; justify-content: flex-end; align-items: center; padding: 10px; gap: 8px; }
-        .deploy-sidebar-left { position: static; width: 100%; max-width: 340px; padding: 12px; margin-bottom: 0px; gap: 8px; order: 2; }
-        .deploy-sidebar-right { position: static; width: 100%; max-width: 340px; padding: 10px; order: 1; }
+        /* DEPLOY SCREEN COMPRESSION */
+        #screen-deploy { flex-direction: column; justify-content: flex-end; align-items: center; padding: 10px; padding-bottom: 20px; pointer-events: none; }
+        .deploy-sidebar-left { position: static; width: 100%; max-width: 320px; padding: 10px; gap: 6px; order: 2; pointer-events: auto; }
+        .deploy-sidebar-right { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 320px; padding: 8px; order: 1; pointer-events: auto; }
+        #deploy-title-label { font-size: 13px; }
         
-        .battle-header { top: 10px; left: 10px; width: calc(100% - 20px); padding: 8px 12px; font-size: 11px; gap: 8px; }
-        .battle-header .hud-item .val { font-size: 12px; }
-        #turn-indicator { font-size: 11px; }
-        #ai-taunt { bottom: unset; top: 75px; font-size: 13px; max-width: 90%; width: 85%; padding: 8px 16px; }
+        /* BATTLE SCREEN COMPRESSION */
+        .battle-header { top: 5px; left: 5px; width: calc(100% - 10px); padding: 6px 10px; font-size: 10px; gap: 5px; }
+        .battle-header .hud-item .val { font-size: 11px; }
+        #turn-indicator { font-size: 10px; }
+        #ai-taunt { top: 60px; bottom: unset; font-size: 12px; width: 90%; padding: 6px 12px; }
         
-        .hud-main-containers { flex-direction: column; justify-content: flex-end; align-items: center; width: 100%; }
-        .sidebar-left { position: static; width: 100%; max-width: 340px; padding: 12px; max-height: 25vh; margin-bottom: 55px; }
+        .hud-main-containers { flex-direction: column; justify-content: flex-end; align-items: center; width: 100%; pointer-events: none; }
+        .sidebar-left { position: static; width: 100%; max-width: 320px; padding: 10px; max-height: 30vh; margin-bottom: 20px; pointer-events: auto; }
         
-        #screen-zen { justify-content: space-between; align-items: center; padding: 15px; }
-        .forest-upper-hud { flex-direction: column; align-items: center; gap: 10px; width: 100%; }
-        .clue-terminal-panel { width: 100%; max-width: 340px; }
-        .chest-vault-panel { width: 100%; max-width: 340px; }
-        .forest-hunt-dock { width: 100%; max-width: 340px; padding: 12px; margin-bottom: 55px; }
-        .target-items-manifest { flex-wrap: wrap; gap: 6px; }
-        .manifest-card { flex: unset; width: calc(50% - 3px); font-size: 11px; padding: 6px; }
+        /* ZEN MODE COMPRESSION */
+        #screen-zen { justify-content: space-between; align-items: center; padding: 10px; }
+        .forest-upper-hud { flex-direction: column; align-items: center; gap: 8px; width: 100%; }
+        .clue-terminal-panel { width: 100%; max-width: 320px; padding: 10px; }
+        .chest-vault-panel { width: 100%; max-width: 320px; }
+        .forest-hunt-dock { width: 100%; max-width: 320px; padding: 10px; margin-bottom: 20px; }
+        .target-items-manifest { flex-wrap: wrap; gap: 4px; }
+        .manifest-card { width: calc(50% - 2px); font-size: 10px; padding: 6px; }
 
-        #settings-trigger-container { bottom: 10px; right: 50%; transform: translateX(50%); width: calc(100% - 30px); max-width: 340px; }
-        #btn-universal-settings { width: 100%; text-align: center; padding: 10px; }
+        #settings-trigger-container { bottom: 10px; right: 50%; transform: translateX(50%); width: calc(100% - 20px); max-width: 320px; }
+        #btn-universal-settings { width: 100%; text-align: center; padding: 8px; font-size: 10px; }
 
-        .jolly-header { flex-direction: column; gap: 8px; align-items: center; text-align: center; }
-        .jolly-footer { flex-direction: column-reverse; gap: 12px; align-items: center; width: 100%; margin-bottom: 50px; }
-        .jolly-tip { font-size: 11px; padding: 6px 12px; text-align: center; width: 100%; max-width: 340px; }
-        .glass-back-portal { width: 100%; max-width: 340px; text-align: center; }
-        .recall-card { padding: 20px 15px; width: 95%; }
-        .recall-echo-box { font-size: 26px; min-height: 40px; }
+        .jolly-header { flex-direction: column; gap: 5px; align-items: center; text-align: center; }
+        .jolly-score-val { font-size: 24px; }
+        .jolly-footer { flex-direction: column-reverse; gap: 10px; align-items: center; width: 100%; margin-bottom: 40px; }
+        .jolly-tip { font-size: 10px; padding: 6px 10px; text-align: center; width: 100%; max-width: 320px; }
+        .glass-back-portal { width: 100%; max-width: 320px; text-align: center; }
+        
+        /* MODALS */
+        .modal-box { max-height: 85vh; padding: 15px; }
+        .recall-card { padding: 15px 10px; width: 95%; overflow-y: auto; max-height: 90vh; }
+        .recall-echo-box { font-size: 20px; min-height: 30px; margin: 10px 0; }
+        .jolly-tracker-grid { gap: 4px; }
+        .tracker-slot { width: 30%; font-size: 10px; height: 28px; }
       }
 
       @media (max-height: 500px) and (orientation: landscape) {
-        .game-screen { justify-content: flex-start !important; padding-bottom: 60px; }
-        #screen-home { flex-direction: row; gap: 20px; }
-        .vibe-deck { flex-direction: row; overflow-x: auto; justify-content: flex-start; align-items: stretch; height: 60vh; }
+        .game-screen { justify-content: flex-start !important; padding-bottom: 10px; overflow-y: auto; }
+        #screen-home { flex-direction: row; gap: 20px; align-items: center; justify-content: center !important; }
+        .vibe-deck { flex-direction: row; overflow-x: auto; overflow-y: hidden; justify-content: flex-start; align-items: stretch; height: auto; max-height: 80vh; padding: 10px; }
         .vibe-card { width: 220px; flex-shrink: 0; }
-        .sidebar-left { position: fixed; right: 10px; bottom: 10px; left: unset; width: 200px; max-height: 50vh; margin-bottom: 0; }
-        .forest-upper-hud { flex-direction: row; gap: 10px; align-items: stretch; }
-        .clue-terminal-panel, .chest-vault-panel { flex: 1; }
-        .forest-hunt-dock { margin-bottom: 0; padding: 8px; }
+        .sidebar-left, .deploy-sidebar-left { position: fixed; right: 10px; left: unset; bottom: 10px; width: 240px; max-height: 80vh; margin-bottom: 0; }
+        .deploy-sidebar-right { display: none; } 
+        .forest-upper-hud { flex-direction: row; gap: 10px; align-items: flex-start; }
+        .clue-terminal-panel, .chest-vault-panel { flex: 1; max-width: 250px; }
+        .forest-hunt-dock { position: fixed; bottom: 10px; left: 10px; width: 250px; margin-bottom: 0; padding: 8px; }
         #settings-trigger-container { bottom: 5px; right: 5px; transform: none; width: auto; }
         #btn-universal-settings { width: auto; }
       }
@@ -1230,30 +1242,45 @@
           const isMobileLandscape = aspect > 1 && window.innerHeight < 500;
 
           if (currentPhase === 'INTRO' || currentPhase === 'MENU' || currentPhase === 'PORTAL') { 
-              camera.position.set(0, 5, 25); camera.lookAt(0, 1, 0); 
+              camera.position.set(0, 5, 25); 
+              camera.lookAt(0, 1, 0); 
           }
           else if (currentPhase === 'DEPLOY') { 
               let gridFocusX = (isLocalPvP && activeDeployingPlayer === 2) ? A_X : P_X;
-              if (isPortrait) camera.position.set(gridFocusX, 14 / aspect, 12 / aspect); 
+              if (isPortrait) {
+                  camera.position.set(gridFocusX, 22, 18); 
+              }
               else if (isMobileLandscape) camera.position.set(gridFocusX, 9, 11);
               else camera.position.set(gridFocusX, 10, 10); 
               camera.lookAt(gridFocusX, -1, 0); 
           } 
           else if (currentPhase === 'ZEN_MODE') { 
-              if (isPortrait) camera.position.set(0, 24 / aspect, 16 / aspect);
+              if (isPortrait) camera.position.set(0, 32, 24);
               else if (isMobileLandscape) camera.position.set(0, 12, 14);
               else camera.position.set(0, 18, 16); 
               camera.lookAt(0, 1, 0); 
           }
           else if (currentPhase === 'JOLLY_MODE') {
-              camera.position.set(0, 1, 10);
+              if (isPortrait) camera.position.set(0, 1, 16);
+              else camera.position.set(0, 1, 10);
               camera.lookAt(0, 1, 0);
           }
           else { 
-              if (isPortrait) { camera.position.set(0, 26 / aspect, 18 / aspect); camera.lookAt(0, -3.5, 0); } 
-              else if (isMobileLandscape) { camera.position.set(0, 12, 18); camera.lookAt(0, -2, 0); }
-              else { camera.position.set(0, 16, 16); camera.lookAt(0, -2, 0); } 
+              if (isPortrait) { 
+                  camera.position.set(0, 40, 28); 
+                  camera.lookAt(0, -3.5, 0); 
+              } 
+              else if (isMobileLandscape) { 
+                  camera.position.set(0, 14, 18); 
+                  camera.lookAt(0, -2, 0); 
+              }
+              else { 
+                  camera.position.set(0, 16, 16); 
+                  camera.lookAt(0, -2, 0); 
+              } 
           }
+          
+          camera.updateProjectionMatrix(); 
       }
 
       function updateDeploymentHologram() {
